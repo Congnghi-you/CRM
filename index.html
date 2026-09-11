@@ -1702,10 +1702,13 @@ function updateBadge() {
 // ══════════════════════════════════════════════════════
 let sbClient = null;
 
+const DEFAULT_SB_URL = 'https://xgtelqxreqokaiytindp.supabase.co';
+const DEFAULT_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndGVscXhyZXFva2FpeXRpbmRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwOTQwOTEsImV4cCI6MjEwNDY3MDA5MX0.FYLxyHd4nHbx1o6cKvgE9U6twhKbYzV5ddtTGzxbJvQ';
+
 function getSbConfig() {
   return {
-    url: localStorage.getItem('crm_sb_url') || '',
-    key: localStorage.getItem('crm_sb_key') || ''
+    url: localStorage.getItem('crm_sb_url') || DEFAULT_SB_URL,
+    key: localStorage.getItem('crm_sb_key') || DEFAULT_SB_KEY
   };
 }
 
