@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#042020" />
+<meta name="description" content="CRM cá nhân cho môi giới bất động sản - Quản lý khách hàng, lịch gọi, nhắc hẹn" />
+<title>CRM BĐS – Môi Giới</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #042020;
+    --bg2: #093331;
+    --bg3: #0f4a47;
+    --card: rgba(9, 51, 49, 0.88);
+    --border: rgba(0, 210, 196, 0.22);
+    --primary: #00d2c4;
+    --primary-d: #00a89d;
+    --hot: #ef4444;
+    --warm: #f59e0b;
+    --cold: #38bdf8;
+    --closed: #10b981;
+    --lost: #6b7280;
+    --easy: #10b981;
+    --normal: #38bdf8;
+    --hard: #f43f5e;
+    --text: #f0fdfa;
+    --text2: #99f6e4;
+    --text3: #5eead4;
+    --shadow: 0 4px 24px rgba(0,20,20,0.5);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow: hidden; }
+  body { display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; position: relative; background: radial-gradient(circle at 50% 0%, #0a3836 0%, #042020 100%); }
+
+  /* ── SCROLLABLE AREA ── */
+  #app { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: 72px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+  #app::-webkit-scrollbar { display: none; }
+
+  /* ── TOP BAR ── */
+  .topbar { position: sticky; top: 0; z-index: 50; background: rgba(4,32,32,0.94); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-size: 18px; font-weight: 800; background: linear-gradient(135deg,#00f0e0,#2dd4bf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.2px; }
+  .topbar-right { display: flex; gap: 10px; align-items: center; }
+  .notif-btn { position: relative; background: var(--bg2); border: 1px solid var(--border); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+  .notif-btn:active { transform: scale(0.93); }
+  .notif-badge { position: absolute; top: -3px; right: -3px; background: var(--hot); color: #fff; font-size: 10px; font-weight: 700; border-radius: 99px; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 3px; border: 2px solid var(--bg); }
+
+  /* ── SEARCH ── */
+  .search-wrap { padding: 12px 16px 8px; }
+  .search-box { display: flex; align-items: center; gap: 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; }
+  .search-box input { background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; font-family: inherit; flex: 1; }
+  .search-box input::placeholder { color: var(--text3); }
+
+  /* ── FILTER PILLS ── */
+  .filter-row { display: flex; gap: 8px; padding: 0 16px 12px; overflow-x: auto; scrollbar-width: none; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .pill { flex-shrink: 0; padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; transition: var(--transition); white-space: nowrap; }
+  .pill.active { color: #021a19; border-color: transparent; }
+  .pill-all.active { background: var(--primary); }
+  .pill-hot.active { background: var(--hot); }
+  .pill-warm.active { background: var(--warm); }
+  .pill-cold.active { background: var(--cold); }
+  .pill-closed.active { background: var(--closed); }
+  .pill-lost.active { background: var(--lost); color: #fff; }
+
+  /* ── CUSTOMER CARDS ── */
+  .cards-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+  .customer-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: var(--transition); backdrop-filter: blur(8px); position: relative; overflow: hidden; }
+  .customer-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
+  .customer-card.hot::before { background: var(--hot); }
+  .customer-card.warm::before { background: var(--warm); }
+  .customer-card.cold::before { background: var(--cold); }
+  .customer-card.closed::before { background: var(--closed); }
+  .customer-card.lost::before { background: var(--lost); }
+  .customer-card:active { transform: scale(0.985); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-name { font-size: 16px; font-weight: 700; color: var(--text); }
+  .card-badges { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; letter-spacing: 0.3px; }
+  .badge-hot { background: rgba(239,68,68,0.18); color: var(--hot); }
+  .badge-warm { background: rgba(245,158,11,0.18); color: var(--warm); }
+  .badge-cold { background: rgba(96,165,250,0.18); color: var(--cold); }
+  .badge-closed { background: rgba(16,185,129,0.18); color: var(--closed); }
+  .badge-lost { background: rgba(107,114,128,0.18); color: var(--lost); }
+  .badge-easy { background: rgba(16,185,129,0.15); color: var(--easy); }
+  .badge-normal { background: rgba(96,165,250,0.15); color: var(--normal); }
+  .badge-hard { background: rgba(244,63,94,0.15); color: var(--hard); }
+  .card-phone { font-size: 13px; color: var(--text2); font-weight: 500; margin-bottom: 6px; }
+  .card-area { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+  .card-note { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-meta { font-size: 11px; color: var(--text3); }
+  .card-meta span { color: var(--primary); font-weight: 600; }
+  .card-actions { display: flex; gap: 8px; }
+  .action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--bg3); border: none; cursor: pointer; transition: var(--transition); }
+  .action-btn:active { transform: scale(0.88); }
+  .action-btn-call { background: rgba(16,185,129,0.15); }
+  .action-btn-msg { background: rgba(96,165,250,0.15); }
+  .reminder-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #fbbf24; background: rgba(251,191,36,0.12); border-radius: 6px; padding: 3px 8px; margin-top: 4px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 16px; color: var(--text2); margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; line-height: 1.6; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(4,32,32,0.96); backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-around; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); z-index: 100; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px; transition: var(--transition); position: relative; }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-icon { font-size: 22px; line-height: 1; position: relative; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--text3); }
+  .nav-item.active .nav-label { color: var(--primary); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 7px rgba(0,210,196,0.85)); }
+  .nav-add { flex: 0; }
+  .nav-add-btn { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg,#00d2c4,#00a89d); display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 4px 18px rgba(0,210,196,0.45); cursor: pointer; transition: var(--transition); color: #021a19; font-weight: 800; }
+  .nav-add-btn:active { transform: scale(0.92); }
+
+  /* ── MODAL / DRAWER ── */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: none; backdrop-filter: blur(4px); }
+  .overlay.show { display: block; }
+  .drawer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); width: 100%; max-width: 480px; background: var(--bg); border-radius: 24px 24px 0 0; z-index: 201; transition: transform 0.32s cubic-bezier(0.4,0,0.2,1); max-height: 95vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .drawer::-webkit-scrollbar { display: none; }
+  .drawer.show { transform: translateX(-50%) translateY(0); }
+  .drawer-handle { width: 40px; height: 4px; background: var(--bg3); border-radius: 2px; margin: 12px auto 4px; }
+  .drawer-title { font-size: 17px; font-weight: 700; text-align: center; padding: 8px 20px 16px; }
+  .drawer-body { padding: 0 20px 32px; }
+
+  /* ── FORM ── */
+  .form-section { margin-bottom: 20px; }
+  .form-section-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--bg2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 14px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: var(--transition);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary); background: rgba(9,51,49,0.95); }
+  .field textarea { resize: none; min-height: 80px; line-height: 1.5; }
+  .field select option { background: var(--bg2); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ── CHIP GROUP ── */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 8px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; transition: var(--transition); }
+  .chip:active { transform: scale(0.94); }
+  .chip.selected-hot { border-color: var(--hot); background: rgba(239,68,68,0.15); color: var(--hot); }
+  .chip.selected-warm { border-color: var(--warm); background: rgba(245,158,11,0.15); color: var(--warm); }
+  .chip.selected-cold { border-color: var(--cold); background: rgba(56,189,248,0.15); color: var(--cold); }
+  .chip.selected-closed { border-color: var(--closed); background: rgba(16,185,129,0.15); color: var(--closed); }
+  .chip.selected-lost { border-color: var(--lost); background: rgba(107,114,128,0.15); color: var(--lost); }
+  .chip.selected-easy { border-color: var(--easy); background: rgba(16,185,129,0.15); color: var(--easy); }
+  .chip.selected-normal { border-color: var(--normal); background: rgba(56,189,248,0.15); color: var(--normal); }
+  .chip.selected-hard { border-color: var(--hard); background: rgba(244,63,94,0.15); color: var(--hard); }
+  .chip.selected-buy { border-color: var(--primary); background: rgba(0,210,196,0.15); color: var(--primary); }
+  .chip.selected-rent { border-color: #a78bfa; background: rgba(167,139,250,0.15); color: #a78bfa; }
+  .chip.selected-invest { border-color: var(--closed); background: rgba(16,185,129,0.15); color: var(--closed); }
+  .chip.selected { border-color: var(--primary); background: rgba(0,210,196,0.15); color: var(--primary); }
+
+  /* ── CALL LOG ── */
+  .call-result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .call-result-chip { padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; transition: var(--transition); }
+  .call-result-chip.selected { border-color: var(--primary); background: rgba(0,210,196,0.14); color: var(--primary); }
+
+  /* ── FOLLOWUP ── */
+  .followup-row { display: flex; gap: 8px; }
+  .followup-chip { flex: 1; padding: 10px 6px; border-radius: 10px; font-size: 12px; font-weight: 600; text-align: center; border: 1.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; transition: var(--transition); }
+  .followup-chip.selected-call { border-color: var(--closed); background: rgba(16,185,129,0.12); color: var(--closed); }
+  .followup-chip.selected-msg { border-color: var(--cold); background: rgba(56,189,248,0.12); color: var(--cold); }
+  .followup-chip.selected-none { border-color: var(--text3); background: rgba(100,116,139,0.1); color: var(--text3); }
+
+  /* ── BUTTONS ── */
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: linear-gradient(135deg,#00d2c4,#00a89d); color: #021a19; font-weight: 800; box-shadow: 0 4px 18px rgba(0,210,196,0.38); }
+  .btn-danger { background: rgba(239,68,68,0.12); color: var(--hot); border: 1.5px solid rgba(239,68,68,0.3); margin-top: 10px; }
+  .btn-ghost { background: var(--bg2); color: var(--text2); border: 1.5px solid var(--border); margin-top: 8px; }
+
+  /* ── DETAIL VIEW ── */
+  .detail-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+  .detail-name { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .detail-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .detail-phone { font-size: 16px; color: var(--text2); font-weight: 500; margin-bottom: 12px; }
+  .detail-quick-btns { display: flex; gap: 10px; }
+  .quick-btn { flex: 1; padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 700; text-align: center; cursor: pointer; border: none; transition: var(--transition); font-family: inherit; }
+  .quick-btn:active { transform: scale(0.95); }
+  .quick-btn-call { background: rgba(16,185,129,0.15); color: var(--closed); border: 1.5px solid rgba(16,185,129,0.3); }
+  .quick-btn-zalo { background: rgba(56,189,248,0.15); color: var(--cold); border: 1.5px solid rgba(56,189,248,0.3); }
+  .quick-btn-edit { background: rgba(0,210,196,0.15); color: var(--primary); border: 1.5px solid rgba(0,210,196,0.35); }
+  .detail-section { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .detail-section-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-item label { font-size: 11px; color: var(--text3); margin-bottom: 3px; display: block; }
+  .info-item span { font-size: 13px; font-weight: 600; color: var(--text); }
+  .call-history { display: flex; flex-direction: column; gap: 10px; }
+  .call-entry { background: var(--bg2); border-radius: 10px; padding: 12px; border-left: 3px solid var(--border); }
+  .call-entry-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .call-entry-result { font-size: 12px; font-weight: 700; }
+  .call-entry-date { font-size: 11px; color: var(--text3); }
+  .call-entry-note { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .call-entry-followup { font-size: 11px; margin-top: 6px; display: flex; gap: 8px; }
+
+  /* ── REMINDERS VIEW ── */
+  .reminders-list { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .reminder-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; align-items: center; gap: 12px; }
+  .reminder-time-col { text-align: center; min-width: 52px; }
+  .reminder-time { font-size: 16px; font-weight: 800; color: var(--primary); }
+  .reminder-date { font-size: 10px; color: var(--text3); }
+  .reminder-info { flex: 1; }
+  .reminder-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .reminder-note { font-size: 12px; color: var(--text2); }
+  .reminder-actions { display: flex; gap: 6px; }
+  .reminder-action { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--bg2); border: none; cursor: pointer; transition: var(--transition); }
+  .reminder-action:active { transform: scale(0.88); }
+  .reminder-past { opacity: 0.5; }
+  .reminder-today { border-color: rgba(0,210,196,0.45); box-shadow: 0 0 12px rgba(0,210,196,0.15); }
+
+  /* ── DASHBOARD ── */
+  .dashboard { padding: 16px; }
+  .dash-greeting { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .dash-date { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; backdrop-filter: blur(8px); }
+  .stat-icon { font-size: 24px; margin-bottom: 8px; }
+  .stat-num { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+  .stat-label { font-size: 12px; color: var(--text3); font-weight: 500; }
+  .stat-card.accent-hot { border-color: rgba(239,68,68,0.3); }
+  .stat-card.accent-warm { border-color: rgba(245,158,11,0.3); }
+  .stat-card.accent-closed { border-color: rgba(16,185,129,0.3); }
+  .dash-section-title { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 12px; }
+  .today-reminders { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .today-item { background: var(--card); border: 1px solid rgba(0,210,196,0.35); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .today-item-time { font-size: 14px; font-weight: 800; color: var(--primary); min-width: 44px; }
+  .today-item-name { font-size: 14px; font-weight: 600; }
+  .today-item-note { font-size: 11px; color: var(--text3); }
+  .district-chart { display: flex; flex-direction: column; gap: 8px; }
+  .district-row { display: flex; align-items: center; gap: 10px; }
+  .district-name { font-size: 12px; color: var(--text2); min-width: 90px; font-weight: 500; }
+  .district-bar-wrap { flex: 1; background: var(--bg2); border-radius: 4px; height: 8px; overflow: hidden; }
+  .district-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg,#00d2c4,#2dd4bf); transition: width 0.6s ease; }
+  .district-count { font-size: 12px; font-weight: 700; color: var(--text2); min-width: 20px; text-align: right; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--bg2); border: 1px solid var(--border); color: var(--text); border-radius: 12px; padding: 12px 20px; font-size: 13px; font-weight: 600; z-index: 999; box-shadow: var(--shadow); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--closed); color: var(--closed); }
+  .toast.error { border-color: var(--hot); color: var(--hot); }
+
+  /* ── AREA SUGGESTIONS ── */
+  .area-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .area-tag { padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; background: var(--bg3); color: var(--text2); cursor: pointer; transition: var(--transition); }
+  .area-tag:active { transform: scale(0.92); background: rgba(0,210,196,0.18); color: var(--primary); }
+
+  /* ── SOCIAL MEDIA ── */
+  .social-input-wrap { display: flex; align-items: center; gap: 10px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; transition: var(--transition); }
+  .social-input-wrap:focus-within { border-color: var(--primary); }
+  .social-icon { font-size: 18px; flex-shrink: 0; }
+  .social-input-wrap input { background: transparent; border: none; outline: none; color: var(--text); font-size: 13px; font-family: inherit; flex: 1; min-width: 0; }
+  .social-input-wrap input::placeholder { color: var(--text3); }
+  .social-links-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .social-link-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; transition: var(--transition); }
+  .social-link-btn:active { transform: scale(0.93); }
+  .social-link-btn.fb { border-color: rgba(24,119,242,0.4); color: #1877f2; background: rgba(24,119,242,0.08); }
+  .social-link-btn.zl { border-color: rgba(0,104,255,0.4); color: #0068ff; background: rgba(0,104,255,0.08); }
+  .social-link-btn.tt { border-color: rgba(254,44,85,0.4); color: #fe2c55; background: rgba(254,44,85,0.08); }
+  .social-link-btn.ig { border-color: rgba(225,48,108,0.4); color: #e1306c; background: rgba(225,48,108,0.08); }
+  .social-link-btn.yt { border-color: rgba(255,0,0,0.4); color: #ff0000; background: rgba(255,0,0,0.08); }
+
+  /* ── MISC ── */
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .section-pad { padding: 12px 0; }
+  .no-reminders { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
+  .tag-overdue { background: rgba(239,68,68,0.12); color: var(--hot); border-color: rgba(239,68,68,0.3); }
+
+  /* ── SEARCH + SORT BAR ── */
+  .search-sort-bar { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; }
+  .inline-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 12px; transition: var(--transition); }
+  .inline-search:focus-within { border-color: var(--primary); }
+  .inline-search input { background: transparent; border: none; outline: none; color: var(--text); font-size: 13px; font-family: inherit; flex: 1; min-width: 0; }
+  .inline-search input::placeholder { color: var(--text3); }
+  .inline-search .si-icon { font-size: 14px; color: var(--text3); flex-shrink: 0; }
+  .inline-search .si-clear { font-size: 13px; color: var(--text3); cursor: pointer; padding: 0 2px; flex-shrink: 0; }
+  .sort-btn-group { display: flex; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+  .sort-btn { padding: 7px 10px; font-size: 11px; font-weight: 700; color: var(--text3); cursor: pointer; transition: var(--transition); white-space: nowrap; display: flex; align-items: center; gap: 3px; }
+  .sort-btn:first-child { border-right: 1px solid var(--border); }
+  .sort-btn.active { background: rgba(0,210,196,0.2); color: var(--primary); }
+  .sort-btn:active { transform: scale(0.93); }
+
+</style>
+
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER: Add/Edit Customer -->
+<div class="drawer" id="drawerCustomer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title" id="drawerCustomerTitle">Thêm Khách Hàng</div>
+  <div class="drawer-body">
+    <input type="hidden" id="editCustomerId" />
+
+    <div class="form-section">
+      <div class="form-section-title">📋 Thông tin cơ bản</div>
+      <div class="field">
+        <label>Họ & Tên *</label>
+        <input type="text" id="cName" placeholder="Nguyễn Văn A" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Số điện thoại *</label>
+          <input type="tel" id="cPhone" placeholder="0901..." />
+        </div>
+        <div class="field">
+          <label>Zalo / Viber</label>
+          <input type="tel" id="cZalo" placeholder="SĐT Zalo" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Nguồn khách</label>
+        <select id="cSource">
+          <option value="">-- Chọn nguồn --</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Zalo">Zalo</option>
+          <option value="Giới thiệu">Giới thiệu</option>
+          <option value="Cold call">Cold call</option>
+          <option value="Website">Website</option>
+          <option value="Chợ tốt">Chợ tốt</option>
+          <option value="Batdongsan.com.vn">Batdongsan.com.vn</option>
+          <option value="Khác">Khác</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🌐 Mạng xã hội</div>
+      <div class="field">
+        <label>Facebook</label>
+        <div class="social-input-wrap">
+          <span class="social-icon" style="color:#1877f2">🔵</span>
+          <input type="url" id="cFacebook" placeholder="https://facebook.com/..." />
+        </div>
+      </div>
+      <div class="field">
+        <label>Zalo</label>
+        <div class="social-input-wrap">
+          <span class="social-icon" style="color:#0068ff">💬</span>
+          <input type="tel" id="cZaloSocial" placeholder="SĐT Zalo" />
+        </div>
+      </div>
+      <div class="field">
+        <label>TikTok</label>
+        <div class="social-input-wrap">
+          <span class="social-icon">🎵</span>
+          <input type="url" id="cTiktok" placeholder="https://tiktok.com/@..." />
+        </div>
+      </div>
+      <div class="field">
+        <label>Instagram</label>
+        <div class="social-input-wrap">
+          <span class="social-icon" style="color:#e1306c">📸</span>
+          <input type="url" id="cInstagram" placeholder="https://instagram.com/..." />
+        </div>
+      </div>
+      <div class="field">
+        <label>YouTube / Khác</label>
+        <div class="social-input-wrap">
+          <span class="social-icon" style="color:#ff0000">▶️</span>
+          <input type="url" id="cYoutube" placeholder="https://youtube.com/..." />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🏡 Nhu cầu BĐS</div>
+      <div class="field">
+        <label>Mục đích</label>
+        <div class="chip-group" id="chipPurpose">
+          <div class="chip" data-val="buy" onclick="selectChip(this,'chipPurpose','selected-buy')">🛒 Mua</div>
+          <div class="chip" data-val="rent" onclick="selectChip(this,'chipPurpose','selected-rent')">🔑 Thuê</div>
+          <div class="chip" data-val="invest" onclick="selectChip(this,'chipPurpose','selected-invest')">📈 Đầu tư</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Loại bất động sản</label>
+        <div class="chip-group" id="chipType">
+          <div class="chip" data-val="apartment" onclick="selectChip(this,'chipType','selected')">🏢 Căn hộ</div>
+          <div class="chip" data-val="house" onclick="selectChip(this,'chipType','selected')">🏠 Nhà phố</div>
+          <div class="chip" data-val="land" onclick="selectChip(this,'chipType','selected')">🌿 Đất nền</div>
+          <div class="chip" data-val="villa" onclick="selectChip(this,'chipType','selected')">🏰 Biệt thự</div>
+          <div class="chip" data-val="commercial" onclick="selectChip(this,'chipType','selected')">🏪 Thương mại</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Khu vực quan tâm</label>
+        <input type="text" id="cArea" placeholder="Quận 7, Bình Chánh, Thủ Đức..." />
+        <div class="area-suggestions">
+          <span class="area-tag" onclick="appendArea('Quận 1')">Q.1</span>
+          <span class="area-tag" onclick="appendArea('Quận 2')">Q.2</span>
+          <span class="area-tag" onclick="appendArea('Quận 7')">Q.7</span>
+          <span class="area-tag" onclick="appendArea('Quận 9')">Q.9</span>
+          <span class="area-tag" onclick="appendArea('Thủ Đức')">Thủ Đức</span>
+          <span class="area-tag" onclick="appendArea('Bình Chánh')">Bình Chánh</span>
+          <span class="area-tag" onclick="appendArea('Nhà Bè')">Nhà Bè</span>
+          <span class="area-tag" onclick="appendArea('Bình Dương')">Bình Dương</span>
+          <span class="area-tag" onclick="appendArea('Long An')">Long An</span>
+          <span class="area-tag" onclick="appendArea('Đồng Nai')">Đồng Nai</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Ngân sách (tỷ)</label>
+          <input type="text" id="cBudget" placeholder="VD: 2 - 3.5 tỷ" />
+        </div>
+        <div class="field">
+          <label>Diện tích (m²)</label>
+          <input type="text" id="cArea2" placeholder="VD: 60 - 90" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🌡️ Trạng thái khách</div>
+      <div class="field">
+        <label>Độ quan tâm</label>
+        <div class="chip-group" id="chipStatus">
+          <div class="chip" data-val="hot" onclick="selectChip(this,'chipStatus','selected-hot')">🔥 Nóng</div>
+          <div class="chip" data-val="warm" onclick="selectChip(this,'chipStatus','selected-warm')">🌤 Ấm</div>
+          <div class="chip" data-val="cold" onclick="selectChip(this,'chipStatus','selected-cold')">❄️ Lạnh</div>
+          <div class="chip" data-val="closed" onclick="selectChip(this,'chipStatus','selected-closed')">✅ Đã chốt</div>
+          <div class="chip" data-val="lost" onclick="selectChip(this,'chipStatus','selected-lost')">🚫 Mất KH</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tính cách</label>
+        <div class="chip-group" id="chipPersonality">
+          <div class="chip" data-val="easy" onclick="selectChip(this,'chipPersonality','selected-easy')">😊 Dễ tính</div>
+          <div class="chip" data-val="normal" onclick="selectChip(this,'chipPersonality','selected-normal')">😐 Bình thường</div>
+          <div class="chip" data-val="hard" onclick="selectChip(this,'chipPersonality','selected-hard')">😤 Khó tính</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">📝 Ghi chú</div>
+      <div class="field">
+        <label>Yêu cầu / Ghi chú</label>
+        <textarea id="cNote" placeholder="Ghi chú yêu cầu đặc biệt, ý kiến khách..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveCustomer()">💾 Lưu Khách Hàng</button>
+    <button class="btn btn-ghost" id="btnDeleteCustomer" style="display:none" onclick="deleteCustomer()">🗑 Xóa khách hàng này</button>
+  </div>
+</div>
+
+<!-- DRAWER: Log Call -->
+<div class="drawer" id="drawerLog">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">📞 Ghi Log Cuộc Gọi</div>
+  <div class="drawer-body">
+    <input type="hidden" id="logCustomerId" />
+
+    <div class="form-section">
+      <div class="form-section-title">📅 Thời gian</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Ngày gọi</label>
+          <input type="date" id="logDate" />
+        </div>
+        <div class="field">
+          <label>Giờ gọi</label>
+          <input type="time" id="logTime" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">📊 Kết quả cuộc gọi</div>
+      <div class="call-result-grid" id="callResultGrid">
+        <div class="call-result-chip" data-val="answered" onclick="selectCallResult(this)">✅ Nghe máy</div>
+        <div class="call-result-chip" data-val="no-answer" onclick="selectCallResult(this)">📵 Không nghe</div>
+        <div class="call-result-chip" data-val="interested" onclick="selectCallResult(this)">🔥 Quan tâm</div>
+        <div class="call-result-chip" data-val="not-interested" onclick="selectCallResult(this)">❌ Không quan tâm</div>
+        <div class="call-result-chip" data-val="callback" onclick="selectCallResult(this)">🔄 Hẹn gọi lại</div>
+        <div class="call-result-chip" data-val="busy" onclick="selectCallResult(this)">⏳ Bận / Sẽ gọi lại</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">💬 Ý kiến khách hàng</div>
+      <div class="field">
+        <textarea id="logNote" placeholder="Khách hỏi về dự án X, quan tâm tầng cao, muốn view sông..."></textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🎯 Hành động tiếp theo</div>
+      <div class="field">
+        <label>Cần làm gì?</label>
+        <div class="followup-row" id="followupRow">
+          <div class="followup-chip" data-val="call" onclick="selectFollowup(this)">📞 Gọi lại</div>
+          <div class="followup-chip" data-val="msg" onclick="selectFollowup(this)">💬 Nhắn tin</div>
+          <div class="followup-chip" data-val="none" onclick="selectFollowup(this)">⏸ Không cần</div>
+        </div>
+      </div>
+      <div class="field" id="reminderField">
+        <label>⏰ Thời gian nhắc hẹn</label>
+        <div class="field-row">
+          <input type="date" id="reminderDate" />
+          <input type="time" id="reminderTime" />
+        </div>
+        <div class="chip-group" style="margin-top:8px" id="quickReminders">
+          <div class="chip" onclick="setQuickReminder(1,'hour')">+1 giờ</div>
+          <div class="chip" onclick="setQuickReminder(2,'hour')">+2 giờ</div>
+          <div class="chip" onclick="setQuickReminder(1,'day')">+1 ngày</div>
+          <div class="chip" onclick="setQuickReminder(2,'day')">+2 ngày</div>
+          <div class="chip" onclick="setQuickReminder(3,'day')">+3 ngày</div>
+          <div class="chip" onclick="setQuickReminder(1,'week')">+1 tuần</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ghi chú nhắc hẹn</label>
+        <input type="text" id="reminderNote" placeholder="Gọi hỏi quyết định, gửi thêm thông tin..." />
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveLog()">✅ Lưu cuộc gọi</button>
+  </div>
+</div>
+
+<!-- DRAWER: Customer Detail -->
+<div class="drawer" id="drawerDetail">
+  <div class="drawer-handle"></div>
+  <div class="drawer-body" id="detailBody" style="padding:0 0 32px"></div>
+</div>
+
+<!-- DRAWER: Add/Edit Rental Customer -->
+<div class="drawer" id="drawerRental">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title" id="drawerRentalTitle">Thêm Khách Thuê</div>
+  <div class="drawer-body">
+    <div class="form-section">
+      <div class="form-section-title">📋 Thông tin cơ bản</div>
+      <div class="field">
+        <label>Họ & Tên *</label>
+        <input type="text" id="rName" placeholder="Nguyễn Văn A" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Số điện thoại *</label>
+          <input type="tel" id="rPhone" placeholder="0901..." />
+        </div>
+        <div class="field">
+          <label>Zalo</label>
+          <input type="tel" id="rZalo" placeholder="SĐT Zalo" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Nguồn khách</label>
+        <select id="rSource">
+          <option value="">-- Chọn nguồn --</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Zalo">Zalo</option>
+          <option value="Giới thiệu">Giới thiệu</option>
+          <option value="Cold call">Cold call</option>
+          <option value="Chợ tốt">Chợ tốt</option>
+          <option value="Batdongsan.com.vn">Batdongsan.com.vn</option>
+          <option value="Khác">Khác</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🔑 Nhu cầu Cho Thuê</div>
+      <div class="field">
+        <label>Loại bất động sản</label>
+        <div class="chip-group" id="chipRentalType">
+          <div class="chip" data-val="apartment" onclick="selectRentalChip(this,'chipRentalType','selected')">🏢 Căn hộ</div>
+          <div class="chip" data-val="house" onclick="selectRentalChip(this,'chipRentalType','selected')">🏠 Nhà phố</div>
+          <div class="chip" data-val="office" onclick="selectRentalChip(this,'chipRentalType','selected')">💼 Văn phòng</div>
+          <div class="chip" data-val="shophouse" onclick="selectRentalChip(this,'chipRentalType','selected')">🏪 Mặt bằng</div>
+          <div class="chip" data-val="villa" onclick="selectRentalChip(this,'chipRentalType','selected')">🏰 Biệt thự</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Khu vực quan tâm</label>
+        <input type="text" id="rArea" placeholder="Quận 7, Thủ Đức..." />
+        <div class="area-suggestions">
+          <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Quận 1'">Q.1</span>
+          <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Quận 2'">Q.2</span>
+          <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Quận 7'">Q.7</span>
+          <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Thủ Đức'">Thủ Đức</span>
+          <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Bình Thạnh'">Bình Thạnh</span>
+          <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Tân Bình'">Tân Bình</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Giá thuê từ (triệu/th)</label>
+          <input type="number" id="rPriceMin" placeholder="VD: 8" />
+        </div>
+        <div class="field">
+          <label>Đến (triệu/th)</label>
+          <input type="number" id="rPriceMax" placeholder="VD: 15" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Diện tích (m²)</label>
+          <input type="text" id="rSize" placeholder="VD: 50-80" />
+        </div>
+        <div class="field">
+          <label>Thời hạn thuê</label>
+          <input type="text" id="rDuration" placeholder="VD: 1 năm" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🌡️ Trạng thái</div>
+      <div class="field">
+        <label>Độ quan tâm</label>
+        <div class="chip-group" id="chipRentalStatus">
+          <div class="chip" data-val="hot" onclick="selectRentalChip(this,'chipRentalStatus','selected-hot')">🔥 Nóng</div>
+          <div class="chip" data-val="warm" onclick="selectRentalChip(this,'chipRentalStatus','selected-warm')">🌤 Ấm</div>
+          <div class="chip" data-val="cold" onclick="selectRentalChip(this,'chipRentalStatus','selected-cold')">❄️ Lạnh</div>
+          <div class="chip" data-val="closed" onclick="selectRentalChip(this,'chipRentalStatus','selected-closed')">✅ Đã thuê</div>
+          <div class="chip" data-val="lost" onclick="selectRentalChip(this,'chipRentalStatus','selected-lost')">🚫 Mất KH</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tính cách</label>
+        <div class="chip-group" id="chipRentalPersonality">
+          <div class="chip" data-val="easy" onclick="selectRentalChip(this,'chipRentalPersonality','selected-easy')">😊 Dễ tính</div>
+          <div class="chip" data-val="normal" onclick="selectRentalChip(this,'chipRentalPersonality','selected-normal')">😐 Bình thường</div>
+          <div class="chip" data-val="hard" onclick="selectRentalChip(this,'chipRentalPersonality','selected-hard')">😤 Khó tính</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">📝 Ghi chú</div>
+      <div class="field">
+        <textarea id="rNote" placeholder="Yêu cầu đặc biệt: có thang máy, chỗ đậu xe, không nuôi thú cưng..."></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveRental()">💾 Lưu Khách Thuê</button>
+    <button class="btn btn-ghost" id="btnDeleteRental" style="display:none" onclick="deleteRental()">🗑 Xóa khách thuê này</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Pages will be rendered here -->
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="navigate('home')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Mua/ĐT</div>
+  </div>
+  <div class="nav-item" id="nav-rental" onclick="navigate('rental')">
+    <div class="nav-icon">🔑</div>
+    <div class="nav-label">Cho Thuê</div>
+  </div>
+  <div class="nav-add">
+    <div class="nav-add-btn" id="mainAddBtn" onclick="handleAddBtn()">＋</div>
+  </div>
+  <div class="nav-item" id="nav-reminders" onclick="navigate('reminders')">
+    <div class="nav-icon">🔔<span class="notif-badge" id="navBadge" style="display:none;position:absolute;top:-4px;right:-4px;font-size:9px"></span></div>
+    <div class="nav-label">Nhắc hẹn</div>
+  </div>
+  <div class="nav-item" id="nav-dashboard" onclick="navigate('dashboard')">
+    <div class="nav-icon">📊</div>
+    <div class="nav-label">Báo cáo</div>
+  </div>
+</nav>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DATA LAYER
+// ══════════════════════════════════════════════════════
+const DB = {
+  get customers() { try { return JSON.parse(localStorage.getItem('crm_customers') || '[]'); } catch { return []; } },
+  set customers(v) { localStorage.setItem('crm_customers', JSON.stringify(v)); },
+  get logs() { try { return JSON.parse(localStorage.getItem('crm_logs') || '[]'); } catch { return []; } },
+  set logs(v) { localStorage.setItem('crm_logs', JSON.stringify(v)); },
+  get reminders() { try { return JSON.parse(localStorage.getItem('crm_reminders') || '[]'); } catch { return []; } },
+  set reminders(v) { localStorage.setItem('crm_reminders', JSON.stringify(v)); }
+};
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+const SAMPLE_DATA = [
+  { id:'s1', name:'Anh Minh', phone:'0901234567', zalo:'0901234567', source:'Facebook', purpose:'buy', propType:'apartment', area:'Quận 7, Nhà Bè', budget:'2 - 3 tỷ', area2:'65-80', status:'hot', personality:'easy', note:'Quan tâm căn 2PN view sông, cần gấp trong 1 tháng tới', createdAt: Date.now()-86400000*5 },
+  { id:'s2', name:'Chị Lan Hương', phone:'0912345678', zalo:'', source:'Giới thiệu', purpose:'invest', propType:'land', area:'Bình Chánh, Long An', budget:'5 - 7 tỷ', area2:'200+', status:'warm', personality:'normal', note:'Đầu tư đất nền, cần pháp lý sạch, sổ đỏ riêng', createdAt: Date.now()-86400000*2 },
+  { id:'s3', name:'Chú Tám BĐS', phone:'0933445566', zalo:'0933445566', source:'Cold call', purpose:'sell', propType:'house', area:'Quận 9, Thủ Đức', budget:'', area2:'', status:'cold', personality:'hard', note:'Muốn bán nhà phố, hỏi giá cao, khó thương lượng', createdAt: Date.now()-86400000*10 },
+];
+
+function initSampleData() {
+  if (DB.customers.length === 0) {
+    DB.customers = SAMPLE_DATA;
+    // Sample logs
+    const logs = [
+      { id:uid(), customerId:'s1', date:'2026-09-10', time:'09:30', result:'interested', note:'Khách rất quan tâm dự án River Park Q7, hỏi về tầng cao view sông Sài Gòn. Ngân sách ổn khoảng 2.8 tỷ.', followup:'call', reminderDate:'2026-09-12', reminderTime:'10:00', reminderNote:'Gửi thêm bảng giá, gọi xác nhận lịch xem nhà', done:false },
+      { id:uid(), customerId:'s2', date:'2026-09-09', time:'14:00', result:'callback', note:'Hỏi thêm về pháp lý đất nền Bình Chánh. Cần sổ đỏ riêng, không mua đất phân lô chui.', followup:'msg', reminderDate:'2026-09-11', reminderTime:'15:30', reminderNote:'Gửi Zalo dự án đất sổ đỏ Bình Chánh', done:false },
+      { id:uid(), customerId:'s3', date:'2026-09-08', time:'16:00', result:'no-answer', note:'Gọi không nghe, nhắn tin chưa rep', followup:'call', reminderDate:'2026-09-15', reminderTime:'09:00', reminderNote:'Gọi lại lần 2', done:false },
+    ];
+    DB.logs = logs;
+    DB.reminders = logs.filter(l => l.reminderDate).map(l => ({
+      id: l.id, customerId: l.customerId, date: l.reminderDate, time: l.reminderTime, note: l.reminderNote, done: false
+    }));
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// UI STATE
+// ══════════════════════════════════════════════════════
+let currentPage = 'home';
+let currentFilter = 'all';
+let searchQuery = '';
+let activeChips = {};
+let selectedCallResult = '';
+let selectedFollowup = '';
+let homeSearch = '';
+let homeSort = 'status'; // 'status' | 'newest' | 'oldest'
+let rentalSearch = '';
+let rentalSort = 'status';
+
+// ══════════════════════════════════════════════════════
+// ROUTING
+// ══════════════════════════════════════════════════════
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('nav-' + page);
+  if (el) el.classList.add('active');
+  render();
+}
+
+function render() {
+  const app = document.getElementById('app');
+  switch(currentPage) {
+    case 'home': app.innerHTML = renderHome(); break;
+    case 'rental': app.innerHTML = renderRental(); break;
+    case 'reminders': app.innerHTML = renderReminders(); break;
+    case 'dashboard': app.innerHTML = renderDashboard(); break;
+    case 'search': app.innerHTML = renderSearch(); break;
+    default: app.innerHTML = renderHome();
+  }
+  updateBadge();
+}
+
+// Re-render cards only (keep search input focused)
+function renderInPlace(page) {
+  const app = document.getElementById('app');
+  const newHtml = page === 'home' ? renderHome() : renderRental();
+  // Update only cards-list and sort buttons to avoid losing focus
+  const tmp = document.createElement('div');
+  tmp.innerHTML = newHtml;
+  const newCards = tmp.querySelector('.cards-list');
+  const curCards = app.querySelector('.cards-list');
+  if (newCards && curCards) curCards.innerHTML = newCards.innerHTML;
+  // Update sort buttons active state
+  const newSortBar = tmp.querySelector('.sort-btn-group');
+  const curSortBar = app.querySelector('.sort-btn-group');
+  if (newSortBar && curSortBar) curSortBar.innerHTML = newSortBar.innerHTML;
+  // Update clear button
+  const newSi = tmp.querySelector('.inline-search');
+  const curSi = app.querySelector('.inline-search');
+  if (newSi && curSi) {
+    const newClear = newSi.querySelector('.si-clear');
+    const curClear = curSi.querySelector('.si-clear');
+    if (newClear && !curClear) curSi.appendChild(newClear.cloneNode(true));
+    else if (!newClear && curClear) curClear.remove();
+  }
+  updateBadge();
+}
+
+// ══════════════════════════════════════════════════════
+// HOME PAGE
+// ══════════════════════════════════════════════════════
+function renderHome() {
+  let customers = DB.customers;
+
+  // Filter by status
+  if (currentFilter !== 'all') customers = customers.filter(c => c.status === currentFilter);
+
+  // Filter by search
+  if (homeSearch.trim()) {
+    const q = homeSearch.trim().toLowerCase();
+    customers = customers.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      (c.phone||'').includes(q) ||
+      (c.area||'').toLowerCase().includes(q) ||
+      (c.note||'').toLowerCase().includes(q)
+    );
+  }
+
+  // Sort
+  if (homeSort === 'newest') {
+    customers = [...customers].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  } else if (homeSort === 'oldest') {
+    customers = [...customers].sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+  } else {
+    const order = {hot:0,warm:1,cold:2,closed:3,lost:4};
+    customers = [...customers].sort((a,b) => (order[a.status]??5) - (order[b.status]??5));
+  }
+
+  const reminders = DB.reminders;
+  const now = new Date();
+
+  const cards = customers.length === 0
+    ? `<div class="empty-state"><div class="icon">${homeSearch ? '🔍' : '🏠'}</div><h3>${homeSearch ? 'Không tìm thấy' : 'Chưa có khách hàng'}</h3><p>${homeSearch ? 'Thử từ khoá khác' : 'Nhấn nút <strong>＋</strong> để thêm'}</p></div>`
+    : customers.map(c => renderCustomerCard(c, reminders, now)).join('');
+
+  return `
+    <div class="topbar">
+      <div class="topbar-title">🏡 CRM BĐS</div>
+      <div class="topbar-right">
+        <div class="notif-btn" onclick="navigate('reminders')">
+          🔔
+          <div class="notif-badge" id="topBadge" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="pill pill-all ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">Tất cả (${DB.customers.length})</div>
+      <div class="pill pill-hot ${currentFilter==='hot'?'active':''}" onclick="setFilter('hot')">🔥 Nóng</div>
+      <div class="pill pill-warm ${currentFilter==='warm'?'active':''}" onclick="setFilter('warm')">🌤 Ấm</div>
+      <div class="pill pill-cold ${currentFilter==='cold'?'active':''}" onclick="setFilter('cold')">❄️ Lạnh</div>
+      <div class="pill pill-closed ${currentFilter==='closed'?'active':''}" onclick="setFilter('closed')">✅ Chốt</div>
+      <div class="pill pill-lost ${currentFilter==='lost'?'active':''}" onclick="setFilter('lost')">🚫 Mất KH</div>
+    </div>
+    <div class="search-sort-bar">
+      <div class="inline-search">
+        <span class="si-icon">🔍</span>
+        <input type="text"
+          placeholder="Tên, SĐT, khu vực..."
+          value="${homeSearch}"
+          oninput="homeSearch=this.value; renderInPlace('home')"
+        />
+        ${homeSearch ? `<span class="si-clear" onclick="homeSearch=''; renderInPlace('home')">✕</span>` : ''}
+      </div>
+      <div class="sort-btn-group">
+        <div class="sort-btn ${homeSort==='newest'?'active':''}" onclick="homeSort='newest'; renderInPlace('home')">🆕<span>Mới</span></div>
+        <div class="sort-btn ${homeSort==='oldest'?'active':''}" onclick="homeSort='oldest'; renderInPlace('home')">📅<span>Cũ</span></div>
+      </div>
+    </div>
+    <div class="cards-list">${cards}</div>
+    <div style="height:16px"></div>
+  `;
+}
+
+function renderCustomerCard(c, reminders, now) {
+  const logs = DB.logs.filter(l => l.customerId === c.id).sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+  const lastLog = logs[0];
+  const reminder = reminders.filter(r => r.customerId === c.id && !r.done).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time))[0];
+  const statusMap = {hot:{label:'🔥 Nóng',cls:'hot'},warm:{label:'🌤 Ấm',cls:'warm'},cold:{label:'❄️ Lạnh',cls:'cold'},closed:{label:'✅ Chốt',cls:'closed'},lost:{label:'🚫 Mất KH',cls:'lost'}};
+  const personMap = {easy:{label:'😊 Dễ tính',cls:'easy'},normal:{label:'😐 Bình thường',cls:'normal'},hard:{label:'😤 Khó tính',cls:'hard'}};
+  const s = statusMap[c.status] || statusMap.cold;
+  const p = personMap[c.personality] || null;
+  const isReminderToday = reminder && reminder.date === today();
+  const isOverdue = reminder && reminder.date < today();
+
+  return `
+    <div class="customer-card ${c.status}" onclick="openDetail('${c.id}')">
+      <div class="card-top">
+        <div class="card-name">${c.name}</div>
+        <div class="card-badges">
+          <span class="badge badge-${s.cls}">${s.label}</span>
+          ${p ? `<span class="badge badge-${p.cls}">${p.label}</span>` : ''}
+        </div>
+      </div>
+      <div class="card-phone">📞 ${c.phone}</div>
+      ${c.area ? `<div class="card-area">📍 ${c.area}</div>` : ''}
+      ${lastLog ? `<div class="card-note">${lastLog.note || '—'}</div>` : ''}
+      <div class="card-footer">
+        <div>
+          <div class="card-meta">${lastLog ? `Gọi: <span>${formatDateShort(lastLog.date)}</span>` : '<span style="color:var(--text3)">Chưa gọi</span>'}</div>
+          ${reminder ? `<div class="reminder-tag ${isOverdue?'tag-overdue':''}">${isOverdue?'⚠️':'⏰'} ${isOverdue?'Quá hạn: ':'Nhắc: '}${formatDateShort(reminder.date)} ${reminder.time}</div>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="action-btn action-btn-call" onclick="event.stopPropagation(); callPhone('${c.phone}')">📞</button>
+          ${c.zalo ? `<button class="action-btn action-btn-msg" onclick="event.stopPropagation(); openZalo('${c.zalo}')">💬</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  render();
+}
+
+// ══════════════════════════════════════════════════════
+// REMINDERS PAGE
+// ══════════════════════════════════════════════════════
+function renderReminders() {
+  const reminders = DB.reminders.filter(r => !r.done).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  const customers = DB.customers;
+  const todayStr = today();
+
+  if (reminders.length === 0) {
+    return `
+      <div class="topbar"><div class="topbar-title">🔔 Nhắc Hẹn</div></div>
+      <div class="no-reminders"><div style="font-size:48px;margin-bottom:12px">✅</div><div>Không có nhắc hẹn nào!</div></div>
+    `;
+  }
+
+  const items = reminders.map(r => {
+    const c = customers.find(x => x.id === r.customerId) || { name:'?', phone:'' };
+    const isToday = r.date === todayStr;
+    const isPast = r.date < todayStr;
+    return `
+      <div class="reminder-card ${isToday?'reminder-today':''} ${isPast?'reminder-past':''}" onclick="openDetail('${r.customerId}')">
+        <div class="reminder-time-col">
+          <div class="reminder-time">${r.time||'—'}</div>
+          <div class="reminder-date">${formatDateShort(r.date)}</div>
+          ${isPast ? '<div style="font-size:9px;color:var(--hot);font-weight:700;margin-top:2px">QUÁ HẠN</div>' : ''}
+          ${isToday ? '<div style="font-size:9px;color:var(--primary);font-weight:700;margin-top:2px">HÔM NAY</div>' : ''}
+        </div>
+        <div class="reminder-info">
+          <div class="reminder-name">${c.name}</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:3px">📞 ${c.phone}</div>
+          <div class="reminder-note">${r.note||''}</div>
+        </div>
+        <div class="reminder-actions">
+          <button class="reminder-action" onclick="event.stopPropagation(); callPhone('${c.phone}')">📞</button>
+          <button class="reminder-action" onclick="event.stopPropagation(); doneReminder('${r.id}')">✅</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="topbar"><div class="topbar-title">🔔 Nhắc Hẹn (${reminders.length})</div></div>
+    <div class="reminders-list">${items}</div>
+  `;
+}
+
+function doneReminder(id) {
+  const reminders = DB.reminders;
+  const i = reminders.findIndex(r => r.id === id);
+  if (i > -1) { reminders[i].done = true; DB.reminders = reminders; }
+  showToast('✅ Đã xong nhắc hẹn!', 'success');
+  render();
+}
+
+// ══════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════
+function renderDashboard() {
+  const customers = DB.customers;
+  const reminders = DB.reminders.filter(r => !r.done);
+  const todayStr = today();
+  const now = new Date();
+  const hours = now.getHours();
+  const greeting = hours < 12 ? 'Chào buổi sáng' : hours < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+
+  const hot = customers.filter(c=>c.status==='hot').length;
+  const warm = customers.filter(c=>c.status==='warm').length;
+  const closed = customers.filter(c=>c.status==='closed').length;
+  const todayRem = reminders.filter(r=>r.date===todayStr);
+  const overdue = reminders.filter(r=>r.date<todayStr);
+
+  // Area distribution
+  const areaCount = {};
+  customers.forEach(c => {
+    if (c.area) c.area.split(',').forEach(a => {
+      const key = a.trim();
+      if (key) areaCount[key] = (areaCount[key]||0) + 1;
+    });
+  });
+  const topAreas = Object.entries(areaCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxArea = topAreas[0]?.[1] || 1;
+
+  const todayItems = todayRem.map(r => {
+    const c = customers.find(x=>x.id===r.customerId)||{name:'?'};
+    return `<div class="today-item" onclick="openDetail('${r.customerId}')">
+      <div class="today-item-time">${r.time||'--:--'}</div>
+      <div><div class="today-item-name">${c.name}</div><div class="today-item-note">${r.note||''}</div></div>
+    </div>`;
+  }).join('');
+
+  const areaChart = topAreas.map(([name,count]) => `
+    <div class="district-row">
+      <div class="district-name">${name}</div>
+      <div class="district-bar-wrap"><div class="district-bar" style="width:${Math.round(count/maxArea*100)}%"></div></div>
+      <div class="district-count">${count}</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="topbar"><div class="topbar-title">📊 Báo Cáo</div></div>
+    <div class="dashboard">
+      <div class="dash-greeting">${greeting}! 👋</div>
+      <div class="dash-date">${formatDateLong(todayStr)}</div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-num">${customers.length}</div>
+          <div class="stat-label">Tổng khách hàng</div>
+        </div>
+        <div class="stat-card accent-hot">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-num" style="color:var(--hot)">${hot}</div>
+          <div class="stat-label">Khách nóng</div>
+        </div>
+        <div class="stat-card accent-warm">
+          <div class="stat-icon">🔔</div>
+          <div class="stat-num" style="color:var(--warm)">${todayRem.length}</div>
+          <div class="stat-label">Nhắc hẹn hôm nay</div>
+        </div>
+        <div class="stat-card accent-closed">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num" style="color:var(--closed)">${closed}</div>
+          <div class="stat-label">Đã chốt</div>
+        </div>
+      </div>
+
+      ${overdue.length > 0 ? `<div style="background:rgba(239,68,68,0.1);border:1.5px solid rgba(239,68,68,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--hot)">⚠️ Bạn có <strong>${overdue.length}</strong> nhắc hẹn đã quá hạn!</div>` : ''}
+
+      ${todayRem.length > 0 ? `<div class="dash-section-title">⏰ Nhắc hẹn hôm nay</div><div class="today-reminders">${todayItems}</div>` : ''}
+
+      ${topAreas.length > 0 ? `
+        <div class="dash-section-title">📍 Khu vực quan tâm</div>
+        <div class="stat-card" style="margin-bottom:16px">
+          <div class="district-chart">${areaChart}</div>
+        </div>
+      ` : ''}
+
+      <div class="dash-section-title">📊 Phân bổ trạng thái</div>
+      <div class="stat-card">
+        ${[['hot','🔥 Nóng',hot,'var(--hot)'],['warm','🌤 Ấm',warm,'var(--warm)'],['cold','❄️ Lạnh',customers.filter(c=>c.status==='cold').length,'var(--cold)'],['closed','✅ Chốt',closed,'var(--closed)'],['lost','🚫 Mất KH',customers.filter(c=>c.status==='lost').length,'var(--lost)']].map(([k,label,n,color])=>`
+          <div class="district-row" style="margin-bottom:10px">
+            <div class="district-name" style="font-size:13px">${label}</div>
+            <div class="district-bar-wrap"><div class="district-bar" style="width:${customers.length?Math.round(n/customers.length*100):0}%;background:${color};opacity:0.8"></div></div>
+            <div class="district-count">${n}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="dash-section-title" style="margin-top:20px">💾 Xuất dữ liệu</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+        <button onclick="exportCSV()" style="background:rgba(16,185,129,0.12);border:1.5px solid rgba(16,185,129,0.35);color:var(--closed);border-radius:14px;padding:14px 10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s">
+          <span style="font-size:24px">📊</span>
+          <span>Xuất CSV</span>
+          <span style="font-size:10px;font-weight:400;opacity:0.7">Mở bằng Excel</span>
+        </button>
+        <button onclick="exportTXT()" style="background:rgba(96,165,250,0.12);border:1.5px solid rgba(96,165,250,0.35);color:var(--cold);border-radius:14px;padding:14px 10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s">
+          <span style="font-size:24px">📄</span>
+          <span>Xuất TXT</span>
+          <span style="font-size:10px;font-weight:400;opacity:0.7">File văn bản nhẹ</span>
+        </button>
+      </div>
+      <div style="background:var(--bg2);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--text3);line-height:1.6">
+        📦 Bao gồm: <strong style="color:var(--text2)">${customers.length} khách Mua/ĐT</strong> + <strong style="color:var(--text2)">${RDB.rentals.length} khách Cho Thuê</strong><br/>
+        Dữ liệu tải về thư mục <strong style="color:var(--text2)">Downloads</strong> trên thiết bị của bạn
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+// EXPORT FUNCTIONS
+// ══════════════════════════════════════════════════════
+function exportCSV() {
+  const statusMap = {hot:'Nóng',warm:'Ấm',cold:'Lạnh',closed:'Đã chốt',lost:'Mất KH'};
+  const personMap = {easy:'Dễ tính',normal:'Bình thường',hard:'Khó tính'};
+  const purposeMap = {buy:'Mua',rent:'Thuê',invest:'Đầu tư',sell:'Bán'};
+  const typeMap = {apartment:'Căn hộ',house:'Nhà phố',land:'Đất nền',villa:'Biệt thự',commercial:'Thương mại'};
+
+  const esc = v => `"${(v||'').toString().replace(/"/g,'""')}"`;
+
+  // Sheet 1: Khách Mua/ĐT
+  const headers1 = ['Họ Tên','Số ĐT','Zalo','Nguồn','Mục đích','Loại BĐS','Khu vực','Ngân sách','Diện tích (m²)','Trạng thái','Tính cách','Facebook','TikTok','Instagram','YouTube','Ghi chú','Ngày tạo'];
+  const rows1 = DB.customers.map(c => [
+    esc(c.name), esc(c.phone), esc(c.zalo), esc(c.source),
+    esc(purposeMap[c.purpose]||c.purpose), esc(typeMap[c.propType]||c.propType),
+    esc(c.area), esc(c.budget), esc(c.area2),
+    esc(statusMap[c.status]||c.status), esc(personMap[c.personality]||c.personality),
+    esc(c.facebook), esc(c.tiktok), esc(c.instagram), esc(c.youtube),
+    esc(c.note), esc(c.createdAt ? new Date(c.createdAt).toLocaleDateString('vi-VN') : '')
+  ].join(','));
+
+  // Sheet 2: Khách Cho Thuê
+  const headers2 = ['Họ Tên','Số ĐT','Zalo','Nguồn','Loại BĐS','Khu vực','Giá từ (tr/th)','Giá đến (tr/th)','Diện tích (m²)','Thời hạn','Trạng thái','Tính cách','Ghi chú','Ngày tạo'];
+  const rtMap = {apartment:'Căn hộ',house:'Nhà phố',office:'Văn phòng',shophouse:'Mặt bằng',villa:'Biệt thự'};
+  const rows2 = RDB.rentals.map(r => [
+    esc(r.name), esc(r.phone), esc(r.zalo), esc(r.source),
+    esc(rtMap[r.rentalType]||r.rentalType), esc(r.area),
+    esc(r.priceMin), esc(r.priceMax), esc(r.size), esc(r.duration),
+    esc(statusMap[r.status]||r.status), esc(personMap[r.personality]||r.personality),
+    esc(r.note), esc(r.createdAt ? new Date(r.createdAt).toLocaleDateString('vi-VN') : '')
+  ].join(','));
+
+  const BOM = '\uFEFF'; // UTF-8 BOM để Excel đọc tiếng Việt
+  const content = BOM +
+    '=== KHÁCH MUA / ĐẦU TƯ ===\n' +
+    [headers1.map(h=>`"${h}"`).join(','), ...rows1].join('\n') +
+    '\n\n=== KHÁCH CHO THUÊ ===\n' +
+    [headers2.map(h=>`"${h}"`).join(','), ...rows2].join('\n');
+
+  downloadFile(content, `CRM_BDS_${formatExportDate()}.csv`, 'text/csv;charset=utf-8');
+  showToast(`✅ Đã xuất ${DB.customers.length + RDB.rentals.length} khách hàng!`, 'success');
+}
+
+function exportTXT() {
+  const statusMap = {hot:'🔥 Nóng',warm:'🌤 Ấm',cold:'❄️ Lạnh',closed:'✅ Đã chốt',lost:'🚫 Mất KH'};
+  const personMap = {easy:'😊 Dễ tính',normal:'😐 Bình thường',hard:'😤 Khó tính'};
+  const line = '─'.repeat(40);
+
+  let txt = `CRM BĐS – Môi Giới Cá Nhân\nXuất lúc: ${new Date().toLocaleString('vi-VN')}\n${'═'.repeat(40)}\n\n`;
+
+  txt += `📋 KHÁCH MUA / ĐẦU TƯ (${DB.customers.length} khách)\n${line}\n`;
+  DB.customers.forEach((c,i) => {
+    txt += `\n[${i+1}] ${c.name}\n`;
+    txt += `    📞 ${c.phone}${c.zalo ? ' | Zalo: '+c.zalo : ''}\n`;
+    if (c.area) txt += `    📍 ${c.area}\n`;
+    if (c.budget) txt += `    💰 ${c.budget}\n`;
+    txt += `    ${statusMap[c.status]||c.status}${c.personality ? ' | '+personMap[c.personality] : ''}\n`;
+    if (c.note) txt += `    💬 ${c.note}\n`;
+    if (c.facebook) txt += `    🔵 FB: ${c.facebook}\n`;
+    txt += `    📅 Tạo: ${c.createdAt ? new Date(c.createdAt).toLocaleDateString('vi-VN') : '—'}\n`;
+  });
+
+  txt += `\n${'═'.repeat(40)}\n🔑 KHÁCH CHO THUÊ (${RDB.rentals.length} khách)\n${line}\n`;
+  const rtMap = {apartment:'Căn hộ',house:'Nhà phố',office:'Văn phòng',shophouse:'Mặt bằng',villa:'Biệt thự'};
+  RDB.rentals.forEach((r,i) => {
+    txt += `\n[${i+1}] ${r.name}\n`;
+    txt += `    📞 ${r.phone}${r.zalo ? ' | Zalo: '+r.zalo : ''}\n`;
+    if (r.rentalType) txt += `    🔑 ${rtMap[r.rentalType]||r.rentalType}\n`;
+    if (r.area) txt += `    📍 ${r.area}\n`;
+    if (r.priceMin||r.priceMax) txt += `    💰 ${r.priceMin||'?'} – ${r.priceMax||'?'} triệu/tháng\n`;
+    if (r.duration) txt += `    ⏳ ${r.duration}\n`;
+    txt += `    ${statusMap[r.status]||r.status}${r.personality ? ' | '+personMap[r.personality] : ''}\n`;
+    if (r.note) txt += `    💬 ${r.note}\n`;
+    txt += `    📅 Tạo: ${r.createdAt ? new Date(r.createdAt).toLocaleDateString('vi-VN') : '—'}\n`;
+  });
+
+  txt += `\n${'═'.repeat(40)}\nTổng: ${DB.customers.length + RDB.rentals.length} khách hàng\n`;
+
+  downloadFile(txt, `CRM_BDS_${formatExportDate()}.txt`, 'text/plain;charset=utf-8');
+  showToast(`✅ Đã xuất ${DB.customers.length + RDB.rentals.length} khách hàng!`, 'success');
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function formatExportDate() {
+  const d = new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// ══════════════════════════════════════════════════════
+// SEARCH PAGE
+// ══════════════════════════════════════════════════════
+function renderSearch() {
+  const filtered = searchQuery.length > 0
+    ? DB.customers.filter(c =>
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.phone.includes(searchQuery) ||
+        (c.area||'').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.note||'').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
+  const reminders = DB.reminders;
+  const now = new Date();
+
+  const cards = filtered.length === 0 && searchQuery.length > 0
+    ? `<div class="empty-state"><div class="icon">🔍</div><h3>Không tìm thấy</h3><p>Thử tìm bằng tên, SĐT hoặc khu vực</p></div>`
+    : filtered.map(c => renderCustomerCard(c, reminders, now)).join('');
+
+  return `
+    <div class="topbar"><div class="topbar-title">🔍 Tìm Kiếm</div></div>
+    <div class="search-wrap">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Tên, SĐT, khu vực..." value="${searchQuery}" oninput="onSearch(this.value)" autofocus />
+        ${searchQuery ? `<span onclick="clearSearch()" style="cursor:pointer;color:var(--text3)">✕</span>` : ''}
+      </div>
+    </div>
+    ${searchQuery.length === 0 ? `<div class="empty-state" style="padding:40px 20px"><div class="icon" style="font-size:40px">🔍</div><p>Nhập tên, SĐT hoặc khu vực để tìm khách</p></div>` : `<div class="cards-list">${cards}</div>`}
+  `;
+}
+
+function onSearch(val) {
+  searchQuery = val;
+  const app = document.getElementById('app');
+  const filtered = val.length > 0
+    ? DB.customers.filter(c => c.name.toLowerCase().includes(val.toLowerCase()) || c.phone.includes(val) || (c.area||'').toLowerCase().includes(val.toLowerCase()))
+    : [];
+  const reminders = DB.reminders;
+  const now = new Date();
+  const cards = filtered.length === 0 && val.length > 0
+    ? `<div class="empty-state"><div class="icon">🔍</div><h3>Không tìm thấy</h3></div>`
+    : filtered.map(c => renderCustomerCard(c, reminders, now)).join('');
+  const list = document.querySelector('.cards-list');
+  const empty = document.querySelector('.empty-state');
+  if (val.length === 0) {
+    if (list) list.innerHTML = '';
+    if (empty) empty.innerHTML = '<div class="icon" style="font-size:40px">🔍</div><p>Nhập tên, SĐT hoặc khu vực để tìm khách</p>';
+  } else {
+    if (list) list.innerHTML = cards;
+    else {
+      const cont = document.createElement('div');
+      cont.className = 'cards-list';
+      cont.innerHTML = cards;
+      app.appendChild(cont);
+    }
+    if (empty) empty.style.display = 'none';
+  }
+}
+
+function clearSearch() {
+  searchQuery = '';
+  render();
+  setTimeout(() => { const inp = document.getElementById('searchInput'); if(inp) inp.focus(); }, 100);
+}
+
+// ══════════════════════════════════════════════════════
+// DRAWER: ADD / EDIT CUSTOMER
+// ══════════════════════════════════════════════════════
+function openAddCustomer() {
+  document.getElementById('editCustomerId').value = '';
+  document.getElementById('drawerCustomerTitle').textContent = 'Thêm Khách Hàng';
+  document.getElementById('btnDeleteCustomer').style.display = 'none';
+  clearForm();
+  openDrawer('drawerCustomer');
+}
+
+function openEditCustomer(id) {
+  const c = DB.customers.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('editCustomerId').value = id;
+  document.getElementById('drawerCustomerTitle').textContent = 'Sửa Khách Hàng';
+  document.getElementById('btnDeleteCustomer').style.display = 'flex';
+  document.getElementById('cName').value = c.name || '';
+  document.getElementById('cPhone').value = c.phone || '';
+  document.getElementById('cZalo').value = c.zalo || '';
+  document.getElementById('cSource').value = c.source || '';
+  document.getElementById('cArea').value = c.area || '';
+  document.getElementById('cBudget').value = c.budget || '';
+  document.getElementById('cArea2').value = c.area2 || '';
+  document.getElementById('cNote').value = c.note || '';
+  document.getElementById('cFacebook').value = c.facebook || '';
+  document.getElementById('cZaloSocial').value = c.zaloSocial || '';
+  document.getElementById('cTiktok').value = c.tiktok || '';
+  document.getElementById('cInstagram').value = c.instagram || '';
+  document.getElementById('cYoutube').value = c.youtube || '';
+
+  // Chips
+  activeChips = {};
+  ['chipPurpose','chipType','chipStatus','chipPersonality'].forEach(group => {
+    document.querySelectorAll(`#${group} .chip`).forEach(chip => {
+      chip.className = 'chip';
+    });
+  });
+
+  if (c.purpose) {
+    const chip = document.querySelector(`#chipPurpose [data-val="${c.purpose}"]`);
+    const cls = c.purpose === 'buy' ? 'selected-buy' : c.purpose === 'rent' ? 'selected-rent' : 'selected-invest';
+    if (chip) { chip.className = `chip ${cls}`; activeChips['chipPurpose'] = c.purpose; }
+  }
+  if (c.propType) {
+    const chip = document.querySelector(`#chipType [data-val="${c.propType}"]`);
+    if (chip) { chip.className = 'chip selected'; activeChips['chipType'] = c.propType; }
+  }
+  if (c.status) {
+    const chip = document.querySelector(`#chipStatus [data-val="${c.status}"]`);
+    const cls = `selected-${c.status}`;
+    if (chip) { chip.className = `chip ${cls}`; activeChips['chipStatus'] = c.status; }
+  }
+  if (c.personality) {
+    const chip = document.querySelector(`#chipPersonality [data-val="${c.personality}"]`);
+    const cls = `selected-${c.personality}`;
+    if (chip) { chip.className = `chip ${cls}`; activeChips['chipPersonality'] = c.personality; }
+  }
+
+  closeDrawer('drawerDetail');
+  setTimeout(() => openDrawer('drawerCustomer'), 100);
+}
+
+function clearForm() {
+  ['cName','cPhone','cZalo','cArea','cBudget','cArea2','cNote','cFacebook','cZaloSocial','cTiktok','cInstagram','cYoutube'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('cSource').value = '';
+  activeChips = {};
+  document.querySelectorAll('.chip').forEach(c => {
+    c.className = 'chip';
+  });
+}
+
+function selectChip(el, groupId, selectedClass) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.chip').forEach(c => c.className = 'chip');
+  el.className = `chip ${selectedClass}`;
+  activeChips[groupId] = el.dataset.val;
+}
+
+function appendArea(val) {
+  const inp = document.getElementById('cArea');
+  if (!inp) return;
+  const cur = inp.value.trim();
+  if (cur) {
+    if (!cur.split(',').map(s=>s.trim()).includes(val)) {
+      inp.value = cur + ', ' + val;
+    }
+  } else {
+    inp.value = val;
+  }
+}
+
+function saveCustomer() {
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  if (!name || !phone) { showToast('⚠️ Cần nhập Tên và SĐT!', 'error'); return; }
+
+  const id = document.getElementById('editCustomerId').value;
+  const customers = DB.customers;
+
+  const data = {
+    name, phone,
+    zalo: document.getElementById('cZalo').value.trim(),
+    source: document.getElementById('cSource').value,
+    purpose: activeChips['chipPurpose'] || '',
+    propType: activeChips['chipType'] || '',
+    area: document.getElementById('cArea').value.trim(),
+    budget: document.getElementById('cBudget').value.trim(),
+    area2: document.getElementById('cArea2').value.trim(),
+    status: activeChips['chipStatus'] || 'cold',
+    personality: activeChips['chipPersonality'] || '',
+    note: document.getElementById('cNote').value.trim(),
+    facebook: document.getElementById('cFacebook').value.trim(),
+    zaloSocial: document.getElementById('cZaloSocial').value.trim(),
+    tiktok: document.getElementById('cTiktok').value.trim(),
+    instagram: document.getElementById('cInstagram').value.trim(),
+    youtube: document.getElementById('cYoutube').value.trim(),
+    updatedAt: Date.now()
+  };
+
+  if (id) {
+    const i = customers.findIndex(c => c.id === id);
+    if (i > -1) { customers[i] = { ...customers[i], ...data }; }
+  } else {
+    data.id = uid();
+    data.createdAt = Date.now();
+    customers.unshift(data);
+  }
+
+  DB.customers = customers;
+  closeDrawer();
+  showToast(id ? '✅ Đã cập nhật khách hàng' : '✅ Đã thêm khách hàng mới', 'success');
+  render();
+}
+
+function deleteCustomer() {
+  const id = document.getElementById('editCustomerId').value;
+  if (!id) return;
+  if (!confirm('Xóa khách hàng này?')) return;
+  DB.customers = DB.customers.filter(c => c.id !== id);
+  DB.logs = DB.logs.filter(l => l.customerId !== id);
+  DB.reminders = DB.reminders.filter(r => r.customerId !== id);
+  closeDrawer();
+  showToast('🗑 Đã xóa khách hàng', 'error');
+  render();
+}
+
+// ══════════════════════════════════════════════════════
+// DRAWER: LOG CALL
+// ══════════════════════════════════════════════════════
+function openLogCall(customerId) {
+  document.getElementById('logCustomerId').value = customerId;
+  const now = new Date();
+  document.getElementById('logDate').value = toDateInputVal(now);
+  document.getElementById('logTime').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('logNote').value = '';
+  document.getElementById('reminderNote').value = '';
+
+  // Reset result
+  document.querySelectorAll('.call-result-chip').forEach(c => c.className = 'call-result-chip');
+  document.querySelectorAll('.followup-chip').forEach(c => c.className = 'followup-chip');
+  selectedCallResult = '';
+  selectedFollowup = '';
+
+  // Default reminder date: tomorrow
+  const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate()+1);
+  document.getElementById('reminderDate').value = toDateInputVal(tomorrow);
+  document.getElementById('reminderTime').value = '09:00';
+
+  closeDrawer('drawerDetail');
+  setTimeout(() => openDrawer('drawerLog'), 100);
+}
+
+function selectCallResult(el) {
+  document.querySelectorAll('.call-result-chip').forEach(c => c.className = 'call-result-chip');
+  el.className = 'call-result-chip selected';
+  selectedCallResult = el.dataset.val;
+}
+
+function selectFollowup(el) {
+  document.querySelectorAll('.followup-chip').forEach(c => c.className = 'followup-chip');
+  const cls = el.dataset.val === 'call' ? 'selected-call' : el.dataset.val === 'msg' ? 'selected-msg' : 'selected-none';
+  el.className = `followup-chip ${cls}`;
+  selectedFollowup = el.dataset.val;
+  const rf = document.getElementById('reminderField');
+  if (rf) rf.style.display = el.dataset.val === 'none' ? 'none' : 'block';
+}
+
+function setQuickReminder(n, unit) {
+  const now = new Date();
+  if (unit === 'hour') now.setHours(now.getHours() + n);
+  else if (unit === 'day') now.setDate(now.getDate() + n);
+  else if (unit === 'week') now.setDate(now.getDate() + n*7);
+  document.getElementById('reminderDate').value = toDateInputVal(now);
+  document.getElementById('reminderTime').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+}
+
+function saveLog() {
+  const customerId = document.getElementById('logCustomerId').value;
+  if (!customerId) return;
+
+  const logData = {
+    id: uid(),
+    customerId,
+    date: document.getElementById('logDate').value,
+    time: document.getElementById('logTime').value,
+    result: selectedCallResult,
+    note: document.getElementById('logNote').value.trim(),
+    followup: selectedFollowup,
+    reminderDate: document.getElementById('reminderDate').value,
+    reminderTime: document.getElementById('reminderTime').value,
+    reminderNote: document.getElementById('reminderNote').value.trim(),
+    done: false,
+    createdAt: Date.now()
+  };
+
+  const logs = DB.logs;
+  logs.push(logData);
+  DB.logs = logs;
+
+  // Add reminder
+  if (selectedFollowup && selectedFollowup !== 'none' && logData.reminderDate) {
+    const reminders = DB.reminders;
+    reminders.push({ id: logData.id, customerId, date: logData.reminderDate, time: logData.reminderTime, note: logData.reminderNote, done: false });
+    DB.reminders = reminders;
+  }
+
+  // Auto-update customer status if "interested"
+  if (selectedCallResult === 'interested') {
+    const customers = DB.customers;
+    const i = customers.findIndex(c => c.id === customerId);
+    if (i > -1 && customers[i].status === 'cold') { customers[i].status = 'warm'; DB.customers = customers; }
+  }
+
+  closeDrawer();
+  showToast('📞 Đã lưu cuộc gọi', 'success');
+  render();
+}
+
+// ══════════════════════════════════════════════════════
+// CUSTOMER DETAIL
+// ══════════════════════════════════════════════════════
+function openDetail(customerId) {
+  const c = DB.customers.find(x => x.id === customerId);
+  if (!c) return;
+  const logs = DB.logs.filter(l => l.customerId === customerId).sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+  const reminders = DB.reminders.filter(r => r.customerId === customerId && !r.done).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+
+  const statusMap = {hot:'🔥 Nóng',warm:'🌤 Ấm',cold:'❄️ Lạnh',closed:'✅ Đã chốt',lost:'🚫 Mất KH'};
+  const personMap = {easy:'😊 Dễ tính',normal:'😐 Bình thường',hard:'😤 Khó tính'};
+  const purposeMap = {buy:'🛒 Mua',rent:'🔑 Thuê',invest:'📈 Đầu tư',sell:'🏷 Bán'};
+  const typeMap = {apartment:'🏢 Căn hộ',house:'🏠 Nhà phố',land:'🌿 Đất nền',villa:'🏰 Biệt thự',commercial:'🏪 Thương mại'};
+  const resultMap = {answered:'✅ Nghe máy','no-answer':'📵 Không nghe',interested:'🔥 Quan tâm','not-interested':'❌ Không quan tâm',callback:'🔄 Hẹn gọi lại',busy:'⏳ Bận'};
+  const followupMap = {call:'📞 Gọi lại',msg:'💬 Nhắn tin',none:'⏸ Không cần'};
+
+  const logsHtml = logs.length === 0
+    ? `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">Chưa có lịch sử gọi</div>`
+    : logs.map(l => `
+        <div class="call-entry">
+          <div class="call-entry-top">
+            <div class="call-entry-result">${resultMap[l.result]||l.result||'—'}</div>
+            <div class="call-entry-date">${formatDateShort(l.date)} ${l.time||''}</div>
+          </div>
+          <div class="call-entry-note">${l.note||'—'}</div>
+          ${l.followup ? `<div class="call-entry-followup"><span style="color:var(--text3)">Tiếp theo:</span> <span style="font-weight:600">${followupMap[l.followup]||l.followup}</span> ${l.reminderDate?`<span style="color:var(--primary)">⏰ ${formatDateShort(l.reminderDate)} ${l.reminderTime||''}</span>`:''}</div>` : ''}
+        </div>
+      `).join('');
+
+  const remindersHtml = reminders.length === 0 ? '' : `
+    <div class="detail-section">
+      <div class="detail-section-title">⏰ Nhắc hẹn sắp tới</div>
+      ${reminders.map(r => `
+        <div style="background:rgba(0,210,196,0.08);border:1.5px solid rgba(0,210,196,0.25);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+          <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--primary)">${r.time||'--:--'} – ${formatDateShort(r.date)}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">${r.note||''}</div></div>
+          <button onclick="doneReminder('${r.id}')" style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.3);color:var(--closed);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">Xong</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  const html = `
+    <div class="detail-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="detail-name">${c.name}</div>
+        <button onclick="closeDrawer('drawerDetail')" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:4px 10px;font-size:13px;cursor:pointer">✕</button>
+      </div>
+      <div class="detail-badges">
+        ${c.status ? `<span class="badge badge-${c.status}">${statusMap[c.status]||c.status}</span>` : ''}
+        ${c.personality ? `<span class="badge badge-${c.personality}">${personMap[c.personality]||c.personality}</span>` : ''}
+        ${c.source ? `<span class="badge" style="background:var(--bg3);color:var(--text2)">📋 ${c.source}</span>` : ''}
+      </div>
+      <div class="detail-phone">📞 <a href="tel:${c.phone}" style="color:var(--text2);text-decoration:none">${c.phone}</a></div>
+      <div class="detail-quick-btns">
+        <button class="quick-btn quick-btn-call" onclick="callPhone('${c.phone}')">📞 Gọi điện</button>
+        ${c.zalo ? `<button class="quick-btn quick-btn-zalo" onclick="openZalo('${c.zalo}')">💬 Zalo</button>` : ''}
+        <button class="quick-btn quick-btn-edit" onclick="openEditCustomer('${c.id}')">✏️ Sửa</button>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">🏡 Nhu cầu BĐS</div>
+      <div class="info-grid">
+        ${c.purpose ? `<div class="info-item"><label>Mục đích</label><span>${purposeMap[c.purpose]||c.purpose}</span></div>` : ''}
+        ${c.propType ? `<div class="info-item"><label>Loại BĐS</label><span>${typeMap[c.propType]||c.propType}</span></div>` : ''}
+        ${c.area ? `<div class="info-item" style="grid-column:1/-1"><label>📍 Khu vực</label><span>${c.area}</span></div>` : ''}
+        ${c.budget ? `<div class="info-item"><label>💰 Ngân sách</label><span>${c.budget}</span></div>` : ''}
+        ${c.area2 ? `<div class="info-item"><label>📐 Diện tích</label><span>${c.area2} m²</span></div>` : ''}
+      </div>
+      ${c.note ? `<div style="margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text2);line-height:1.6">${c.note}</div>` : ''}
+    </div>
+
+    ${(c.facebook || c.zaloSocial || c.tiktok || c.instagram || c.youtube) ? `
+    <div class="detail-section">
+      <div class="detail-section-title">🌐 Mạng xã hội</div>
+      <div class="social-links-grid">
+        ${c.facebook ? `<a href="${c.facebook}" target="_blank" class="social-link-btn fb">🔵 Facebook</a>` : ''}
+        ${c.zaloSocial ? `<a href="https://zalo.me/${c.zaloSocial.replace(/^0/,'84')}" target="_blank" class="social-link-btn zl">💬 Zalo</a>` : ''}
+        ${c.tiktok ? `<a href="${c.tiktok}" target="_blank" class="social-link-btn tt">🎵 TikTok</a>` : ''}
+        ${c.instagram ? `<a href="${c.instagram}" target="_blank" class="social-link-btn ig">📸 Instagram</a>` : ''}
+        ${c.youtube ? `<a href="${c.youtube}" target="_blank" class="social-link-btn yt">▶️ YouTube</a>` : ''}
+      </div>
+    </div>
+    ` : ''}
+
+    ${remindersHtml}
+
+    <div class="detail-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="detail-section-title" style="margin-bottom:0">📞 Lịch sử liên lạc (${logs.length})</div>
+        <button onclick="openLogCall('${c.id}')" style="background:rgba(0,210,196,0.15);border:1.5px solid rgba(0,210,196,0.35);color:var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Thêm</button>
+      </div>
+      <div class="call-history">${logsHtml}</div>
+    </div>
+  `;
+
+  document.getElementById('detailBody').innerHTML = html;
+  openDrawer('drawerDetail');
+}
+
+// ══════════════════════════════════════════════════════
+// DRAWER HELPERS
+// ══════════════════════════════════════════════════════
+let activeDrawer = null;
+
+function openDrawer(id) {
+  const overlay = document.getElementById('overlay');
+  const drawer = document.getElementById(id);
+  overlay.classList.add('show');
+  drawer.classList.add('show');
+  activeDrawer = id;
+  document.getElementById('app').style.overflow = 'hidden';
+}
+
+function closeDrawer(id) {
+  const drawerId = id || activeDrawer;
+  if (drawerId) {
+    document.getElementById(drawerId)?.classList.remove('show');
+  } else {
+    document.querySelectorAll('.drawer').forEach(d => d.classList.remove('show'));
+  }
+  document.getElementById('overlay').classList.remove('show');
+  activeDrawer = null;
+  document.getElementById('app').style.overflow = '';
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+function callPhone(phone) {
+  if (!phone) return;
+  window.location.href = `tel:${phone}`;
+}
+
+function openZalo(phone) {
+  window.open(`https://zalo.me/${phone.replace(/^0/, '84')}`, '_blank');
+}
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function toDateInputVal(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatDateShort(dateStr) {
+  if (!dateStr) return '—';
+  const [y,m,d] = dateStr.split('-');
+  return `${d}/${m}`;
+}
+
+function formatDateLong(dateStr) {
+  if (!dateStr) return '';
+  const days = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+  const d = new Date(dateStr + 'T00:00:00');
+  return `${days[d.getDay()]}, ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`;
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => { t.className = 'toast'; }, 2800);
+}
+
+function updateBadge() {
+  const count = DB.reminders.filter(r => !r.done && r.date <= today()).length;
+  const badges = [document.getElementById('navBadge'), document.getElementById('topBadge')];
+  badges.forEach(b => {
+    if (!b) return;
+    if (count > 0) { b.style.display = 'flex'; b.textContent = count > 9 ? '9+' : count; }
+    else { b.style.display = 'none'; }
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+initSampleData();
+render();
+
+// Request notification permission
+if ('Notification' in window) Notification.requestPermission();
+
+// ══════════════════════════════════════════════════════
+// SMART ADD BUTTON
+// ══════════════════════════════════════════════════════
+function handleAddBtn() {
+  if (currentPage === 'rental') openAddRental();
+  else openAddCustomer();
+}
+
+// ══════════════════════════════════════════════════════
+// RENTAL DATA
+// ══════════════════════════════════════════════════════
+const RDB = {
+  get rentals() { try { return JSON.parse(localStorage.getItem('crm_rentals') || '[]'); } catch { return []; } },
+  set rentals(v) { localStorage.setItem('crm_rentals', JSON.stringify(v)); }
+};
+
+// Sample rental data
+(function initRentalSample() {
+  if (RDB.rentals.length === 0) {
+    RDB.rentals = [
+      { id:'r1', name:'Anh Tuấn', phone:'0977001122', zalo:'0977001122', source:'Zalo', rentalType:'apartment', area:'Quận 2, Thủ Đức', priceMin:'8', priceMax:'12', size:'50-70', duration:'1 năm', status:'hot', personality:'normal', note:'Cần gấp căn 2PN gần trường học, có thang máy', createdAt: Date.now()-86400000*3 },
+      { id:'r2', name:'Chị Phương Linh', phone:'0944556677', zalo:'', source:'Facebook', rentalType:'house', area:'Quận 7, Nhà Bè', priceMin:'15', priceMax:'20', size:'80-120', duration:'2 năm', status:'warm', personality:'easy', note:'Nhà nguyên căn, có chỗ để xe ô tô, không nuôi thú cưng', createdAt: Date.now()-86400000*7 },
+    ];
+  }
+})();
+
+let rentalFilter = 'all';
+
+// ══════════════════════════════════════════════════════
+// RENTAL PAGE RENDER
+// ══════════════════════════════════════════════════════
+function renderRental() {
+  let rentals = RDB.rentals;
+
+  // Filter by status
+  if (rentalFilter !== 'all') rentals = rentals.filter(r => r.status === rentalFilter);
+
+  // Filter by search
+  if (rentalSearch.trim()) {
+    const q = rentalSearch.trim().toLowerCase();
+    rentals = rentals.filter(r =>
+      r.name.toLowerCase().includes(q) ||
+      (r.phone||'').includes(q) ||
+      (r.area||'').toLowerCase().includes(q) ||
+      (r.note||'').toLowerCase().includes(q)
+    );
+  }
+
+  // Sort
+  if (rentalSort === 'newest') {
+    rentals = [...rentals].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  } else if (rentalSort === 'oldest') {
+    rentals = [...rentals].sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+  } else {
+    const order = {hot:0,warm:1,cold:2,closed:3,lost:4};
+    rentals = [...rentals].sort((a,b) => (order[a.status]??5) - (order[b.status]??5));
+  }
+
+  const typeMap = { apartment:'🏢 Căn hộ', house:'🏠 Nhà phố', office:'💼 Văn phòng', shophouse:'🏪 Mặt bằng', villa:'🏰 Biệt thự' };
+  const statusMap = { hot:{label:'🔥 Nóng',cls:'hot'}, warm:{label:'🌤 Ấm',cls:'warm'}, cold:{label:'❄️ Lạnh',cls:'cold'}, closed:{label:'✅ Đã thuê',cls:'closed'}, lost:{label:'🚫 Mất KH',cls:'lost'} };
+  const personMap = { easy:{label:'😊 Dễ tính',cls:'easy'}, normal:{label:'😐 Bình thường',cls:'normal'}, hard:{label:'😤 Khó tính',cls:'hard'} };
+
+  const cards = rentals.length === 0
+    ? `<div class="empty-state"><div class="icon">${rentalSearch ? '🔍' : '🔑'}</div><h3>${rentalSearch ? 'Không tìm thấy' : 'Chưa có khách thuê'}</h3><p>${rentalSearch ? 'Thử từ khoá khác' : 'Nhấn <strong>＋</strong> để thêm'}</p></div>`
+    : rentals.map(r => {
+        const s = statusMap[r.status] || statusMap.cold;
+        const p = personMap[r.personality] || null;
+        const reminder = DB.reminders.filter(rm => rm.customerId === r.id && !rm.done).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))[0];
+        const isOverdue = reminder && reminder.date < today();
+        return `
+          <div class="customer-card ${r.status}" onclick="openRentalDetail('${r.id}')">
+            <div class="card-top">
+              <div class="card-name">${r.name}</div>
+              <div class="card-badges">
+                <span class="badge badge-${s.cls}">${s.label}</span>
+                ${p ? `<span class="badge badge-${p.cls}">${p.label}</span>` : ''}
+              </div>
+            </div>
+            <div class="card-phone">📞 ${r.phone}</div>
+            ${r.rentalType ? `<div class="card-area">🔑 ${typeMap[r.rentalType]||r.rentalType}</div>` : ''}
+            ${r.area ? `<div class="card-area">📍 ${r.area}</div>` : ''}
+            ${(r.priceMin||r.priceMax) ? `<div class="card-area">💰 ${r.priceMin||'?'} – ${r.priceMax||'?'} triệu/tháng</div>` : ''}
+            ${r.note ? `<div class="card-note">${r.note}</div>` : ''}
+            <div class="card-footer">
+              <div>
+                ${reminder ? `<div class="reminder-tag ${isOverdue?'tag-overdue':''}">${isOverdue?'⚠️':'⏰'} ${isOverdue?'Quá hạn: ':'Nhắc: '}${formatDateShort(reminder.date)} ${reminder.time}</div>` : ''}
+              </div>
+              <div class="card-actions">
+                <button class="action-btn action-btn-call" onclick="event.stopPropagation(); callPhone('${r.phone}')">📞</button>
+                ${r.zalo ? `<button class="action-btn action-btn-msg" onclick="event.stopPropagation(); openZalo('${r.zalo}')">💬</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+  return `
+    <div class="topbar">
+      <div class="topbar-title">🔑 Khách Cho Thuê</div>
+      <div class="topbar-right">
+        <div class="notif-btn" onclick="navigate('reminders')">🔔<div class="notif-badge" id="topBadge" style="display:none"></div></div>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="pill pill-all ${rentalFilter==='all'?'active':''}" onclick="setRentalFilter('all')">Tất cả (${RDB.rentals.length})</div>
+      <div class="pill pill-hot ${rentalFilter==='hot'?'active':''}" onclick="setRentalFilter('hot')">🔥 Nóng</div>
+      <div class="pill pill-warm ${rentalFilter==='warm'?'active':''}" onclick="setRentalFilter('warm')">🌤 Ấm</div>
+      <div class="pill pill-cold ${rentalFilter==='cold'?'active':''}" onclick="setRentalFilter('cold')">❄️ Lạnh</div>
+      <div class="pill pill-closed ${rentalFilter==='closed'?'active':''}" onclick="setRentalFilter('closed')">✅ Đã thuê</div>
+    </div>
+    <div class="search-sort-bar">
+      <div class="inline-search">
+        <span class="si-icon">🔍</span>
+        <input type="text"
+          placeholder="Tên, SĐT, khu vực..."
+          value="${rentalSearch}"
+          oninput="rentalSearch=this.value; renderInPlace('rental')"
+        />
+        ${rentalSearch ? `<span class="si-clear" onclick="rentalSearch=''; renderInPlace('rental')">✕</span>` : ''}
+      </div>
+      <div class="sort-btn-group">
+        <div class="sort-btn ${rentalSort==='newest'?'active':''}" onclick="rentalSort='newest'; renderInPlace('rental')">🆕<span>Mới</span></div>
+        <div class="sort-btn ${rentalSort==='oldest'?'active':''}" onclick="rentalSort='oldest'; renderInPlace('rental')">📅<span>Cũ</span></div>
+      </div>
+    </div>
+    <div class="cards-list">${cards}</div>
+    <div style="height:16px"></div>
+  `;
+}
+
+function setRentalFilter(f) { rentalFilter = f; render(); }
+
+
+// ══════════════════════════════════════════════════════
+// RENTAL DETAIL
+// ══════════════════════════════════════════════════════
+function openRentalDetail(id) {
+  const r = RDB.rentals.find(x => x.id === id);
+  if (!r) return;
+  const typeMap = { apartment:'🏢 Căn hộ', house:'🏠 Nhà phố', office:'🏢 Văn phòng', shophouse:'🏪 Mặt bằng', villa:'🏰 Biệt thự' };
+  const statusMap = { hot:'🔥 Nóng', warm:'🌤 Ấm', cold:'❄️ Lạnh', closed:'✅ Đã thuê', lost:'🚫 Mất KH' };
+  const personMap = { easy:'😊 Dễ tính', normal:'😐 Bình thường', hard:'😤 Khó tính' };
+  const reminders = DB.reminders.filter(rm => rm.customerId === r.id && !rm.done).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+
+  const html = `
+    <div class="detail-header">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div class="detail-name">${r.name}</div>
+        <button onclick="closeDrawer('drawerDetail')" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:4px 10px;font-size:13px;cursor:pointer">✕</button>
+      </div>
+      <div class="detail-badges">
+        ${r.status ? `<span class="badge badge-${r.status}">${statusMap[r.status]||r.status}</span>` : ''}
+        ${r.personality ? `<span class="badge badge-${r.personality}">${personMap[r.personality]||r.personality}</span>` : ''}
+        <span class="badge" style="background:rgba(167,139,250,0.15);color:#a78bfa">🔑 Cho Thuê</span>
+        ${r.source ? `<span class="badge" style="background:var(--bg3);color:var(--text2)">📋 ${r.source}</span>` : ''}
+      </div>
+      <div class="detail-phone">📞 <a href="tel:${r.phone}" style="color:var(--text2);text-decoration:none">${r.phone}</a></div>
+      <div class="detail-quick-btns">
+        <button class="quick-btn quick-btn-call" onclick="callPhone('${r.phone}')">📞 Gọi điện</button>
+        ${r.zalo ? `<button class="quick-btn quick-btn-zalo" onclick="openZalo('${r.zalo}')">💬 Zalo</button>` : ''}
+        <button class="quick-btn quick-btn-edit" onclick="openEditRental('${r.id}')">✏️ Sửa</button>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">🔑 Nhu cầu Cho Thuê</div>
+      <div class="info-grid">
+        ${r.rentalType ? `<div class="info-item"><label>Loại BĐS</label><span>${typeMap[r.rentalType]||r.rentalType}</span></div>` : ''}
+        ${r.duration ? `<div class="info-item"><label>⏳ Thời hạn</label><span>${r.duration}</span></div>` : ''}
+        ${r.area ? `<div class="info-item" style="grid-column:1/-1"><label>📍 Khu vực</label><span>${r.area}</span></div>` : ''}
+        ${(r.priceMin||r.priceMax) ? `<div class="info-item"><label>💰 Giá thuê</label><span>${r.priceMin||'?'} – ${r.priceMax||'?'} tr/tháng</span></div>` : ''}
+        ${r.size ? `<div class="info-item"><label>📐 Diện tích</label><span>${r.size} m²</span></div>` : ''}
+      </div>
+      ${r.note ? `<div style="margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text2);line-height:1.6">${r.note}</div>` : ''}
+    </div>
+
+    ${reminders.length > 0 ? `
+    <div class="detail-section">
+      <div class="detail-section-title">⏰ Nhắc hẹn sắp tới</div>
+      ${reminders.map(rm => `
+        <div style="background:rgba(0,210,196,0.08);border:1.5px solid rgba(0,210,196,0.25);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+          <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--primary)">${rm.time||'--:--'} – ${formatDateShort(rm.date)}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">${rm.note||''}</div></div>
+          <button onclick="doneReminder('${rm.id}')" style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.3);color:var(--closed);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">Xong</button>
+        </div>
+      `).join('')}
+    </div>` : ''}
+
+    <div class="detail-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="detail-section-title" style="margin-bottom:0">📞 Lịch sử liên lạc</div>
+        <button onclick="openRentalLog('${r.id}')" style="background:rgba(0,210,196,0.15);border:1.5px solid rgba(0,210,196,0.35);color:var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Thêm</button>
+      </div>
+      ${(() => {
+        const logs = DB.logs.filter(l => l.customerId === r.id).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+        const resultMap = {answered:'✅ Nghe máy','no-answer':'📵 Không nghe',interested:'🔥 Quan tâm','not-interested':'❌ Không quan tâm',callback:'🔄 Hẹn gọi lại',busy:'⏳ Bận'};
+        return logs.length === 0
+          ? `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">Chưa có lịch sử gọi</div>`
+          : logs.map(l=>`<div class="call-entry"><div class="call-entry-top"><div class="call-entry-result">${resultMap[l.result]||l.result||'—'}</div><div class="call-entry-date">${formatDateShort(l.date)} ${l.time||''}</div></div><div class="call-entry-note">${l.note||'—'}</div></div>`).join('');
+      })()}
+    </div>
+  `;
+
+  document.getElementById('detailBody').innerHTML = html;
+  openDrawer('drawerDetail');
+}
+
+function openRentalLog(id) {
+  closeDrawer('drawerDetail');
+  setTimeout(() => {
+    document.getElementById('logCustomerId').value = id;
+    const now = new Date();
+    document.getElementById('logDate').value = toDateInputVal(now);
+    document.getElementById('logTime').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    document.getElementById('logNote').value = '';
+    document.getElementById('reminderNote').value = '';
+    document.querySelectorAll('.call-result-chip').forEach(c => c.className = 'call-result-chip');
+    document.querySelectorAll('.followup-chip').forEach(c => c.className = 'followup-chip');
+    selectedCallResult = ''; selectedFollowup = '';
+    const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate()+1);
+    document.getElementById('reminderDate').value = toDateInputVal(tomorrow);
+    document.getElementById('reminderTime').value = '09:00';
+    openDrawer('drawerLog');
+  }, 120);
+}
+
+// ══════════════════════════════════════════════════════
+// RENTAL CRUD
+// ══════════════════════════════════════════════════════
+let editRentalId = '';
+
+function openAddRental() {
+  editRentalId = '';
+  document.getElementById('drawerRentalTitle').textContent = 'Thêm Khách Thuê';
+  document.getElementById('btnDeleteRental').style.display = 'none';
+  clearRentalForm();
+  openDrawer('drawerRental');
+}
+
+function openEditRental(id) {
+  const r = RDB.rentals.find(x => x.id === id);
+  if (!r) return;
+  editRentalId = id;
+  document.getElementById('drawerRentalTitle').textContent = 'Sửa Khách Thuê';
+  document.getElementById('btnDeleteRental').style.display = 'flex';
+  document.getElementById('rName').value = r.name || '';
+  document.getElementById('rPhone').value = r.phone || '';
+  document.getElementById('rZalo').value = r.zalo || '';
+  document.getElementById('rSource').value = r.source || '';
+  document.getElementById('rArea').value = r.area || '';
+  document.getElementById('rPriceMin').value = r.priceMin || '';
+  document.getElementById('rPriceMax').value = r.priceMax || '';
+  document.getElementById('rSize').value = r.size || '';
+  document.getElementById('rDuration').value = r.duration || '';
+  document.getElementById('rNote').value = r.note || '';
+
+  rentalChips = {};
+  ['chipRentalType','chipRentalStatus','chipRentalPersonality'].forEach(g => {
+    document.querySelectorAll(`#${g} .chip`).forEach(c => c.className = 'chip');
+  });
+  if (r.rentalType) { const ch = document.querySelector(`#chipRentalType [data-val="${r.rentalType}"]`); if(ch){ch.className='chip selected';rentalChips['chipRentalType']=r.rentalType;} }
+  if (r.status) { const ch = document.querySelector(`#chipRentalStatus [data-val="${r.status}"]`); if(ch){ch.className=`chip selected-${r.status}`;rentalChips['chipRentalStatus']=r.status;} }
+  if (r.personality) { const ch = document.querySelector(`#chipRentalPersonality [data-val="${r.personality}"]`); if(ch){ch.className=`chip selected-${r.personality}`;rentalChips['chipRentalPersonality']=r.personality;} }
+
+  closeDrawer('drawerDetail');
+  setTimeout(() => openDrawer('drawerRental'), 100);
+}
+
+function clearRentalForm() {
+  ['rName','rPhone','rZalo','rArea','rPriceMin','rPriceMax','rSize','rDuration','rNote'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('rSource').value = '';
+  rentalChips = {};
+  document.querySelectorAll('#drawerRental .chip').forEach(c => c.className='chip');
+}
+
+let rentalChips = {};
+function selectRentalChip(el, groupId, cls) {
+  document.querySelectorAll(`#${groupId} .chip`).forEach(c => c.className='chip');
+  el.className = `chip ${cls}`;
+  rentalChips[groupId] = el.dataset.val;
+}
+
+function saveRental() {
+  const name = document.getElementById('rName').value.trim();
+  const phone = document.getElementById('rPhone').value.trim();
+  if (!name || !phone) { showToast('⚠️ Cần nhập Tên và SĐT!','error'); return; }
+
+  const data = {
+    name, phone,
+    zalo: document.getElementById('rZalo').value.trim(),
+    source: document.getElementById('rSource').value,
+    rentalType: rentalChips['chipRentalType'] || '',
+    area: document.getElementById('rArea').value.trim(),
+    priceMin: document.getElementById('rPriceMin').value.trim(),
+    priceMax: document.getElementById('rPriceMax').value.trim(),
+    size: document.getElementById('rSize').value.trim(),
+    duration: document.getElementById('rDuration').value.trim(),
+    status: rentalChips['chipRentalStatus'] || 'cold',
+    personality: rentalChips['chipRentalPersonality'] || '',
+    note: document.getElementById('rNote').value.trim(),
+    updatedAt: Date.now()
+  };
+
+  const rentals = RDB.rentals;
+  if (editRentalId) {
+    const i = rentals.findIndex(r => r.id === editRentalId);
+    if (i > -1) rentals[i] = { ...rentals[i], ...data };
+  } else {
+    data.id = uid(); data.createdAt = Date.now();
+    rentals.unshift(data);
+  }
+  RDB.rentals = rentals;
+  closeDrawer();
+  showToast(editRentalId ? '✅ Đã cập nhật khách thuê' : '✅ Đã thêm khách thuê mới', 'success');
+  render();
+}
+
+function deleteRental() {
+  if (!editRentalId) return;
+  if (!confirm('Xóa khách thuê này?')) return;
+  RDB.rentals = RDB.rentals.filter(r => r.id !== editRentalId);
+  closeDrawer();
+  showToast('🗑 Đã xóa khách thuê','error');
+  render();
+}
+
+</script>
+</body>
+</html>
