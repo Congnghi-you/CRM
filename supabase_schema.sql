@@ -1,85 +1,47 @@
 -- ═════════════════════════════════════════════════════════════
--- SUPABASE SCHEMA CHO CRM BẤT ĐỘNG SẢN (XANH SM THEME)
--- Chạy script này trong SQL Editor của Supabase Project "CRM"
+-- SUPABASE SCHEMA NÂNG CẤP: ĐA TÀI KHOẢN (MULTI-ACCOUNT)
+-- Hỗ trợ nhiều môi giới dùng chung app, dữ liệu tách biệt 100%
 -- ═════════════════════════════════════════════════════════════
 
--- 1. Bảng Khách hàng Mua / Đầu tư
-CREATE TABLE IF NOT EXISTS customers (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  zalo TEXT,
-  source TEXT,
-  purpose TEXT,
-  prop_type TEXT,
-  area TEXT,
-  budget TEXT,
-  area2 TEXT,
-  status TEXT DEFAULT 'cold',
-  personality TEXT,
-  note TEXT,
-  facebook TEXT,
-  zalo_social TEXT,
-  tiktok TEXT,
-  instagram TEXT,
-  youtube TEXT,
-  created_at BIGINT,
-  updated_at BIGINT
-);
+-- 1. Thêm cột user_id liên kết với tài khoản đăng nhập Supabase Auth
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid();
+ALTER TABLE rentals ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid();
+ALTER TABLE call_logs ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid();
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) DEFAULT auth.uid();
 
--- 2. Bảng Khách hàng Cho thuê
-CREATE TABLE IF NOT EXISTS rentals (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  zalo TEXT,
-  source TEXT,
-  rental_type TEXT,
-  area TEXT,
-  price_min TEXT,
-  price_max TEXT,
-  size TEXT,
-  duration TEXT,
-  status TEXT DEFAULT 'cold',
-  personality TEXT,
-  note TEXT,
-  created_at BIGINT,
-  updated_at BIGINT
-);
-
--- 3. Bảng Lịch sử cuộc gọi
-CREATE TABLE IF NOT EXISTS call_logs (
-  id TEXT PRIMARY KEY,
-  customer_id TEXT NOT NULL,
-  call_date TEXT,
-  call_time TEXT,
-  result TEXT,
-  note TEXT,
-  followup TEXT,
-  reminder_date TEXT,
-  reminder_time TEXT,
-  reminder_note TEXT,
-  done BOOLEAN DEFAULT FALSE,
-  created_at BIGINT
-);
-
--- 4. Bảng Nhắc hẹn
-CREATE TABLE IF NOT EXISTS reminders (
-  id TEXT PRIMARY KEY,
-  customer_id TEXT NOT NULL,
-  remind_date TEXT,
-  remind_time TEXT,
-  note TEXT,
-  done BOOLEAN DEFAULT FALSE
-);
-
--- Cho phép quyền truy cập qua Anon Key (public API)
+-- 2. Kích hoạt Row Level Security (RLS) bảo mật từng hàng
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rentals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE call_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow anon all on customers" ON customers FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon all on rentals" ON rentals FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon all on call_logs" ON call_logs FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow anon all on reminders" ON reminders FOR ALL USING (true) WITH CHECK (true);
+-- 3. Xóa các chính sách cũ (nếu có)
+DROP POLICY IF EXISTS "Allow anon all on customers" ON customers;
+DROP POLICY IF EXISTS "Allow anon all on rentals" ON rentals;
+DROP POLICY IF EXISTS "Allow anon all on call_logs" ON call_logs;
+DROP POLICY IF EXISTS "Allow anon all on reminders" ON reminders;
+DROP POLICY IF EXISTS "Users can manage own customers" ON customers;
+DROP POLICY IF EXISTS "Users can manage own rentals" ON rentals;
+DROP POLICY IF EXISTS "Users can manage own call_logs" ON call_logs;
+DROP POLICY IF EXISTS "Users can manage own reminders" ON reminders;
+
+-- 4. Tạo chính sách bảo mật: Người dùng nào CHỈ ĐƯỢC xem/thêm/sửa/xóa dữ liệu của chính mình
+CREATE POLICY "Users can manage own customers" ON customers
+  FOR ALL TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own rentals" ON rentals
+  FOR ALL TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own call_logs" ON call_logs
+  FOR ALL TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own reminders" ON reminders
+  FOR ALL TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);

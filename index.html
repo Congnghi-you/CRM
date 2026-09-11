@@ -291,10 +291,164 @@
   .sort-btn.active { background: rgba(0,210,196,0.2); color: var(--primary); }
   .sort-btn:active { transform: scale(0.93); }
 
+  /* ── AUTH SCREEN (XANH SM BRIGHT ELECTRIC THEME) ── */
+  #authScreen {
+    position: fixed; inset: 0; z-index: 500;
+    background: radial-gradient(circle at 50% 12%, #0d5450 0%, #063836 50%, #032221 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .auth-card {
+    width: 100%; max-width: 400px;
+    background: rgba(10, 58, 56, 0.92);
+    backdrop-filter: blur(24px);
+    border: 1.5px solid rgba(0, 240, 224, 0.45);
+    box-shadow: 0 16px 48px rgba(0, 240, 224, 0.22), 0 6px 24px rgba(0,0,0,0.6);
+    border-radius: 26px;
+    padding: 30px 22px 26px;
+    position: relative;
+  }
+  .auth-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0, 240, 224, 0.16);
+    border: 1.2px solid rgba(0, 240, 224, 0.45);
+    color: #00f0e0;
+    font-size: 11px; font-weight: 800;
+    padding: 6px 14px; border-radius: 99px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .auth-title {
+    font-size: 22px; font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .auth-subtitle {
+    font-size: 12px; color: #99f6e4; margin-bottom: 22px; line-height: 1.5;
+  }
+  .auth-tabs {
+    display: flex; background: rgba(5, 34, 33, 0.85);
+    border-radius: 12px; padding: 4px; margin-bottom: 18px;
+    border: 1.2px solid rgba(0, 240, 224, 0.25);
+  }
+  .auth-tab {
+    flex: 1; padding: 9px; text-align: center;
+    font-size: 13px; font-weight: 700; color: #99f6e4;
+    border-radius: 9px; cursor: pointer; transition: var(--transition);
+  }
+  .auth-tab.active {
+    background: linear-gradient(135deg, #00f0e0, #00c4b4);
+    color: #021a19;
+    box-shadow: 0 3px 12px rgba(0, 240, 224, 0.4);
+  }
+  .auth-input-wrap { margin-bottom: 14px; }
+  .auth-input-wrap label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: #a7f3d0; margin-bottom: 6px;
+  }
+  .auth-input {
+    width: 100%; background: rgba(4, 28, 27, 0.9);
+    border: 1.5px solid rgba(0, 240, 224, 0.32);
+    border-radius: 12px; padding: 12px 14px;
+    color: #f0fdfa; font-size: 14px; font-family: inherit; outline: none;
+    transition: var(--transition);
+  }
+  .auth-input:focus {
+    border-color: #00f0e0;
+    background: rgba(8, 46, 44, 0.98);
+    box-shadow: 0 0 14px rgba(0, 240, 224, 0.35);
+  }
+  .auth-btn-submit {
+    width: 100%; padding: 14px; border-radius: 14px;
+    background: linear-gradient(135deg, #00f0e0, #00c4b4);
+    color: #021a19; font-weight: 800; font-size: 15px;
+    border: none; cursor: pointer; transition: var(--transition);
+    box-shadow: 0 4px 18px rgba(0, 240, 224, 0.45);
+    margin-top: 8px; font-family: inherit;
+  }
+  .auth-btn-submit:active { transform: scale(0.97); }
+  .auth-footer-links {
+    margin-top: 16px; text-align: center;
+    font-size: 12px; color: #99f6e4;
+  }
+  .auth-link {
+    color: #00f0e0; font-weight: 700; text-decoration: none; cursor: pointer;
+  }
+  .auth-link:hover { text-decoration: underline; }
+
 </style>
 
 </head>
 <body>
+
+<!-- AUTH SCREEN (LOGIN / REGISTER / FORGOT) -->
+<div id="authScreen" style="display:none">
+  <div class="auth-card">
+    <div style="text-align:center">
+      <div class="auth-badge">🚙 XANH SM CRM • CLOUD</div>
+      <div class="auth-title" id="authTitle">Đăng Nhập Tài Khoản</div>
+      <div class="auth-subtitle" id="authSubtitle">Quản lý khách hàng BĐS cá nhân bảo mật</div>
+    </div>
+
+    <div class="auth-tabs" id="authTabs">
+      <div class="auth-tab active" id="tabLogin" onclick="switchAuthMode('login')">Đăng Nhập</div>
+      <div class="auth-tab" id="tabRegister" onclick="switchAuthMode('register')">Đăng Ký Mới</div>
+    </div>
+
+    <!-- FORM LOGIN -->
+    <form id="formLogin" onsubmit="handleLogin(event)">
+      <div class="auth-input-wrap">
+        <label>Email (@gmail.com) *</label>
+        <input type="email" id="loginEmail" class="auth-input" placeholder="tenban@gmail.com" required />
+      </div>
+      <div class="auth-input-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <label style="margin-bottom:0">Mật khẩu *</label>
+          <span class="auth-link" onclick="switchAuthMode('forgot')" style="font-size:11px">Quên mật khẩu?</span>
+        </div>
+        <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="auth-btn-submit" id="btnLoginSubmit">Đăng Nhập Ngay ➔</button>
+    </form>
+
+    <!-- FORM REGISTER -->
+    <form id="formRegister" onsubmit="handleRegister(event)" style="display:none">
+      <div class="auth-input-wrap">
+        <label>Họ và Tên *</label>
+        <input type="text" id="regName" class="auth-input" placeholder="Nguyễn Văn A" required />
+      </div>
+      <div class="auth-input-wrap">
+        <label>Gmail (@gmail.com) *</label>
+        <input type="email" id="regEmail" class="auth-input" placeholder="tenban@gmail.com" required />
+        <div style="font-size:11px;color:#a7f3d0;margin-top:4px">⚠️ Chỉ chấp nhận tài khoản có đuôi <strong>@gmail.com</strong></div>
+      </div>
+      <div class="auth-input-wrap">
+        <label>Mật khẩu (tối thiểu 6 ký tự) *</label>
+        <input type="password" id="regPassword" class="auth-input" placeholder="••••••••" minlength="6" required />
+      </div>
+      <button type="submit" class="auth-btn-submit" id="btnRegSubmit">Tạo Tài Khoản Mới ➔</button>
+      <div class="auth-footer-links">
+        Đã có tài khoản? <span class="auth-link" onclick="switchAuthMode('login')">Đăng nhập</span>
+      </div>
+    </form>
+
+    <!-- FORM FORGOT PASSWORD -->
+    <form id="formForgot" onsubmit="handleForgot(event)" style="display:none">
+      <div style="background:rgba(0,240,224,0.1);border:1px solid rgba(0,240,224,0.3);border-radius:12px;padding:12px;font-size:12px;color:#a7f3d0;margin-bottom:14px;line-height:1.5">
+        Nhập địa chỉ Gmail của bạn. Chúng tôi sẽ gửi link đặt lại mật khẩu mới vào hòm thư.
+      </div>
+      <div class="auth-input-wrap">
+        <label>Gmail của bạn (@gmail.com) *</label>
+        <input type="email" id="forgotEmail" class="auth-input" placeholder="tenban@gmail.com" required />
+      </div>
+      <button type="submit" class="auth-btn-submit" id="btnForgotSubmit">Gửi Link Khôi Phục ✉️</button>
+      <div class="auth-footer-links" style="margin-top:14px">
+        <span class="auth-link" onclick="switchAuthMode('login')">← Quay lại Đăng nhập</span>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -1045,6 +1199,14 @@ function renderDashboard() {
       <div class="dash-greeting">${greeting}! 👋</div>
       <div class="dash-date">${formatDateLong(todayStr)}</div>
 
+      <div class="stat-card" style="margin-bottom:16px;background:rgba(0,240,224,0.08);border-color:rgba(0,240,224,0.3);display:flex;justify-content:space-between;align-items:center;padding:12px 14px">
+        <div>
+          <div style="font-size:11px;color:var(--text3)">👤 Tài khoản:</div>
+          <div style="font-size:13px;font-weight:700;color:#00f0e0">${currentUser ? currentUser.email : 'Chưa đăng nhập'}</div>
+        </div>
+        <button onclick="handleLogout()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:var(--hot);border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">🚪 Đăng xuất</button>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon">👥</div>
@@ -1712,17 +1874,196 @@ function getSbConfig() {
   };
 }
 
+let currentUser = null;
 let realtimeSubscribed = false;
 
-function initSupabase() {
+// ── AUTH CONTROLLER ──
+async function checkAuthSession() {
+  if (!sbClient) return;
+  try {
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session && session.user) {
+      currentUser = session.user;
+      hideAuthScreen();
+      syncFromCloud(true);
+    } else {
+      showAuthScreen();
+    }
+  } catch(e) {
+    console.warn('Check auth session error:', e);
+    showAuthScreen();
+  }
+}
+
+function showAuthScreen() {
+  const el = document.getElementById('authScreen');
+  if (el) el.style.display = 'flex';
+  const app = document.getElementById('app');
+  if (app) app.style.display = 'none';
+  const nav = document.querySelector('.bottom-nav');
+  if (nav) nav.style.display = 'none';
+}
+
+function hideAuthScreen() {
+  const el = document.getElementById('authScreen');
+  if (el) el.style.display = 'none';
+  const app = document.getElementById('app');
+  if (app) app.style.display = 'block';
+  const nav = document.querySelector('.bottom-nav');
+  if (nav) nav.style.display = 'flex';
+  render();
+}
+
+function switchAuthMode(mode) {
+  const fLogin = document.getElementById('formLogin');
+  const fReg = document.getElementById('formRegister');
+  const fForgot = document.getElementById('formForgot');
+  const tLogin = document.getElementById('tabLogin');
+  const tReg = document.getElementById('tabRegister');
+  const tabs = document.getElementById('authTabs');
+  const title = document.getElementById('authTitle');
+  const sub = document.getElementById('authSubtitle');
+
+  fLogin.style.display = 'none';
+  fReg.style.display = 'none';
+  fForgot.style.display = 'none';
+  tLogin.classList.remove('active');
+  tReg.classList.remove('active');
+  tabs.style.display = 'flex';
+
+  if (mode === 'login') {
+    fLogin.style.display = 'block';
+    tLogin.classList.add('active');
+    title.textContent = 'Đăng Nhập Tài Khoản';
+    sub.textContent = 'Quản lý khách hàng BĐS cá nhân bảo mật';
+  } else if (mode === 'register') {
+    fReg.style.display = 'block';
+    tReg.classList.add('active');
+    title.textContent = 'Đăng Ký Tài Khoản';
+    sub.textContent = 'Mỗi tài khoản có một Database khách hàng riêng 100%';
+  } else if (mode === 'forgot') {
+    fForgot.style.display = 'block';
+    tabs.style.display = 'none';
+    title.textContent = 'Quên Mật Khẩu';
+    sub.textContent = 'Khôi phục quyền truy cập vào tài khoản của bạn';
+  }
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    showToast('⚠️ Chỉ chấp nhận tài khoản có đuôi @gmail.com!', 'error');
+    return;
+  }
+  const btn = document.getElementById('btnLoginSubmit');
+  btn.textContent = '⏳ Đang đăng nhập...';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    currentUser = data.user;
+    showToast('✅ Đăng nhập thành công! Chào mừng bạn.', 'success');
+    hideAuthScreen();
+    await syncFromCloud(true);
+  } catch(err) {
+    showToast('❌ Đăng nhập thất bại: ' + (err.message === 'Invalid login credentials' ? 'Sai email hoặc mật khẩu' : err.message), 'error');
+  } finally {
+    btn.textContent = 'Đăng Nhập Ngay ➔';
+    btn.disabled = false;
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    showToast('⚠️ Chỉ chấp nhận tài khoản có đuôi @gmail.com!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnRegSubmit');
+  btn.textContent = '⏳ Đang tạo tài khoản...';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await sbClient.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
+    if (error) throw error;
+
+    if (data.session) {
+      currentUser = data.user;
+      showToast('🎉 Đăng ký thành công! Đang vào app...', 'success');
+      hideAuthScreen();
+      await syncFromCloud(true);
+    } else {
+      showToast('✉️ Vui lòng kiểm tra Gmail để xác nhận rồi đăng nhập nhé!', 'success');
+      switchAuthMode('login');
+      document.getElementById('loginEmail').value = email;
+    }
+  } catch(err) {
+    showToast('❌ Đăng ký thất bại: ' + err.message, 'error');
+  } finally {
+    btn.textContent = 'Tạo Tài Khoản Mới ➔';
+    btn.disabled = false;
+  }
+}
+
+async function handleForgot(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    showToast('⚠️ Chỉ chấp nhận tài khoản có đuôi @gmail.com!', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnForgotSubmit');
+  btn.textContent = '⏳ Đang gửi link...';
+  btn.disabled = true;
+
+  try {
+    const { error } = await sbClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin
+    });
+    if (error) throw error;
+    showToast('✉️ Đã gửi link đổi mật khẩu vào Gmail của bạn!', 'success');
+    setTimeout(() => switchAuthMode('login'), 2500);
+  } catch(err) {
+    showToast('❌ Lỗi: ' + err.message, 'error');
+  } finally {
+    btn.textContent = 'Gửi Link Khôi Phục ✉️';
+    btn.disabled = false;
+  }
+}
+
+async function handleLogout() {
+  if (!confirm('Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?')) return;
+  if (sbClient) await sbClient.auth.signOut();
+  currentUser = null;
+  DB.customers = [];
+  RDB.rentals = [];
+  DB.logs = [];
+  DB.reminders = [];
+  showToast('👋 Đã đăng xuất thành công', '');
+  showAuthScreen();
+}
+
+async function initSupabase() {
   const cfg = getSbConfig();
   if (cfg.url && cfg.key && window.supabase) {
     try {
       sbClient = window.supabase.createClient(cfg.url, cfg.key);
       updateCloudDot(true);
-      // Auto pull latest data in background on load
-      syncFromCloud(true);
-      // Listen to real-time changes
+      await checkAuthSession();
       setupRealtime();
       return true;
     } catch(e) {
@@ -1795,7 +2136,9 @@ async function syncAllToCloud() {
     const customers = DB.customers;
     for (const c of customers) {
       await sbClient.from('customers').upsert({
-        id: c.id, name: c.name, phone: c.phone, zalo: c.zalo || '',
+        id: c.id,
+        user_id: currentUser ? currentUser.id : undefined,
+        name: c.name, phone: c.phone, zalo: c.zalo || '',
         source: c.source || '', purpose: c.purpose || '', prop_type: c.propType || '',
         area: c.area || '', budget: c.budget || '', area2: c.area2 || '',
         status: c.status || 'cold', personality: c.personality || '', note: c.note || '',
@@ -1808,7 +2151,9 @@ async function syncAllToCloud() {
     const rentals = RDB.rentals;
     for (const r of rentals) {
       await sbClient.from('rentals').upsert({
-        id: r.id, name: r.name, phone: r.phone, zalo: r.zalo || '',
+        id: r.id,
+        user_id: currentUser ? currentUser.id : undefined,
+        name: r.name, phone: r.phone, zalo: r.zalo || '',
         source: r.source || '', rental_type: r.rentalType || '', area: r.area || '',
         price_min: r.priceMin || '', price_max: r.priceMax || '', size: r.size || '',
         duration: r.duration || '', status: r.status || 'cold', personality: r.personality || '',
@@ -1819,7 +2164,9 @@ async function syncAllToCloud() {
     const logs = DB.logs;
     for (const l of logs) {
       await sbClient.from('call_logs').upsert({
-        id: l.id, customer_id: l.customerId, call_date: l.date || '',
+        id: l.id,
+        user_id: currentUser ? currentUser.id : undefined,
+        customer_id: l.customerId, call_date: l.date || '',
         call_time: l.time || '', result: l.result || '', note: l.note || '',
         followup: l.followup || '', reminder_date: l.reminderDate || '',
         reminder_time: l.reminderTime || '', reminder_note: l.reminderNote || '',
@@ -1830,7 +2177,9 @@ async function syncAllToCloud() {
     const reminders = DB.reminders;
     for (const rm of reminders) {
       await sbClient.from('reminders').upsert({
-        id: rm.id, customer_id: rm.customerId, remind_date: rm.date || '',
+        id: rm.id,
+        user_id: currentUser ? currentUser.id : undefined,
+        customer_id: rm.customerId, remind_date: rm.date || '',
         remind_time: rm.time || '', note: rm.note || '', done: rm.done || false
       });
     }
