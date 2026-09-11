@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#042020" />
-<meta name="description" content="CRM cá nhân cho môi giới bất động sản - Quản lý khách hàng, lịch gọi, nhắc hẹn" />
-<title>CRM BĐS – Môi Giới</title>
+<meta name="description" content="Xanh CRM - Nền tảng quản trị khách hàng bất động sản thông minh" />
+<title>Xanh CRM – Bất Động Sản</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -385,10 +385,10 @@
 <!-- AUTH SCREEN (LOGIN / REGISTER / FORGOT) -->
 <div id="authScreen" style="display:none">
   <div class="auth-card">
-    <div style="text-align:center">
-      <div class="auth-badge">🚙 XANH SM CRM • CLOUD</div>
+    <div style="text-align:center;margin-bottom:20px">
+      <div class="auth-badge">⚡ XANH CRM</div>
       <div class="auth-title" id="authTitle">Đăng Nhập Tài Khoản</div>
-      <div class="auth-subtitle" id="authSubtitle">Quản lý khách hàng BĐS cá nhân bảo mật</div>
+      <div class="auth-subtitle" id="authSubtitle" style="display:none"></div>
     </div>
 
     <div class="auth-tabs" id="authTabs">
@@ -1013,7 +1013,7 @@ function renderHome() {
 
   return `
     <div class="topbar">
-      <div class="topbar-title">🏡 CRM BĐS</div>
+      <div class="topbar-title">⚡ Xanh CRM</div>
       <div class="topbar-right">
         <div class="notif-btn" onclick="openCloudConfig()" title="Đồng bộ Supabase Cloud">
           ☁️
@@ -1935,17 +1935,20 @@ function switchAuthMode(mode) {
     fLogin.style.display = 'block';
     tLogin.classList.add('active');
     title.textContent = 'Đăng Nhập Tài Khoản';
-    sub.textContent = 'Quản lý khách hàng BĐS cá nhân bảo mật';
+    sub.textContent = '';
+    sub.style.display = 'none';
   } else if (mode === 'register') {
     fReg.style.display = 'block';
     tReg.classList.add('active');
     title.textContent = 'Đăng Ký Tài Khoản';
-    sub.textContent = 'Mỗi tài khoản có một Database khách hàng riêng 100%';
+    sub.textContent = '';
+    sub.style.display = 'none';
   } else if (mode === 'forgot') {
     fForgot.style.display = 'block';
     tabs.style.display = 'none';
     title.textContent = 'Quên Mật Khẩu';
-    sub.textContent = 'Khôi phục quyền truy cập vào tài khoản của bạn';
+    sub.textContent = '';
+    sub.style.display = 'none';
   }
 }
 
