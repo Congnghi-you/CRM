@@ -498,11 +498,6 @@
   <div class="drawer-handle"></div>
   <div class="drawer-title" id="drawerCloudTitle">☁️ Tài Khoản & Hỗ Trợ</div>
   <div class="drawer-body">
-    <div style="background:rgba(0,210,196,0.1);border:1.5px solid rgba(0,210,196,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;line-height:1.6;color:var(--text2)">
-      🛡️ <span id="cloudSecurityNote">Dữ liệu được lưu trữ an toàn trên Cloud cho tài khoản:</span><br/>
-      <strong id="cloudUserEmail" style="color:var(--teal);font-size:14px;word-break:break-all">...</strong><br/>
-      <span style="font-size:11px;color:var(--text3)">Đổi máy hay mất điện thoại chỉ cần đăng nhập lại là dữ liệu còn nguyên 100%!</span>
-    </div>
 
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
       <div style="font-size:12px;color:var(--text3);margin-bottom:6px" id="cloudContactLabel">📩 Hỗ trợ kỹ thuật & Góp ý qua Email:</div>
@@ -2976,15 +2971,6 @@ function updateCloudDot(connected) {
 }
 
 function openCloudConfig() {
-  const emailEl = document.getElementById('cloudUserEmail');
-  if (emailEl) {
-    emailEl.textContent = currentUser ? currentUser.email : (t('notLoggedIn') || 'Chưa đăng nhập');
-  }
-  const badgeEl = document.getElementById('cloudStatusBadge');
-  if (badgeEl) {
-    badgeEl.textContent = sbClient ? (t('cloudConnActive') || '🟢 Đã kết nối') : (t('cloudConnInactive') || '⚪ Chưa kết nối');
-    badgeEl.style.color = sbClient ? '#10b981' : '#94a3b8';
-  }
   openDrawer('drawerCloud');
 }
 
