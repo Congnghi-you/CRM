@@ -436,13 +436,13 @@
     <!-- FORM LOGIN -->
     <form id="formLogin" onsubmit="handleLogin(event)">
       <div class="auth-input-wrap">
-        <label>Email (@gmail.com) *</label>
+        <label id="lblLoginEmail">Email (@gmail.com) *</label>
         <input type="email" id="loginEmail" class="auth-input" placeholder="tenban@gmail.com" required />
       </div>
       <div class="auth-input-wrap">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <label style="margin-bottom:0">Mật khẩu *</label>
-          <span class="auth-link" onclick="switchAuthMode('forgot')" style="font-size:11px">Quên mật khẩu?</span>
+          <label id="lblLoginPassword" style="margin-bottom:0">Mật khẩu *</label>
+          <span class="auth-link" id="linkForgot" onclick="switchAuthMode('forgot')" style="font-size:11px">Quên mật khẩu?</span>
         </div>
         <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required />
       </div>
@@ -452,36 +452,36 @@
     <!-- FORM REGISTER -->
     <form id="formRegister" onsubmit="handleRegister(event)" style="display:none">
       <div class="auth-input-wrap">
-        <label>Họ và Tên *</label>
+        <label id="lblRegName">Họ và Tên *</label>
         <input type="text" id="regName" class="auth-input" placeholder="Nguyễn Văn A" required />
       </div>
       <div class="auth-input-wrap">
-        <label>Gmail (@gmail.com) *</label>
+        <label id="lblRegEmail">Gmail (@gmail.com) *</label>
         <input type="email" id="regEmail" class="auth-input" placeholder="tenban@gmail.com" required />
-        <div style="font-size:11px;color:#a7f3d0;margin-top:4px">⚠️ Chỉ chấp nhận tài khoản có đuôi <strong>@gmail.com</strong></div>
+        <div id="noticeRegGmail" style="font-size:11px;color:#a7f3d0;margin-top:4px">⚠️ Chỉ chấp nhận tài khoản có đuôi <strong>@gmail.com</strong></div>
       </div>
       <div class="auth-input-wrap">
-        <label>Mật khẩu (tối thiểu 6 ký tự) *</label>
+        <label id="lblRegPassword">Mật khẩu (tối thiểu 6 ký tự) *</label>
         <input type="password" id="regPassword" class="auth-input" placeholder="••••••••" minlength="6" required />
       </div>
       <button type="submit" class="auth-btn-submit" id="btnRegSubmit">Tạo Tài Khoản Mới ➔</button>
-      <div class="auth-footer-links">
-        Đã có tài khoản? <span class="auth-link" onclick="switchAuthMode('login')">Đăng nhập</span>
+      <div class="auth-footer-links" id="wrapRegFooter">
+        <span id="txtAlreadyAccount">Đã có tài khoản?</span> <span class="auth-link" id="linkGoLogin" onclick="switchAuthMode('login')">Đăng nhập</span>
       </div>
     </form>
 
     <!-- FORM FORGOT PASSWORD -->
     <form id="formForgot" onsubmit="handleForgot(event)" style="display:none">
-      <div style="background:rgba(0,240,224,0.1);border:1px solid rgba(0,240,224,0.3);border-radius:12px;padding:12px;font-size:12px;color:#a7f3d0;margin-bottom:14px;line-height:1.5">
+      <div id="boxForgotHelp" style="background:rgba(0,240,224,0.1);border:1px solid rgba(0,240,224,0.3);border-radius:12px;padding:12px;font-size:12px;color:#a7f3d0;margin-bottom:14px;line-height:1.5">
         Nhập địa chỉ Gmail của bạn. Chúng tôi sẽ gửi link đặt lại mật khẩu mới vào hòm thư.
       </div>
       <div class="auth-input-wrap">
-        <label>Gmail của bạn (@gmail.com) *</label>
+        <label id="lblForgotEmail">Gmail của bạn (@gmail.com) *</label>
         <input type="email" id="forgotEmail" class="auth-input" placeholder="tenban@gmail.com" required />
       </div>
       <button type="submit" class="auth-btn-submit" id="btnForgotSubmit">Gửi Link Khôi Phục ✉️</button>
       <div class="auth-footer-links" style="margin-top:14px">
-        <span class="auth-link" onclick="switchAuthMode('login')">← Quay lại Đăng nhập</span>
+        <span class="auth-link" id="linkBackLogin" onclick="switchAuthMode('login')">← Quay lại Đăng nhập</span>
       </div>
     </form>
   </div>
@@ -532,23 +532,23 @@
     <input type="hidden" id="editCustomerId" />
 
     <div class="form-section">
-      <div class="form-section-title">📋 Thông tin cơ bản</div>
+      <div class="form-section-title" id="secCustBasicTitle">📋 Thông tin cơ bản</div>
       <div class="field">
-        <label>Họ & Tên *</label>
+        <label id="lblCustName">Họ & Tên *</label>
         <input type="text" id="cName" placeholder="Nguyễn Văn A" />
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Số điện thoại *</label>
+          <label id="lblCustPhone">Số điện thoại *</label>
           <input type="tel" id="cPhone" placeholder="0901..." />
         </div>
         <div class="field">
-          <label>Zalo / Viber</label>
+          <label id="lblCustZalo">Zalo / Viber</label>
           <input type="tel" id="cZalo" placeholder="SĐT Zalo" />
         </div>
       </div>
       <div class="field">
-        <label>Nguồn khách</label>
+        <label id="lblCustSource">Nguồn khách</label>
         <select id="cSource">
           <option value="">-- Chọn nguồn --</option>
           <option value="Facebook">Facebook</option>
@@ -564,7 +564,7 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🌐 Mạng xã hội</div>
+      <div class="form-section-title" id="secCustSocialTitle">🌐 Mạng xã hội</div>
       <div class="field">
         <label>Facebook</label>
         <div class="social-input-wrap">
@@ -603,9 +603,9 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🏡 Nhu cầu BĐS</div>
+      <div class="form-section-title" id="secCustNeedsTitle">🏡 Nhu cầu BĐS</div>
       <div class="field">
-        <label>Mục đích</label>
+        <label id="lblCustPurpose">Mục đích</label>
         <div class="chip-group" id="chipPurpose">
           <div class="chip" data-val="buy" onclick="selectChip(this,'chipPurpose','selected-buy')">🛒 Mua</div>
           <div class="chip" data-val="rent" onclick="selectChip(this,'chipPurpose','selected-rent')">🔑 Thuê</div>
@@ -613,7 +613,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Loại bất động sản</label>
+        <label id="lblCustType">Loại bất động sản</label>
         <div class="chip-group" id="chipType">
           <div class="chip" data-val="apartment" onclick="selectChip(this,'chipType','selected')">🏢 Căn hộ</div>
           <div class="chip" data-val="house" onclick="selectChip(this,'chipType','selected')">🏠 Nhà phố</div>
@@ -623,7 +623,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Khu vực quan tâm</label>
+        <label id="lblCustArea">Khu vực quan tâm</label>
         <input type="text" id="cArea" placeholder="Quận 7, Bình Chánh, Thủ Đức..." />
         <div class="area-suggestions">
           <span class="area-tag" onclick="appendArea('Quận 1')">Q.1</span>
@@ -640,20 +640,20 @@
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Ngân sách (tỷ)</label>
+          <label id="lblCustBudget">Ngân sách (tỷ)</label>
           <input type="text" id="cBudget" placeholder="VD: 2 - 3.5 tỷ" />
         </div>
         <div class="field">
-          <label>Diện tích (m²)</label>
+          <label id="lblCustArea2">Diện tích (m²)</label>
           <input type="text" id="cArea2" placeholder="VD: 60 - 90" />
         </div>
       </div>
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🌡️ Trạng thái khách</div>
+      <div class="form-section-title" id="secCustStatusTitle">🌡️ Trạng thái khách</div>
       <div class="field">
-        <label>Độ quan tâm</label>
+        <label id="lblCustStatus">Độ quan tâm</label>
         <div class="chip-group" id="chipStatus">
           <div class="chip" data-val="hot" onclick="selectChip(this,'chipStatus','selected-hot')">🔥 Nóng</div>
           <div class="chip" data-val="warm" onclick="selectChip(this,'chipStatus','selected-warm')">🌤 Ấm</div>
@@ -663,7 +663,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Tính cách</label>
+        <label id="lblCustPersonality">Tính cách</label>
         <div class="chip-group" id="chipPersonality">
           <div class="chip" data-val="easy" onclick="selectChip(this,'chipPersonality','selected-easy')">😊 Dễ tính</div>
           <div class="chip" data-val="normal" onclick="selectChip(this,'chipPersonality','selected-normal')">😐 Bình thường</div>
@@ -673,14 +673,14 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">📝 Ghi chú</div>
+      <div class="form-section-title" id="secCustNoteTitle">📝 Ghi chú</div>
       <div class="field">
-        <label>Yêu cầu / Ghi chú</label>
+        <label id="lblCustNote">Yêu cầu / Ghi chú</label>
         <textarea id="cNote" placeholder="Ghi chú yêu cầu đặc biệt, ý kiến khách..."></textarea>
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="saveCustomer()">💾 Lưu Khách Hàng</button>
+    <button class="btn btn-primary" id="btnSaveCustomer" onclick="saveCustomer()">💾 Lưu Khách Hàng</button>
     <button class="btn btn-ghost" id="btnDeleteCustomer" style="display:none" onclick="deleteCustomer()">🗑 Xóa khách hàng này</button>
   </div>
 </div>
@@ -688,26 +688,26 @@
 <!-- DRAWER: Log Call -->
 <div class="drawer" id="drawerLog">
   <div class="drawer-handle"></div>
-  <div class="drawer-title">📞 Ghi Log Cuộc Gọi</div>
+  <div class="drawer-title" id="drawerLogTitle">📞 Ghi Log Cuộc Gọi</div>
   <div class="drawer-body">
     <input type="hidden" id="logCustomerId" />
 
     <div class="form-section">
-      <div class="form-section-title">📅 Thời gian</div>
+      <div class="form-section-title" id="secLogTimeTitle">📅 Thời gian</div>
       <div class="field-row">
         <div class="field">
-          <label>Ngày gọi</label>
+          <label id="lblLogDate">Ngày gọi</label>
           <input type="date" id="logDate" />
         </div>
         <div class="field">
-          <label>Giờ gọi</label>
+          <label id="lblLogTime">Giờ gọi</label>
           <input type="time" id="logTime" />
         </div>
       </div>
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">📊 Kết quả cuộc gọi</div>
+      <div class="form-section-title" id="secLogResultTitle">📊 Kết quả cuộc gọi</div>
       <div class="call-result-grid" id="callResultGrid">
         <div class="call-result-chip" data-val="answered" onclick="selectCallResult(this)">✅ Nghe máy</div>
         <div class="call-result-chip" data-val="no-answer" onclick="selectCallResult(this)">📵 Không nghe</div>
@@ -719,16 +719,16 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">💬 Ý kiến khách hàng</div>
+      <div class="form-section-title" id="secLogFeedbackTitle">💬 Ý kiến khách hàng</div>
       <div class="field">
         <textarea id="logNote" placeholder="Khách hỏi về dự án X, quan tâm tầng cao, muốn view sông..."></textarea>
       </div>
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🎯 Hành động tiếp theo</div>
+      <div class="form-section-title" id="secLogNextTitle">🎯 Hành động tiếp theo</div>
       <div class="field">
-        <label>Cần làm gì?</label>
+        <label id="lblLogNeed">Cần làm gì?</label>
         <div class="followup-row" id="followupRow">
           <div class="followup-chip" data-val="call" onclick="selectFollowup(this)">📞 Gọi lại</div>
           <div class="followup-chip" data-val="msg" onclick="selectFollowup(this)">💬 Nhắn tin</div>
@@ -736,7 +736,7 @@
         </div>
       </div>
       <div class="field" id="reminderField">
-        <label>⏰ Thời gian nhắc hẹn</label>
+        <label id="lblLogRemindTime">⏰ Thời gian nhắc hẹn</label>
         <div class="field-row">
           <input type="date" id="reminderDate" />
           <input type="time" id="reminderTime" />
@@ -751,12 +751,12 @@
         </div>
       </div>
       <div class="field">
-        <label>Ghi chú nhắc hẹn</label>
+        <label id="lblLogRemindNote">Ghi chú nhắc hẹn</label>
         <input type="text" id="reminderNote" placeholder="Gọi hỏi quyết định, gửi thêm thông tin..." />
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="saveLog()">✅ Lưu cuộc gọi</button>
+    <button class="btn btn-primary" id="btnSaveCallLog" onclick="saveLog()">✅ Lưu cuộc gọi</button>
   </div>
 </div>
 
@@ -772,23 +772,23 @@
   <div class="drawer-title" id="drawerRentalTitle">Thêm Khách Thuê</div>
   <div class="drawer-body">
     <div class="form-section">
-      <div class="form-section-title">📋 Thông tin cơ bản</div>
+      <div class="form-section-title" id="secRentalBasicTitle">📋 Thông tin cơ bản</div>
       <div class="field">
-        <label>Họ & Tên *</label>
+        <label id="lblRentalName">Họ & Tên *</label>
         <input type="text" id="rName" placeholder="Nguyễn Văn A" />
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Số điện thoại *</label>
+          <label id="lblRentalPhone">Số điện thoại *</label>
           <input type="tel" id="rPhone" placeholder="0901..." />
         </div>
         <div class="field">
-          <label>Zalo</label>
+          <label id="lblRentalZalo">Zalo</label>
           <input type="tel" id="rZalo" placeholder="SĐT Zalo" />
         </div>
       </div>
       <div class="field">
-        <label>Nguồn khách</label>
+        <label id="lblRentalSource">Nguồn khách</label>
         <select id="rSource">
           <option value="">-- Chọn nguồn --</option>
           <option value="Facebook">Facebook</option>
@@ -803,9 +803,9 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🔑 Nhu cầu Cho Thuê</div>
+      <div class="form-section-title" id="secRentalNeedsTitle">🔑 Nhu cầu Cho Thuê</div>
       <div class="field">
-        <label>Loại bất động sản</label>
+        <label id="lblRentalType">Loại bất động sản</label>
         <div class="chip-group" id="chipRentalType">
           <div class="chip" data-val="apartment" onclick="selectRentalChip(this,'chipRentalType','selected')">🏢 Căn hộ</div>
           <div class="chip" data-val="house" onclick="selectRentalChip(this,'chipRentalType','selected')">🏠 Nhà phố</div>
@@ -815,7 +815,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Khu vực quan tâm</label>
+        <label id="lblRentalArea">Khu vực quan tâm</label>
         <input type="text" id="rArea" placeholder="Quận 7, Thủ Đức..." />
         <div class="area-suggestions">
           <span class="area-tag" onclick="document.getElementById('rArea').value += (document.getElementById('rArea').value?', ':'')+'Quận 1'">Q.1</span>
@@ -828,30 +828,30 @@
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Giá thuê từ (triệu/th)</label>
+          <label id="lblRentalPriceMin">Giá thuê từ (triệu/th)</label>
           <input type="number" id="rPriceMin" placeholder="VD: 8" />
         </div>
         <div class="field">
-          <label>Đến (triệu/th)</label>
+          <label id="lblRentalPriceMax">Đến (triệu/th)</label>
           <input type="number" id="rPriceMax" placeholder="VD: 15" />
         </div>
       </div>
       <div class="field-row">
         <div class="field">
-          <label>Diện tích (m²)</label>
+          <label id="lblRentalSize">Diện tích (m²)</label>
           <input type="text" id="rSize" placeholder="VD: 50-80" />
         </div>
         <div class="field">
-          <label>Thời hạn thuê</label>
+          <label id="lblRentalDuration">Thời hạn thuê</label>
           <input type="text" id="rDuration" placeholder="VD: 1 năm" />
         </div>
       </div>
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">🌡️ Trạng thái</div>
+      <div class="form-section-title" id="secRentalStatusTitle">🌡️ Trạng thái</div>
       <div class="field">
-        <label>Độ quan tâm</label>
+        <label id="lblRentalStatus">Độ quan tâm</label>
         <div class="chip-group" id="chipRentalStatus">
           <div class="chip" data-val="hot" onclick="selectRentalChip(this,'chipRentalStatus','selected-hot')">🔥 Nóng</div>
           <div class="chip" data-val="warm" onclick="selectRentalChip(this,'chipRentalStatus','selected-warm')">🌤 Ấm</div>
@@ -861,7 +861,7 @@
         </div>
       </div>
       <div class="field">
-        <label>Tính cách</label>
+        <label id="lblRentalPersonality">Tính cách</label>
         <div class="chip-group" id="chipRentalPersonality">
           <div class="chip" data-val="easy" onclick="selectRentalChip(this,'chipRentalPersonality','selected-easy')">😊 Dễ tính</div>
           <div class="chip" data-val="normal" onclick="selectRentalChip(this,'chipRentalPersonality','selected-normal')">😐 Bình thường</div>
@@ -871,13 +871,13 @@
     </div>
 
     <div class="form-section">
-      <div class="form-section-title">📝 Ghi chú</div>
+      <div class="form-section-title" id="secRentalNoteTitle">📝 Ghi chú</div>
       <div class="field">
         <textarea id="rNote" placeholder="Yêu cầu đặc biệt: có thang máy, chỗ đậu xe, không nuôi thú cưng..."></textarea>
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="saveRental()">💾 Lưu Khách Thuê</button>
+    <button class="btn btn-primary" id="btnSaveRental" onclick="saveRental()">💾 Lưu Khách Thuê</button>
     <button class="btn btn-ghost" id="btnDeleteRental" style="display:none" onclick="deleteRental()">🗑 Xóa khách thuê này</button>
   </div>
 </div>
@@ -939,26 +939,32 @@ const I18N = {
     notFound: 'Không tìm thấy',
     addPrompt: 'Nhấn nút ＋ để thêm',
     tryOtherKeyword: 'Thử từ khoá khác',
+    searchPrompt: 'Nhập tên, SĐT hoặc khu vực để tìm khách',
+    searchTitle: '🔍 Tìm Kiếm',
     // Person
     personEasy: '😊 Dễ tính',
     personNormal: '😐 Bình thường',
     personHard: '😤 Khó tính',
+    // Card meta
+    callPrefix: 'Gọi: ',
+    notCalled: 'Chưa gọi',
+    overduePrefix: 'Quá hạn: ',
+    remindPrefix: 'Nhắc: ',
     // Reminders page
     remindersTitle: '🔔 Nhắc Hẹn',
     noReminders: 'Không có nhắc hẹn nào!',
     overdueTag: 'QUÁ HẠN',
     todayTag: 'HÔM NAY',
-    remindPrefix: 'Nhắc: ',
-    overduePrefix: 'Quá hạn: ',
     btnDone: 'Xong',
     // Reports page
     reportsTitle: '📊 Báo Cáo',
     userAccount: '👤 Tài khoản:',
+    notLoggedIn: 'Chưa đăng nhập',
     btnLogout: '🚪 Đăng xuất',
     totalCustomers: 'Tổng khách hàng',
     hotCustomers: 'Khách nóng',
     todayReminders: 'Nhắc hẹn hôm nay',
-    closedCustomers: 'Đã chốt',
+    closedCustomers: 'Đã chốt / Thuê',
     areaInterest: '📍 Khu vực quan tâm',
     statusDist: '📊 Phân bổ trạng thái',
     exportData: '💾 Xuất dữ liệu',
@@ -966,6 +972,12 @@ const I18N = {
     exportTXT: 'Xuất TXT',
     csvSub: 'Mở bằng Excel',
     txtSub: 'Văn bản đầy đủ',
+    youHave: 'Bạn có',
+    overdueAlert: 'nhắc hẹn đã quá hạn!',
+    exportSummary: 'Bao gồm:',
+    exportCustBuy: 'khách Mua/ĐT',
+    exportCustRent: 'khách Cho Thuê',
+    exportFolder: 'Dữ liệu tải về thư mục Downloads trên thiết bị của bạn',
     // Auth Screen
     loginTab: 'Đăng Nhập',
     regTab: 'Đăng Ký Mới',
@@ -982,18 +994,102 @@ const I18N = {
     btnForgotSubmit: 'Gửi Link Khôi Phục ✉️',
     alreadyHaveAccount: 'Đã có tài khoản?',
     backToLogin: '← Quay lại Đăng nhập',
-    gmailOnlyNotice: '⚠️ Chỉ chấp nhận tài khoản có đuôi @gmail.com',
+    gmailOnlyNotice: '⚠️ Chỉ chấp nhận tài khoản có đuôi <strong>@gmail.com</strong>',
     forgotHelpText: 'Nhập địa chỉ Gmail của bạn. Chúng tôi sẽ gửi link đặt lại mật khẩu mới vào hòm thư.',
-    // Greetings
-    goodMorning: 'Chào buổi sáng',
-    goodAfternoon: 'Chào buổi chiều',
-    goodEvening: 'Chào buổi tối',
-    // Drawer titles
+    labelYourGmail: 'Gmail của bạn (@gmail.com) *',
+    // Actions & Details
+    btnCall: '📞 Gọi điện',
+    btnEdit: '✏️ Sửa',
+    btnAdd: '+ Thêm',
+    btnSave: '💾 Lưu',
+    btnDelete: '🗑 Xóa',
+    historyTitle: '📞 Lịch sử liên lạc',
+    noHistory: 'Chưa có lịch sử gọi',
+    nextFollowup: 'Tiếp theo:',
+    upcomingReminders: '⏰ Nhắc hẹn sắp tới',
+    bdsNeeds: '🏡 Nhu cầu BĐS',
+    rentalNeeds: '🔑 Nhu cầu Cho Thuê',
+    socialMedia: '🌐 Mạng xã hội',
+    purposeLabel: 'Mục đích',
+    propTypeLabel: 'Loại BĐS',
+    areaLabel: '📍 Khu vực',
+    budgetLabel: '💰 Ngân sách',
+    rentalPriceLabel: '💰 Giá thuê',
+    sizeLabel: '📐 Diện tích',
+    durationLabel: '⏳ Thời hạn',
+    millionPerMonth: 'triệu/tháng',
+    // Purpose choices
+    purposeBuy: '🛒 Mua',
+    purposeRent: '🔑 Thuê',
+    purposeInvest: '📈 Đầu tư',
+    purposeSell: '🏷 Bán',
+    // Property Type choices
+    typeApartment: '🏢 Căn hộ',
+    typeHouse: '🏠 Nhà phố',
+    typeLand: '🌿 Đất nền',
+    typeVilla: '🏰 Biệt thự',
+    typeCommercial: '🏪 Thương mại',
+    typeOffice: '💼 Văn phòng',
+    typeShophouse: '🏪 Mặt bằng',
+    // Call Result choices
+    resAnswered: '✅ Nghe máy',
+    resNoAnswer: '📵 Không nghe',
+    resInterested: '🔥 Quan tâm',
+    resNotInterested: '❌ Không quan tâm',
+    resCallback: '🔄 Hẹn gọi lại',
+    resBusy: '⏳ Bận / Sẽ gọi lại',
+    // Followup choices
+    foCall: '📞 Gọi lại',
+    foMsg: '💬 Nhắn tin',
+    foNone: '⏸ Không cần',
+    // Drawer Form Labels & Titles
     titleAddCustomer: 'Thêm Khách Hàng',
     titleEditCustomer: 'Sửa Khách Hàng',
     titleAddRental: 'Thêm Khách Thuê',
     titleEditRental: 'Sửa Khách Thuê',
-    titleRentalPage: '🔑 Khách Cho Thuê'
+    titleRentalPage: '🔑 Khách Cho Thuê',
+    titleLogCall: '📞 Ghi Log Cuộc Gọi',
+    secCustBasic: '📋 Thông tin cơ bản',
+    labelCustName: 'Họ & Tên *',
+    labelCustPhone: 'Số điện thoại *',
+    labelCustSource: 'Nguồn khách',
+    secStatus: '🌡️ Trạng thái',
+    lblInterest: 'Độ quan tâm',
+    lblPersonality: 'Tính cách',
+    secNotes: '📝 Ghi chú',
+    labelCustNotes: 'Yêu cầu / Ghi chú',
+    btnSaveCustomer: '💾 Lưu Khách Hàng',
+    btnDeleteCustomer: '🗑 Xóa khách hàng này',
+    btnSaveRental: '💾 Lưu Khách Thuê',
+    btnDeleteRental: '🗑 Xóa khách thuê này',
+    lblPriceFrom: 'Giá thuê từ (triệu/th)',
+    lblPriceTo: 'Đến (triệu/th)',
+    secTime: '📅 Thời gian',
+    lblCallDate: 'Ngày gọi',
+    lblCallTime: 'Giờ gọi',
+    secCallResult: '📊 Kết quả cuộc gọi',
+    secFeedback: '💬 Ý kiến khách hàng',
+    secNextAction: '🎯 Hành động tiếp theo',
+    lblWhatToDo: 'Cần làm gì?',
+    lblRemindTime: '⏰ Thời gian nhắc hẹn',
+    lblRemindNote: 'Ghi chú nhắc hẹn',
+    btnSaveLog: '✅ Lưu cuộc gọi',
+    // Toasts & Confirmations
+    toastDoneReminder: '✅ Đã xong nhắc hẹn!',
+    toastNeedNamePhone: '⚠️ Cần nhập Tên và SĐT!',
+    toastCustUpdated: '✅ Đã cập nhật khách hàng',
+    toastCustAdded: '✅ Đã thêm khách hàng mới',
+    toastCustDeleted: '🗑 Đã xóa khách hàng',
+    toastRentalUpdated: '✅ Đã cập nhật khách thuê',
+    toastRentalAdded: '✅ Đã thêm khách thuê mới',
+    toastRentalDeleted: '🗑 Đã xóa khách thuê',
+    toastLogSaved: '📞 Đã lưu cuộc gọi',
+    confirmDeleteCust: 'Xóa khách hàng này?',
+    confirmDeleteRental: 'Xóa khách thuê này?',
+    // Greetings
+    goodMorning: 'Chào buổi sáng',
+    goodAfternoon: 'Chào buổi chiều',
+    goodEvening: 'Chào buổi tối'
   },
   en: {
     langName: '🇬🇧 English',
@@ -1019,26 +1115,32 @@ const I18N = {
     notFound: 'No results found',
     addPrompt: 'Tap ＋ to add a new client',
     tryOtherKeyword: 'Try searching with other keywords',
+    searchPrompt: 'Enter name, phone, or location to search',
+    searchTitle: '🔍 Search',
     // Person
     personEasy: '😊 Easy',
     personNormal: '😐 Moderate',
     personHard: '😤 Demanding',
+    // Card meta
+    callPrefix: 'Called: ',
+    notCalled: 'Not called',
+    overduePrefix: 'Overdue: ',
+    remindPrefix: 'Remind: ',
     // Reminders page
     remindersTitle: '🔔 Reminders',
     noReminders: 'No pending reminders!',
     overdueTag: 'OVERDUE',
     todayTag: 'TODAY',
-    remindPrefix: 'Remind: ',
-    overduePrefix: 'Overdue: ',
     btnDone: 'Done',
     // Reports page
     reportsTitle: '📊 Reports',
     userAccount: '👤 Account:',
+    notLoggedIn: 'Not logged in',
     btnLogout: '🚪 Logout',
     totalCustomers: 'Total Clients',
     hotCustomers: 'Hot Leads',
     todayReminders: 'Today Reminders',
-    closedCustomers: 'Closed Deals',
+    closedCustomers: 'Closed / Rented',
     areaInterest: '📍 Area of Interest',
     statusDist: '📊 Status Distribution',
     exportData: '💾 Export Data',
@@ -1046,6 +1148,12 @@ const I18N = {
     exportTXT: 'Export TXT',
     csvSub: 'Open with Excel',
     txtSub: 'Plain Text File',
+    youHave: 'You have',
+    overdueAlert: 'overdue reminder(s)!',
+    exportSummary: 'Includes:',
+    exportCustBuy: 'Buy/Invest clients',
+    exportCustRent: 'Rental clients',
+    exportFolder: 'Data will be downloaded to your Downloads folder',
     // Auth Screen
     loginTab: 'Sign In',
     regTab: 'Sign Up',
@@ -1062,18 +1170,102 @@ const I18N = {
     btnForgotSubmit: 'Send Recovery Link ✉️',
     alreadyHaveAccount: 'Already have an account?',
     backToLogin: '← Back to Sign In',
-    gmailOnlyNotice: '⚠️ Only @gmail.com accounts are supported',
+    gmailOnlyNotice: '⚠️ Only <strong>@gmail.com</strong> accounts are supported',
     forgotHelpText: 'Enter your Gmail address. We will send a secure password reset link to your inbox.',
-    // Greetings
-    goodMorning: 'Good morning',
-    goodAfternoon: 'Good afternoon',
-    goodEvening: 'Good evening',
-    // Drawer titles
+    labelYourGmail: 'Your Gmail (@gmail.com) *',
+    // Actions & Details
+    btnCall: '📞 Call',
+    btnEdit: '✏️ Edit',
+    btnAdd: '+ Add',
+    btnSave: '💾 Save',
+    btnDelete: '🗑 Delete',
+    historyTitle: '📞 Call History',
+    noHistory: 'No call history yet',
+    nextFollowup: 'Next:',
+    upcomingReminders: '⏰ Upcoming Reminders',
+    bdsNeeds: '🏡 Property Needs',
+    rentalNeeds: '🔑 Rental Needs',
+    socialMedia: '🌐 Social Networks',
+    purposeLabel: 'Purpose',
+    propTypeLabel: 'Property Type',
+    areaLabel: '📍 Location',
+    budgetLabel: '💰 Budget',
+    rentalPriceLabel: '💰 Rental Price',
+    sizeLabel: '📐 Area (m²)',
+    durationLabel: '⏳ Lease Term',
+    millionPerMonth: 'M/month',
+    // Purpose choices
+    purposeBuy: '🛒 Buy',
+    purposeRent: '🔑 Rent',
+    purposeInvest: '📈 Invest',
+    purposeSell: '🏷 Sell',
+    // Property Type choices
+    typeApartment: '🏢 Apartment',
+    typeHouse: '🏠 Townhouse',
+    typeLand: '🌿 Land',
+    typeVilla: '🏰 Villa',
+    typeCommercial: '🏪 Commercial',
+    typeOffice: '💼 Office',
+    typeShophouse: '🏪 Shophouse',
+    // Call Result choices
+    resAnswered: '✅ Answered',
+    resNoAnswer: '📵 No answer',
+    resInterested: '🔥 Interested',
+    resNotInterested: '❌ Not interested',
+    resCallback: '🔄 Call back later',
+    resBusy: '⏳ Busy / Call later',
+    // Followup choices
+    foCall: '📞 Call back',
+    foMsg: '💬 Send text',
+    foNone: '⏸ None',
+    // Drawer Form Labels & Titles
     titleAddCustomer: 'Add Client',
     titleEditCustomer: 'Edit Client',
     titleAddRental: 'Add Rental Client',
     titleEditRental: 'Edit Rental Client',
-    titleRentalPage: '🔑 Rental Clients'
+    titleRentalPage: '🔑 Rental Clients',
+    titleLogCall: '📞 Log Call',
+    secCustBasic: '📋 Basic Information',
+    labelCustName: 'Full Name *',
+    labelCustPhone: 'Phone Number *',
+    labelCustSource: 'Lead Source',
+    secStatus: '🌡️ Lead Status',
+    lblInterest: 'Interest Level',
+    lblPersonality: 'Personality',
+    secNotes: '📝 Notes',
+    labelCustNotes: 'Requirements / Notes',
+    btnSaveCustomer: '💾 Save Client',
+    btnDeleteCustomer: '🗑 Delete Client',
+    btnSaveRental: '💾 Save Rental Client',
+    btnDeleteRental: '🗑 Delete Rental Client',
+    lblPriceFrom: 'Price from (M/mo)',
+    lblPriceTo: 'To (M/mo)',
+    secTime: '📅 Time',
+    lblCallDate: 'Call Date',
+    lblCallTime: 'Call Time',
+    secCallResult: '📊 Call Result',
+    secFeedback: '💬 Client Feedback',
+    secNextAction: '🎯 Next Action',
+    lblWhatToDo: 'Action needed?',
+    lblRemindTime: '⏰ Reminder Time',
+    lblRemindNote: 'Reminder Note',
+    btnSaveLog: '✅ Save Call Log',
+    // Toasts & Confirmations
+    toastDoneReminder: '✅ Reminder completed!',
+    toastNeedNamePhone: '⚠️ Name and Phone are required!',
+    toastCustUpdated: '✅ Client updated successfully',
+    toastCustAdded: '✅ New client added successfully',
+    toastCustDeleted: '🗑 Client deleted',
+    toastRentalUpdated: '✅ Rental client updated successfully',
+    toastRentalAdded: '✅ New rental client added successfully',
+    toastRentalDeleted: '🗑 Rental client deleted',
+    toastLogSaved: '📞 Call log saved',
+    confirmDeleteCust: 'Delete this client?',
+    confirmDeleteRental: 'Delete this rental client?',
+    // Greetings
+    goodMorning: 'Good morning',
+    goodAfternoon: 'Good afternoon',
+    goodEvening: 'Good evening'
   },
   zh: {
     langName: '🇨🇳 中文',
@@ -1099,26 +1291,32 @@ const I18N = {
     notFound: '未找到相关数据',
     addPrompt: '点击 ＋ 按钮添加新客户',
     tryOtherKeyword: '尝试其他搜索关键词',
+    searchPrompt: '输入客户姓名、手机号或关注区域进行搜索',
+    searchTitle: '🔍 客户搜索',
     // Person
     personEasy: '😊 随和',
     personNormal: '😐 普通',
     personHard: '😤 严格',
+    // Card meta
+    callPrefix: '通话: ',
+    notCalled: '未通话',
+    overduePrefix: '逾期: ',
+    remindPrefix: '提醒: ',
     // Reminders page
     remindersTitle: '🔔 跟进提醒',
     noReminders: '暂无待办提醒！',
     overdueTag: '已逾期',
     todayTag: '今日',
-    remindPrefix: '提醒: ',
-    overduePrefix: '逾期: ',
     btnDone: '完成',
     // Reports page
     reportsTitle: '📊 数据报表',
     userAccount: '👤 登录账号:',
+    notLoggedIn: '未登录',
     btnLogout: '🚪 退出登录',
     totalCustomers: '客户总数',
     hotCustomers: '高意向客户',
     todayReminders: '今日待办',
-    closedCustomers: '已成交数',
+    closedCustomers: '已成交/出租',
     areaInterest: '📍 热门关注区域',
     statusDist: '📊 客户状态分布',
     exportData: '💾 导出数据',
@@ -1126,6 +1324,12 @@ const I18N = {
     exportTXT: '导出 TXT',
     csvSub: 'Excel 表格打开',
     txtSub: '完整文本格式',
+    youHave: '您有',
+    overdueAlert: '条待办提醒已逾期！',
+    exportSummary: '包含:',
+    exportCustBuy: '位买房/投资客户',
+    exportCustRent: '位房产租赁客户',
+    exportFolder: '数据已下载至您设备的 Downloads 文件夹',
     // Auth Screen
     loginTab: '账号登录',
     regTab: '注册新账号',
@@ -1142,18 +1346,102 @@ const I18N = {
     btnForgotSubmit: '发送重置链接 ✉️',
     alreadyHaveAccount: '已有账号？',
     backToLogin: '← 返回登录',
-    gmailOnlyNotice: '⚠️ 仅支持 @gmail.com 邮箱账号',
+    gmailOnlyNotice: '⚠️ 仅支持 <strong>@gmail.com</strong> 邮箱账号',
     forgotHelpText: '请输入您的 Gmail 邮箱地址，我们将发送密码重置链接至您的邮箱。',
-    // Greetings
-    goodMorning: '早上好',
-    goodAfternoon: '下午好',
-    goodEvening: '晚上好',
-    // Drawer titles
+    labelYourGmail: '您的 Gmail 邮箱 (@gmail.com) *',
+    // Actions & Details
+    btnCall: '📞 拨号',
+    btnEdit: '✏️ 编辑',
+    btnAdd: '+ 添加',
+    btnSave: '💾 保存',
+    btnDelete: '🗑 删除',
+    historyTitle: '📞 跟进历史',
+    noHistory: '暂无跟进记录',
+    nextFollowup: '下一步:',
+    upcomingReminders: '⏰ 待办提醒',
+    bdsNeeds: '🏡 置业需求',
+    rentalNeeds: '🔑 租赁需求',
+    socialMedia: '🌐 社交媒体',
+    purposeLabel: '置业目的',
+    propTypeLabel: '物业类型',
+    areaLabel: '📍 目标区域',
+    budgetLabel: '💰 预算范围',
+    rentalPriceLabel: '💰 租金预算',
+    sizeLabel: '📐 面积 (m²)',
+    durationLabel: '⏳ 租赁租期',
+    millionPerMonth: '百万/月',
+    // Purpose choices
+    purposeBuy: '🛒 购房',
+    purposeRent: '🔑 租房',
+    purposeInvest: '📈 投资',
+    purposeSell: '🏷 出售',
+    // Property Type choices
+    typeApartment: '🏢 公寓',
+    typeHouse: '🏠 别墅/排屋',
+    typeLand: '🌿 土地',
+    typeVilla: '🏰 独栋别墅',
+    typeCommercial: '🏪 商铺',
+    typeOffice: '💼 写字楼',
+    typeShophouse: '🏪 店面',
+    // Call Result choices
+    resAnswered: '✅ 已接听',
+    resNoAnswer: '📵 未接听',
+    resInterested: '🔥 感兴趣',
+    resNotInterested: '❌ 不感兴趣',
+    resCallback: '🔄 约定回电',
+    resBusy: '⏳ 忙碌 / 稍后回电',
+    // Followup choices
+    foCall: '📞 再次致电',
+    foMsg: '💬 发送信息',
+    foNone: '⏸ 暂不需要',
+    // Drawer Form Labels & Titles
     titleAddCustomer: '添加客户',
     titleEditCustomer: '编辑客户',
     titleAddRental: '添加租客',
     titleEditRental: '编辑租客',
-    titleRentalPage: '🔑 房产租赁客户'
+    titleRentalPage: '🔑 房产租赁客户',
+    titleLogCall: '📞 记录通话',
+    secCustBasic: '📋 基本信息',
+    labelCustName: '姓名 *',
+    labelCustPhone: '电话号码 *',
+    labelCustSource: '客户来源',
+    secStatus: '🌡️ 客户状态',
+    lblInterest: '意向程度',
+    lblPersonality: '性格特点',
+    secNotes: '📝 备注',
+    labelCustNotes: '需求 / 备注',
+    btnSaveCustomer: '💾 保存客户',
+    btnDeleteCustomer: '🗑 删除客户',
+    btnSaveRental: '💾 保存租客',
+    btnDeleteRental: '🗑 删除租客',
+    lblPriceFrom: '租金从 (百万/月)',
+    lblPriceTo: '至 (百万/月)',
+    secTime: '📅 通话时间',
+    lblCallDate: '通话日期',
+    lblCallTime: '通话时间',
+    secCallResult: '📊 通话结果',
+    secFeedback: '💬 客户反馈',
+    secNextAction: '🎯 下一步行动',
+    lblWhatToDo: '需要做什么？',
+    lblRemindTime: '⏰ 提醒时间',
+    lblRemindNote: '提醒备注',
+    btnSaveLog: '✅ 保存通话记录',
+    // Toasts & Confirmations
+    toastDoneReminder: '✅ 提醒已完成！',
+    toastNeedNamePhone: '⚠️ 请输入姓名和电话！',
+    toastCustUpdated: '✅ 客户信息已更新',
+    toastCustAdded: '✅ 新增客户成功',
+    toastCustDeleted: '🗑 客户已删除',
+    toastRentalUpdated: '✅ 租客信息已更新',
+    toastRentalAdded: '✅ 新增租客成功',
+    toastRentalDeleted: '🗑 租客已删除',
+    toastLogSaved: '📞 通话记录已保存',
+    confirmDeleteCust: '确认删除该客户？',
+    confirmDeleteRental: '确认删除该租客？',
+    // Greetings
+    goodMorning: '早上好',
+    goodAfternoon: '下午好',
+    goodEvening: '晚上好'
   }
 };
 
@@ -1184,6 +1472,7 @@ function changeLang(lang) {
   document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('show'));
   updateAuthScreenTexts();
   updateNavLabels();
+  updateDrawerTexts();
   render();
 }
 
@@ -1196,6 +1485,110 @@ function updateNavLabels() {
   if (nRental) nRental.textContent = t('navRental');
   if (nReminders) nReminders.textContent = t('navReminders');
   if (nDash) nDash.textContent = t('navReports');
+}
+
+function updateDrawerTexts() {
+  // drawerCustomer
+  const secCustBasic = document.getElementById('secCustBasicTitle'); if (secCustBasic) secCustBasic.textContent = t('secCustBasic');
+  const lblCustName = document.getElementById('lblCustName'); if (lblCustName) lblCustName.textContent = t('labelCustName');
+  const lblCustPhone = document.getElementById('lblCustPhone'); if (lblCustPhone) lblCustPhone.textContent = t('labelCustPhone');
+  const lblCustSource = document.getElementById('lblCustSource'); if (lblCustSource) lblCustSource.textContent = t('labelCustSource');
+  const secCustSocial = document.getElementById('secCustSocialTitle'); if (secCustSocial) secCustSocial.textContent = t('socialMedia');
+  const secCustNeeds = document.getElementById('secCustNeedsTitle'); if (secCustNeeds) secCustNeeds.textContent = t('bdsNeeds');
+  const lblCustPurpose = document.getElementById('lblCustPurpose'); if (lblCustPurpose) lblCustPurpose.textContent = t('purposeLabel');
+  const lblCustType = document.getElementById('lblCustType'); if (lblCustType) lblCustType.textContent = t('propTypeLabel');
+  const lblCustArea = document.getElementById('lblCustArea'); if (lblCustArea) lblCustArea.textContent = t('areaLabel');
+  const lblCustBudget = document.getElementById('lblCustBudget'); if (lblCustBudget) lblCustBudget.textContent = t('budgetLabel');
+  const lblCustArea2 = document.getElementById('lblCustArea2'); if (lblCustArea2) lblCustArea2.textContent = t('sizeLabel');
+  const secCustStatus = document.getElementById('secCustStatusTitle'); if (secCustStatus) secCustStatus.textContent = t('secStatus');
+  const lblCustStatus = document.getElementById('lblCustStatus'); if (lblCustStatus) lblCustStatus.textContent = t('lblInterest');
+  const lblCustPersonality = document.getElementById('lblCustPersonality'); if (lblCustPersonality) lblCustPersonality.textContent = t('lblPersonality');
+  const secCustNote = document.getElementById('secCustNoteTitle'); if (secCustNote) secCustNote.textContent = t('secNotes');
+  const lblCustNote = document.getElementById('lblCustNote'); if (lblCustNote) lblCustNote.textContent = t('labelCustNotes');
+  const btnSaveCustomer = document.getElementById('btnSaveCustomer'); if (btnSaveCustomer) btnSaveCustomer.textContent = t('btnSaveCustomer');
+  const btnDeleteCustomer = document.getElementById('btnDeleteCustomer'); if (btnDeleteCustomer) btnDeleteCustomer.textContent = t('btnDeleteCustomer');
+
+  // Customer chips
+  const cpBuy = document.querySelector('#chipPurpose [data-val="buy"]'); if (cpBuy) cpBuy.textContent = t('purposeBuy');
+  const cpRent = document.querySelector('#chipPurpose [data-val="rent"]'); if (cpRent) cpRent.textContent = t('purposeRent');
+  const cpInvest = document.querySelector('#chipPurpose [data-val="invest"]'); if (cpInvest) cpInvest.textContent = t('purposeInvest');
+
+  const ctApt = document.querySelector('#chipType [data-val="apartment"]'); if (ctApt) ctApt.textContent = t('typeApartment');
+  const ctHouse = document.querySelector('#chipType [data-val="house"]'); if (ctHouse) ctHouse.textContent = t('typeHouse');
+  const ctLand = document.querySelector('#chipType [data-val="land"]'); if (ctLand) ctLand.textContent = t('typeLand');
+  const ctVilla = document.querySelector('#chipType [data-val="villa"]'); if (ctVilla) ctVilla.textContent = t('typeVilla');
+  const ctCom = document.querySelector('#chipType [data-val="commercial"]'); if (ctCom) ctCom.textContent = t('typeCommercial');
+
+  const csHot = document.querySelector('#chipStatus [data-val="hot"]'); if (csHot) csHot.textContent = t('statusHot');
+  const csWarm = document.querySelector('#chipStatus [data-val="warm"]'); if (csWarm) csWarm.textContent = t('statusWarm');
+  const csCold = document.querySelector('#chipStatus [data-val="cold"]'); if (csCold) csCold.textContent = t('statusCold');
+  const csClosed = document.querySelector('#chipStatus [data-val="closed"]'); if (csClosed) csClosed.textContent = t('statusClosed');
+  const csLost = document.querySelector('#chipStatus [data-val="lost"]'); if (csLost) csLost.textContent = t('statusLost');
+
+  const cpeEasy = document.querySelector('#chipPersonality [data-val="easy"]'); if (cpeEasy) cpeEasy.textContent = t('personEasy');
+  const cpeNorm = document.querySelector('#chipPersonality [data-val="normal"]'); if (cpeNorm) cpeNorm.textContent = t('personNormal');
+  const cpeHard = document.querySelector('#chipPersonality [data-val="hard"]'); if (cpeHard) cpeHard.textContent = t('personHard');
+
+  // drawerRental
+  const secRentalBasic = document.getElementById('secRentalBasicTitle'); if (secRentalBasic) secRentalBasic.textContent = t('secCustBasic');
+  const lblRentalName = document.getElementById('lblRentalName'); if (lblRentalName) lblRentalName.textContent = t('labelCustName');
+  const lblRentalPhone = document.getElementById('lblRentalPhone'); if (lblRentalPhone) lblRentalPhone.textContent = t('labelCustPhone');
+  const lblRentalSource = document.getElementById('lblRentalSource'); if (lblRentalSource) lblRentalSource.textContent = t('labelCustSource');
+  const secRentalNeeds = document.getElementById('secRentalNeedsTitle'); if (secRentalNeeds) secRentalNeeds.textContent = t('rentalNeeds');
+  const lblRentalType = document.getElementById('lblRentalType'); if (lblRentalType) lblRentalType.textContent = t('propTypeLabel');
+  const lblRentalArea = document.getElementById('lblRentalArea'); if (lblRentalArea) lblRentalArea.textContent = t('areaLabel');
+  const lblRentalPriceMin = document.getElementById('lblRentalPriceMin'); if (lblRentalPriceMin) lblRentalPriceMin.textContent = t('lblPriceFrom');
+  const lblRentalPriceMax = document.getElementById('lblRentalPriceMax'); if (lblRentalPriceMax) lblRentalPriceMax.textContent = t('lblPriceTo');
+  const lblRentalSize = document.getElementById('lblRentalSize'); if (lblRentalSize) lblRentalSize.textContent = t('sizeLabel');
+  const lblRentalDuration = document.getElementById('lblRentalDuration'); if (lblRentalDuration) lblRentalDuration.textContent = t('durationLabel');
+  const secRentalStatus = document.getElementById('secRentalStatusTitle'); if (secRentalStatus) secRentalStatus.textContent = t('secStatus');
+  const lblRentalStatus = document.getElementById('lblRentalStatus'); if (lblRentalStatus) lblRentalStatus.textContent = t('lblInterest');
+  const lblRentalPersonality = document.getElementById('lblRentalPersonality'); if (lblRentalPersonality) lblRentalPersonality.textContent = t('lblPersonality');
+  const secRentalNote = document.getElementById('secRentalNoteTitle'); if (secRentalNote) secRentalNote.textContent = t('secNotes');
+  const btnSaveRental = document.getElementById('btnSaveRental'); if (btnSaveRental) btnSaveRental.textContent = t('btnSaveRental');
+  const btnDeleteRental = document.getElementById('btnDeleteRental'); if (btnDeleteRental) btnDeleteRental.textContent = t('btnDeleteRental');
+
+  // Rental chips
+  const crtApt = document.querySelector('#chipRentalType [data-val="apartment"]'); if (crtApt) crtApt.textContent = t('typeApartment');
+  const crtHouse = document.querySelector('#chipRentalType [data-val="house"]'); if (crtHouse) crtHouse.textContent = t('typeHouse');
+  const crtOff = document.querySelector('#chipRentalType [data-val="office"]'); if (crtOff) crtOff.textContent = t('typeOffice');
+  const crtShop = document.querySelector('#chipRentalType [data-val="shophouse"]'); if (crtShop) crtShop.textContent = t('typeShophouse');
+  const crtVil = document.querySelector('#chipRentalType [data-val="villa"]'); if (crtVil) crtVil.textContent = t('typeVilla');
+
+  const crsHot = document.querySelector('#chipRentalStatus [data-val="hot"]'); if (crsHot) crsHot.textContent = t('statusHot');
+  const crsWarm = document.querySelector('#chipRentalStatus [data-val="warm"]'); if (crsWarm) crsWarm.textContent = t('statusWarm');
+  const crsCold = document.querySelector('#chipRentalStatus [data-val="cold"]'); if (crsCold) crsCold.textContent = t('statusCold');
+  const crsClosed = document.querySelector('#chipRentalStatus [data-val="closed"]'); if (crsClosed) crsClosed.textContent = t('statusRented');
+  const crsLost = document.querySelector('#chipRentalStatus [data-val="lost"]'); if (crsLost) crsLost.textContent = t('statusLost');
+
+  const crpeEasy = document.querySelector('#chipRentalPersonality [data-val="easy"]'); if (crpeEasy) crpeEasy.textContent = t('personEasy');
+  const crpeNorm = document.querySelector('#chipRentalPersonality [data-val="normal"]'); if (crpeNorm) crpeNorm.textContent = t('personNormal');
+  const crpeHard = document.querySelector('#chipRentalPersonality [data-val="hard"]'); if (crpeHard) crpeHard.textContent = t('personHard');
+
+  // drawerLog
+  const dLogTitle = document.getElementById('drawerLogTitle'); if (dLogTitle) dLogTitle.textContent = t('titleLogCall');
+  const secLogTime = document.getElementById('secLogTimeTitle'); if (secLogTime) secLogTime.textContent = t('secTime');
+  const lblLogDate = document.getElementById('lblLogDate'); if (lblLogDate) lblLogDate.textContent = t('lblCallDate');
+  const lblLogTime = document.getElementById('lblLogTime'); if (lblLogTime) lblLogTime.textContent = t('lblCallTime');
+  const secLogResult = document.getElementById('secLogResultTitle'); if (secLogResult) secLogResult.textContent = t('secCallResult');
+  const secLogFeedback = document.getElementById('secLogFeedbackTitle'); if (secLogFeedback) secLogFeedback.textContent = t('secFeedback');
+  const secLogNext = document.getElementById('secLogNextTitle'); if (secLogNext) secLogNext.textContent = t('secNextAction');
+  const lblLogNeed = document.getElementById('lblLogNeed'); if (lblLogNeed) lblLogNeed.textContent = t('lblWhatToDo');
+  const lblLogRemindTime = document.getElementById('lblLogRemindTime'); if (lblLogRemindTime) lblLogRemindTime.textContent = t('lblRemindTime');
+  const lblLogRemindNote = document.getElementById('lblLogRemindNote'); if (lblLogRemindNote) lblLogRemindNote.textContent = t('lblRemindNote');
+  const btnSaveCallLog = document.getElementById('btnSaveCallLog'); if (btnSaveCallLog) btnSaveCallLog.textContent = t('btnSaveLog');
+
+  // Log chips
+  const resAns = document.querySelector('#callResultGrid [data-val="answered"]'); if (resAns) resAns.textContent = t('resAnswered');
+  const resNoAns = document.querySelector('#callResultGrid [data-val="no-answer"]'); if (resNoAns) resNoAns.textContent = t('resNoAnswer');
+  const resInt = document.querySelector('#callResultGrid [data-val="interested"]'); if (resInt) resInt.textContent = t('resInterested');
+  const resNotInt = document.querySelector('#callResultGrid [data-val="not-interested"]'); if (resNotInt) resNotInt.textContent = t('resNotInterested');
+  const resCb = document.querySelector('#callResultGrid [data-val="callback"]'); if (resCb) resCb.textContent = t('resCallback');
+  const resBusy = document.querySelector('#callResultGrid [data-val="busy"]'); if (resBusy) resBusy.textContent = t('resBusy');
+
+  const foCall = document.querySelector('#followupRow [data-val="call"]'); if (foCall) foCall.textContent = t('foCall');
+  const foMsg = document.querySelector('#followupRow [data-val="msg"]'); if (foMsg) foMsg.textContent = t('foMsg');
+  const foNone = document.querySelector('#followupRow [data-val="none"]'); if (foNone) foNone.textContent = t('foNone');
 }
 
 function updateAuthScreenTexts() {
@@ -1211,12 +1604,41 @@ function updateAuthScreenTexts() {
   const title = document.getElementById('authTitle');
   if (title) title.textContent = isLogin ? t('loginTitle') : t('regTitle');
   
+  // Login Form
+  const lblLoginEmail = document.getElementById('lblLoginEmail');
+  if (lblLoginEmail) lblLoginEmail.textContent = t('labelEmail');
+  const lblLoginPass = document.getElementById('lblLoginPassword');
+  if (lblLoginPass) lblLoginPass.textContent = t('labelPassword');
+  const linkForgot = document.getElementById('linkForgot');
+  if (linkForgot) linkForgot.textContent = t('forgotLink');
   const btnL = document.getElementById('btnLoginSubmit');
   if (btnL) btnL.textContent = t('btnLoginSubmit');
+
+  // Register Form
+  const lblRegName = document.getElementById('lblRegName');
+  if (lblRegName) lblRegName.textContent = t('labelFullName');
+  const lblRegEmail = document.getElementById('lblRegEmail');
+  if (lblRegEmail) lblRegEmail.textContent = t('labelEmail');
+  const noticeReg = document.getElementById('noticeRegGmail');
+  if (noticeReg) noticeReg.innerHTML = t('gmailOnlyNotice');
+  const lblRegPass = document.getElementById('lblRegPassword');
+  if (lblRegPass) lblRegPass.textContent = t('labelMinPassword');
   const btnR = document.getElementById('btnRegSubmit');
   if (btnR) btnR.textContent = t('btnRegSubmit');
+  const txtAlready = document.getElementById('txtAlreadyAccount');
+  if (txtAlready) txtAlready.textContent = t('alreadyHaveAccount');
+  const linkGoLogin = document.getElementById('linkGoLogin');
+  if (linkGoLogin) linkGoLogin.textContent = t('loginTab');
+
+  // Forgot Form
+  const boxHelp = document.getElementById('boxForgotHelp');
+  if (boxHelp) boxHelp.textContent = t('forgotHelpText');
+  const lblForgotEmail = document.getElementById('lblForgotEmail');
+  if (lblForgotEmail) lblForgotEmail.textContent = t('labelYourGmail');
   const btnF = document.getElementById('btnForgotSubmit');
   if (btnF) btnF.textContent = t('btnForgotSubmit');
+  const linkBack = document.getElementById('linkBackLogin');
+  if (linkBack) linkBack.textContent = t('backToLogin');
 }
 
 function renderLangSelector(dropId) {
@@ -1447,8 +1869,8 @@ function renderCustomerCard(c, reminders, now) {
       ${lastLog ? `<div class="card-note">${lastLog.note || '—'}</div>` : ''}
       <div class="card-footer">
         <div>
-          <div class="card-meta">${lastLog ? `Gọi: <span>${formatDateShort(lastLog.date)}</span>` : '<span style="color:var(--text3)">Chưa gọi</span>'}</div>
-          ${reminder ? `<div class="reminder-tag ${isOverdue?'tag-overdue':''}">${isOverdue?'⚠️':'⏰'} ${isOverdue?'Quá hạn: ':'Nhắc: '}${formatDateShort(reminder.date)} ${reminder.time}</div>` : ''}
+          <div class="card-meta">${lastLog ? `${t('callPrefix')}<span>${formatDateShort(lastLog.date)}</span>` : `<span style="color:var(--text3)">${t('notCalled')}</span>`}</div>
+          ${reminder ? `<div class="reminder-tag ${isOverdue?'tag-overdue':''}">${isOverdue?'⚠️':'⏰'} ${isOverdue?t('overduePrefix'):t('remindPrefix')}${formatDateShort(reminder.date)} ${reminder.time}</div>` : ''}
         </div>
         <div class="card-actions">
           <button class="action-btn action-btn-call" onclick="event.stopPropagation(); callPhone('${c.phone}')">📞</button>
@@ -1520,7 +1942,7 @@ function doneReminder(id) {
   const reminders = DB.reminders;
   const i = reminders.findIndex(r => r.id === id);
   if (i > -1) { reminders[i].done = true; DB.reminders = reminders; }
-  showToast('✅ Đã xong nhắc hẹn!', 'success');
+  showToast(t('toastDoneReminder'), 'success');
   render();
 }
 
@@ -1580,7 +2002,7 @@ function renderDashboard() {
       <div class="stat-card" style="margin-bottom:16px;background:rgba(0,240,224,0.08);border-color:rgba(0,240,224,0.3);display:flex;justify-content:space-between;align-items:center;padding:12px 14px">
         <div>
           <div style="font-size:11px;color:var(--text3)">${t('userAccount')}</div>
-          <div style="font-size:13px;font-weight:700;color:#00f0e0">${currentUser ? currentUser.email : 'Chưa đăng nhập'}</div>
+          <div style="font-size:13px;font-weight:700;color:#00f0e0">${currentUser ? currentUser.email : t('notLoggedIn')}</div>
         </div>
         <button onclick="handleLogout()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:var(--hot);border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">${t('btnLogout')}</button>
       </div>
@@ -1608,7 +2030,7 @@ function renderDashboard() {
         </div>
       </div>
 
-      ${overdue.length > 0 ? `<div style="background:rgba(239,68,68,0.1);border:1.5px solid rgba(239,68,68,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--hot)">⚠️ Bạn có <strong>${overdue.length}</strong> nhắc hẹn đã quá hạn!</div>` : ''}
+      ${overdue.length > 0 ? `<div style="background:rgba(239,68,68,0.1);border:1.5px solid rgba(239,68,68,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--hot)">⚠️ ${t('youHave')} <strong>${overdue.length}</strong> ${t('overdueAlert')}</div>` : ''}
 
       ${todayRem.length > 0 ? `<div class="dash-section-title">⏰ ${t('todayReminders')}</div><div class="today-reminders">${todayItems}</div>` : ''}
 
@@ -1644,8 +2066,8 @@ function renderDashboard() {
         </button>
       </div>
       <div style="background:var(--bg2);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--text3);line-height:1.6">
-        📦 Bao gồm: <strong style="color:var(--text2)">${customers.length} khách Mua/ĐT</strong> + <strong style="color:var(--text2)">${RDB.rentals.length} khách Cho Thuê</strong><br/>
-        Dữ liệu tải về thư mục <strong style="color:var(--text2)">Downloads</strong> trên thiết bị của bạn
+        📦 ${t('exportSummary')} <strong style="color:var(--text2)">${customers.length} ${t('exportCustBuy')}</strong> + <strong style="color:var(--text2)">${RDB.rentals.length} ${t('exportCustRent')}</strong><br/>
+        ${t('exportFolder')}
       </div>
     </div>
   `;
@@ -1765,19 +2187,19 @@ function renderSearch() {
   const now = new Date();
 
   const cards = filtered.length === 0 && searchQuery.length > 0
-    ? `<div class="empty-state"><div class="icon">🔍</div><h3>Không tìm thấy</h3><p>Thử tìm bằng tên, SĐT hoặc khu vực</p></div>`
+    ? `<div class="empty-state"><div class="icon">🔍</div><h3>${t('notFound')}</h3><p>${t('tryOtherKeyword')}</p></div>`
     : filtered.map(c => renderCustomerCard(c, reminders, now)).join('');
 
   return `
-    <div class="topbar"><div class="topbar-title">🔍 Tìm Kiếm</div></div>
+    <div class="topbar"><div class="topbar-title">${t('searchTitle')}</div></div>
     <div class="search-wrap">
       <div class="search-box">
         <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="Tên, SĐT, khu vực..." value="${searchQuery}" oninput="onSearch(this.value)" autofocus />
+        <input type="text" id="searchInput" placeholder="${t('searchPlaceholder')}" value="${searchQuery}" oninput="onSearch(this.value)" autofocus />
         ${searchQuery ? `<span onclick="clearSearch()" style="cursor:pointer;color:var(--text3)">✕</span>` : ''}
       </div>
     </div>
-    ${searchQuery.length === 0 ? `<div class="empty-state" style="padding:40px 20px"><div class="icon" style="font-size:40px">🔍</div><p>Nhập tên, SĐT hoặc khu vực để tìm khách</p></div>` : `<div class="cards-list">${cards}</div>`}
+    ${searchQuery.length === 0 ? `<div class="empty-state" style="padding:40px 20px"><div class="icon" style="font-size:40px">🔍</div><p>${t('searchPrompt')}</p></div>` : `<div class="cards-list">${cards}</div>`}
   `;
 }
 
@@ -1790,13 +2212,13 @@ function onSearch(val) {
   const reminders = DB.reminders;
   const now = new Date();
   const cards = filtered.length === 0 && val.length > 0
-    ? `<div class="empty-state"><div class="icon">🔍</div><h3>Không tìm thấy</h3></div>`
+    ? `<div class="empty-state"><div class="icon">🔍</div><h3>${t('notFound')}</h3></div>`
     : filtered.map(c => renderCustomerCard(c, reminders, now)).join('');
   const list = document.querySelector('.cards-list');
   const empty = document.querySelector('.empty-state');
   if (val.length === 0) {
     if (list) list.innerHTML = '';
-    if (empty) empty.innerHTML = '<div class="icon" style="font-size:40px">🔍</div><p>Nhập tên, SĐT hoặc khu vực để tìm khách</p>';
+    if (empty) empty.innerHTML = `<div class="icon" style="font-size:40px">🔍</div><p>${t('searchPrompt')}</p>`;
   } else {
     if (list) list.innerHTML = cards;
     else {
@@ -1820,7 +2242,7 @@ function clearSearch() {
 // ══════════════════════════════════════════════════════
 function openAddCustomer() {
   document.getElementById('editCustomerId').value = '';
-  document.getElementById('drawerCustomerTitle').textContent = 'Thêm Khách Hàng';
+  document.getElementById('drawerCustomerTitle').textContent = t('titleAddCustomer');
   document.getElementById('btnDeleteCustomer').style.display = 'none';
   clearForm();
   openDrawer('drawerCustomer');
@@ -1830,7 +2252,7 @@ function openEditCustomer(id) {
   const c = DB.customers.find(x => x.id === id);
   if (!c) return;
   document.getElementById('editCustomerId').value = id;
-  document.getElementById('drawerCustomerTitle').textContent = 'Sửa Khách Hàng';
+  document.getElementById('drawerCustomerTitle').textContent = t('titleEditCustomer');
   document.getElementById('btnDeleteCustomer').style.display = 'flex';
   document.getElementById('cName').value = c.name || '';
   document.getElementById('cPhone').value = c.phone || '';
@@ -1910,7 +2332,7 @@ function appendArea(val) {
 function saveCustomer() {
   const name = document.getElementById('cName').value.trim();
   const phone = document.getElementById('cPhone').value.trim();
-  if (!name || !phone) { showToast('⚠️ Cần nhập Tên và SĐT!', 'error'); return; }
+  if (!name || !phone) { showToast(t('toastNeedNamePhone'), 'error'); return; }
 
   const id = document.getElementById('editCustomerId').value;
   const customers = DB.customers;
@@ -1946,7 +2368,7 @@ function saveCustomer() {
 
   DB.customers = customers;
   closeDrawer();
-  showToast(id ? '✅ Đã cập nhật khách hàng' : '✅ Đã thêm khách hàng mới', 'success');
+  showToast(id ? t('toastCustUpdated') : t('toastCustAdded'), 'success');
   render();
   syncAllToCloud();
 }
@@ -1954,7 +2376,7 @@ function saveCustomer() {
 function deleteCustomer() {
   const id = document.getElementById('editCustomerId').value;
   if (!id) return;
-  if (!confirm('Xóa khách hàng này?')) return;
+  if (!confirm(t('confirmDeleteCust'))) return;
   DB.customers = DB.customers.filter(c => c.id !== id);
   DB.logs = DB.logs.filter(l => l.customerId !== id);
   DB.reminders = DB.reminders.filter(r => r.customerId !== id);
@@ -1964,7 +2386,7 @@ function deleteCustomer() {
     sbClient.from('reminders').delete().eq('customer_id', id);
   }
   closeDrawer();
-  showToast('🗑 Đã xóa khách hàng', 'error');
+  showToast(t('toastCustDeleted'), 'error');
   render();
 }
 
@@ -2056,7 +2478,7 @@ function saveLog() {
   }
 
   closeDrawer();
-  showToast('📞 Đã lưu cuộc gọi', 'success');
+  showToast(t('toastLogSaved'), 'success');
   render();
 }
 
@@ -2069,15 +2491,49 @@ function openDetail(customerId) {
   const logs = DB.logs.filter(l => l.customerId === customerId).sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   const reminders = DB.reminders.filter(r => r.customerId === customerId && !r.done).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
 
-  const statusMap = {hot:'🔥 Nóng',warm:'🌤 Ấm',cold:'❄️ Lạnh',closed:'✅ Đã chốt',lost:'🚫 Mất KH'};
-  const personMap = {easy:'😊 Dễ tính',normal:'😐 Bình thường',hard:'😤 Khó tính'};
-  const purposeMap = {buy:'🛒 Mua',rent:'🔑 Thuê',invest:'📈 Đầu tư',sell:'🏷 Bán'};
-  const typeMap = {apartment:'🏢 Căn hộ',house:'🏠 Nhà phố',land:'🌿 Đất nền',villa:'🏰 Biệt thự',commercial:'🏪 Thương mại'};
-  const resultMap = {answered:'✅ Nghe máy','no-answer':'📵 Không nghe',interested:'🔥 Quan tâm','not-interested':'❌ Không quan tâm',callback:'🔄 Hẹn gọi lại',busy:'⏳ Bận'};
-  const followupMap = {call:'📞 Gọi lại',msg:'💬 Nhắn tin',none:'⏸ Không cần'};
+  const statusMap = {
+    hot: t('statusHot'),
+    warm: t('statusWarm'),
+    cold: t('statusCold'),
+    closed: t('statusClosed'),
+    lost: t('statusLost')
+  };
+  const personMap = {
+    easy: t('personEasy'),
+    normal: t('personNormal'),
+    hard: t('personHard')
+  };
+  const purposeMap = {
+    buy: t('purposeBuy'),
+    rent: t('purposeRent'),
+    invest: t('purposeInvest'),
+    sell: t('purposeSell')
+  };
+  const typeMap = {
+    apartment: t('typeApartment'),
+    house: t('typeHouse'),
+    land: t('typeLand'),
+    villa: t('typeVilla'),
+    commercial: t('typeCommercial'),
+    office: t('typeOffice'),
+    shophouse: t('typeShophouse')
+  };
+  const resultMap = {
+    answered: t('resAnswered'),
+    'no-answer': t('resNoAnswer'),
+    interested: t('resInterested'),
+    'not-interested': t('resNotInterested'),
+    callback: t('resCallback'),
+    busy: t('resBusy')
+  };
+  const followupMap = {
+    call: t('foCall'),
+    msg: t('foMsg'),
+    none: t('foNone')
+  };
 
   const logsHtml = logs.length === 0
-    ? `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">Chưa có lịch sử gọi</div>`
+    ? `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">${t('noHistory')}</div>`
     : logs.map(l => `
         <div class="call-entry">
           <div class="call-entry-top">
@@ -2085,17 +2541,17 @@ function openDetail(customerId) {
             <div class="call-entry-date">${formatDateShort(l.date)} ${l.time||''}</div>
           </div>
           <div class="call-entry-note">${l.note||'—'}</div>
-          ${l.followup ? `<div class="call-entry-followup"><span style="color:var(--text3)">Tiếp theo:</span> <span style="font-weight:600">${followupMap[l.followup]||l.followup}</span> ${l.reminderDate?`<span style="color:var(--primary)">⏰ ${formatDateShort(l.reminderDate)} ${l.reminderTime||''}</span>`:''}</div>` : ''}
+          ${l.followup ? `<div class="call-entry-followup"><span style="color:var(--text3)">${t('nextFollowup')}</span> <span style="font-weight:600">${followupMap[l.followup]||l.followup}</span> ${l.reminderDate?`<span style="color:var(--primary)">⏰ ${formatDateShort(l.reminderDate)} ${l.reminderTime||''}</span>`:''}</div>` : ''}
         </div>
       `).join('');
 
   const remindersHtml = reminders.length === 0 ? '' : `
     <div class="detail-section">
-      <div class="detail-section-title">⏰ Nhắc hẹn sắp tới</div>
+      <div class="detail-section-title">⏰ ${t('upcomingReminders')}</div>
       ${reminders.map(r => `
         <div style="background:rgba(0,210,196,0.08);border:1.5px solid rgba(0,210,196,0.25);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
           <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--primary)">${r.time||'--:--'} – ${formatDateShort(r.date)}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">${r.note||''}</div></div>
-          <button onclick="doneReminder('${r.id}')" style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.3);color:var(--closed);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">Xong</button>
+          <button onclick="doneReminder('${r.id}')" style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.3);color:var(--closed);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">${t('btnDone')}</button>
         </div>
       `).join('')}
     </div>
@@ -2114,27 +2570,27 @@ function openDetail(customerId) {
       </div>
       <div class="detail-phone">📞 <a href="tel:${c.phone}" style="color:var(--text2);text-decoration:none">${c.phone}</a></div>
       <div class="detail-quick-btns">
-        <button class="quick-btn quick-btn-call" onclick="callPhone('${c.phone}')">📞 Gọi điện</button>
+        <button class="quick-btn quick-btn-call" onclick="callPhone('${c.phone}')">${t('btnCall')}</button>
         ${c.zalo ? `<button class="quick-btn quick-btn-zalo" onclick="openZalo('${c.zalo}')">💬 Zalo</button>` : ''}
-        <button class="quick-btn quick-btn-edit" onclick="openEditCustomer('${c.id}')">✏️ Sửa</button>
+        <button class="quick-btn quick-btn-edit" onclick="openEditCustomer('${c.id}')">${t('btnEdit')}</button>
       </div>
     </div>
 
     <div class="detail-section">
-      <div class="detail-section-title">🏡 Nhu cầu BĐS</div>
+      <div class="detail-section-title">${t('bdsNeeds')}</div>
       <div class="info-grid">
-        ${c.purpose ? `<div class="info-item"><label>Mục đích</label><span>${purposeMap[c.purpose]||c.purpose}</span></div>` : ''}
-        ${c.propType ? `<div class="info-item"><label>Loại BĐS</label><span>${typeMap[c.propType]||c.propType}</span></div>` : ''}
-        ${c.area ? `<div class="info-item" style="grid-column:1/-1"><label>📍 Khu vực</label><span>${c.area}</span></div>` : ''}
-        ${c.budget ? `<div class="info-item"><label>💰 Ngân sách</label><span>${c.budget}</span></div>` : ''}
-        ${c.area2 ? `<div class="info-item"><label>📐 Diện tích</label><span>${c.area2} m²</span></div>` : ''}
+        ${c.purpose ? `<div class="info-item"><label>${t('purposeLabel')}</label><span>${purposeMap[c.purpose]||c.purpose}</span></div>` : ''}
+        ${c.propType ? `<div class="info-item"><label>${t('propTypeLabel')}</label><span>${typeMap[c.propType]||c.propType}</span></div>` : ''}
+        ${c.area ? `<div class="info-item" style="grid-column:1/-1"><label>${t('areaLabel')}</label><span>${c.area}</span></div>` : ''}
+        ${c.budget ? `<div class="info-item"><label>${t('budgetLabel')}</label><span>${c.budget}</span></div>` : ''}
+        ${c.area2 ? `<div class="info-item"><label>${t('sizeLabel')}</label><span>${c.area2} m²</span></div>` : ''}
       </div>
       ${c.note ? `<div style="margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text2);line-height:1.6">${c.note}</div>` : ''}
     </div>
 
     ${(c.facebook || c.zaloSocial || c.tiktok || c.instagram || c.youtube) ? `
     <div class="detail-section">
-      <div class="detail-section-title">🌐 Mạng xã hội</div>
+      <div class="detail-section-title">${t('socialMedia')}</div>
       <div class="social-links-grid">
         ${c.facebook ? `<a href="${c.facebook}" target="_blank" class="social-link-btn fb">🔵 Facebook</a>` : ''}
         ${c.zaloSocial ? `<a href="https://zalo.me/${c.zaloSocial.replace(/^0/,'84')}" target="_blank" class="social-link-btn zl">💬 Zalo</a>` : ''}
@@ -2149,8 +2605,8 @@ function openDetail(customerId) {
 
     <div class="detail-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div class="detail-section-title" style="margin-bottom:0">📞 Lịch sử liên lạc (${logs.length})</div>
-        <button onclick="openLogCall('${c.id}')" style="background:rgba(0,210,196,0.15);border:1.5px solid rgba(0,210,196,0.35);color:var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Thêm</button>
+        <div class="detail-section-title" style="margin-bottom:0">${t('historyTitle')} (${logs.length})</div>
+        <button onclick="openLogCall('${c.id}')" style="background:rgba(0,210,196,0.15);border:1.5px solid rgba(0,210,196,0.35);color:var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">${t('btnAdd')}</button>
       </div>
       <div class="call-history">${logsHtml}</div>
     </div>
@@ -2215,8 +2671,13 @@ function formatDateShort(dateStr) {
 
 function formatDateLong(dateStr) {
   if (!dateStr) return '';
-  const days = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
   const d = new Date(dateStr + 'T00:00:00');
+  if (currentLang === 'en') {
+    return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  } else if (currentLang === 'zh') {
+    return d.toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  const days = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
   return `${days[d.getDay()]}, ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`;
 }
 
@@ -2628,6 +3089,7 @@ async function syncFromCloud(silent = false) {
 initSampleData();
 updateNavLabels();
 updateAuthScreenTexts();
+updateDrawerTexts();
 initSupabase();
 render();
 
@@ -2725,7 +3187,7 @@ function renderRental() {
             <div class="card-phone">📞 ${r.phone}</div>
             ${r.rentalType ? `<div class="card-area">🔑 ${typeMap[r.rentalType]||r.rentalType}</div>` : ''}
             ${r.area ? `<div class="card-area">📍 ${r.area}</div>` : ''}
-            ${(r.priceMin||r.priceMax) ? `<div class="card-area">💰 ${r.priceMin||'?'} – ${r.priceMax||'?'} triệu/tháng</div>` : ''}
+            ${(r.priceMin||r.priceMax) ? `<div class="card-area">💰 ${r.priceMin||'?'} – ${r.priceMax||'?'} ${t('millionPerMonth')}</div>` : ''}
             ${r.note ? `<div class="card-note">${r.note}</div>` : ''}
             <div class="card-footer">
               <div>
@@ -2788,9 +3250,25 @@ function setRentalFilter(f) { rentalFilter = f; render(); }
 function openRentalDetail(id) {
   const r = RDB.rentals.find(x => x.id === id);
   if (!r) return;
-  const typeMap = { apartment:'🏢 Căn hộ', house:'🏠 Nhà phố', office:'🏢 Văn phòng', shophouse:'🏪 Mặt bằng', villa:'🏰 Biệt thự' };
-  const statusMap = { hot:'🔥 Nóng', warm:'🌤 Ấm', cold:'❄️ Lạnh', closed:'✅ Đã thuê', lost:'🚫 Mất KH' };
-  const personMap = { easy:'😊 Dễ tính', normal:'😐 Bình thường', hard:'😤 Khó tính' };
+  const typeMap = {
+    apartment: t('typeApartment'),
+    house: t('typeHouse'),
+    office: t('typeOffice'),
+    shophouse: t('typeShophouse'),
+    villa: t('typeVilla')
+  };
+  const statusMap = {
+    hot: t('statusHot'),
+    warm: t('statusWarm'),
+    cold: t('statusCold'),
+    closed: t('statusRented'),
+    lost: t('statusLost')
+  };
+  const personMap = {
+    easy: t('personEasy'),
+    normal: t('personNormal'),
+    hard: t('personHard')
+  };
   const reminders = DB.reminders.filter(rm => rm.customerId === r.id && !rm.done).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
 
   const html = `
@@ -2802,50 +3280,57 @@ function openRentalDetail(id) {
       <div class="detail-badges">
         ${r.status ? `<span class="badge badge-${r.status}">${statusMap[r.status]||r.status}</span>` : ''}
         ${r.personality ? `<span class="badge badge-${r.personality}">${personMap[r.personality]||r.personality}</span>` : ''}
-        <span class="badge" style="background:rgba(167,139,250,0.15);color:#a78bfa">🔑 Cho Thuê</span>
+        <span class="badge" style="background:rgba(167,139,250,0.15);color:#a78bfa">🔑 ${t('navRental')}</span>
         ${r.source ? `<span class="badge" style="background:var(--bg3);color:var(--text2)">📋 ${r.source}</span>` : ''}
       </div>
       <div class="detail-phone">📞 <a href="tel:${r.phone}" style="color:var(--text2);text-decoration:none">${r.phone}</a></div>
       <div class="detail-quick-btns">
-        <button class="quick-btn quick-btn-call" onclick="callPhone('${r.phone}')">📞 Gọi điện</button>
+        <button class="quick-btn quick-btn-call" onclick="callPhone('${r.phone}')">${t('btnCall')}</button>
         ${r.zalo ? `<button class="quick-btn quick-btn-zalo" onclick="openZalo('${r.zalo}')">💬 Zalo</button>` : ''}
-        <button class="quick-btn quick-btn-edit" onclick="openEditRental('${r.id}')">✏️ Sửa</button>
+        <button class="quick-btn quick-btn-edit" onclick="openEditRental('${r.id}')">${t('btnEdit')}</button>
       </div>
     </div>
 
     <div class="detail-section">
-      <div class="detail-section-title">🔑 Nhu cầu Cho Thuê</div>
+      <div class="detail-section-title">${t('rentalNeeds')}</div>
       <div class="info-grid">
-        ${r.rentalType ? `<div class="info-item"><label>Loại BĐS</label><span>${typeMap[r.rentalType]||r.rentalType}</span></div>` : ''}
-        ${r.duration ? `<div class="info-item"><label>⏳ Thời hạn</label><span>${r.duration}</span></div>` : ''}
-        ${r.area ? `<div class="info-item" style="grid-column:1/-1"><label>📍 Khu vực</label><span>${r.area}</span></div>` : ''}
-        ${(r.priceMin||r.priceMax) ? `<div class="info-item"><label>💰 Giá thuê</label><span>${r.priceMin||'?'} – ${r.priceMax||'?'} tr/tháng</span></div>` : ''}
-        ${r.size ? `<div class="info-item"><label>📐 Diện tích</label><span>${r.size} m²</span></div>` : ''}
+        ${r.rentalType ? `<div class="info-item"><label>${t('propTypeLabel')}</label><span>${typeMap[r.rentalType]||r.rentalType}</span></div>` : ''}
+        ${r.duration ? `<div class="info-item"><label>${t('durationLabel')}</label><span>${r.duration}</span></div>` : ''}
+        ${r.area ? `<div class="info-item" style="grid-column:1/-1"><label>${t('areaLabel')}</label><span>${r.area}</span></div>` : ''}
+        ${(r.priceMin||r.priceMax) ? `<div class="info-item"><label>${t('rentalPriceLabel')}</label><span>${r.priceMin||'?'} – ${r.priceMax||'?'} ${t('millionPerMonth')}</span></div>` : ''}
+        ${r.size ? `<div class="info-item"><label>${t('sizeLabel')}</label><span>${r.size} m²</span></div>` : ''}
       </div>
       ${r.note ? `<div style="margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text2);line-height:1.6">${r.note}</div>` : ''}
     </div>
 
     ${reminders.length > 0 ? `
     <div class="detail-section">
-      <div class="detail-section-title">⏰ Nhắc hẹn sắp tới</div>
+      <div class="detail-section-title">⏰ ${t('upcomingReminders')}</div>
       ${reminders.map(rm => `
         <div style="background:rgba(0,210,196,0.08);border:1.5px solid rgba(0,210,196,0.25);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px">
           <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--primary)">${rm.time||'--:--'} – ${formatDateShort(rm.date)}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">${rm.note||''}</div></div>
-          <button onclick="doneReminder('${rm.id}')" style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.3);color:var(--closed);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">Xong</button>
+          <button onclick="doneReminder('${rm.id}')" style="background:rgba(16,185,129,0.15);border:1.5px solid rgba(16,185,129,0.3);color:var(--closed);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">${t('btnDone')}</button>
         </div>
       `).join('')}
     </div>` : ''}
 
     <div class="detail-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div class="detail-section-title" style="margin-bottom:0">📞 Lịch sử liên lạc</div>
-        <button onclick="openRentalLog('${r.id}')" style="background:rgba(0,210,196,0.15);border:1.5px solid rgba(0,210,196,0.35);color:var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Thêm</button>
+        <div class="detail-section-title" style="margin-bottom:0">${t('historyTitle')}</div>
+        <button onclick="openRentalLog('${r.id}')" style="background:rgba(0,210,196,0.15);border:1.5px solid rgba(0,210,196,0.35);color:var(--primary);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">${t('btnAdd')}</button>
       </div>
       ${(() => {
         const logs = DB.logs.filter(l => l.customerId === r.id).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
-        const resultMap = {answered:'✅ Nghe máy','no-answer':'📵 Không nghe',interested:'🔥 Quan tâm','not-interested':'❌ Không quan tâm',callback:'🔄 Hẹn gọi lại',busy:'⏳ Bận'};
+        const resultMap = {
+          answered: t('resAnswered'),
+          'no-answer': t('resNoAnswer'),
+          interested: t('resInterested'),
+          'not-interested': t('resNotInterested'),
+          callback: t('resCallback'),
+          busy: t('resBusy')
+        };
         return logs.length === 0
-          ? `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">Chưa có lịch sử gọi</div>`
+          ? `<div style="color:var(--text3);font-size:13px;text-align:center;padding:16px">${t('noHistory')}</div>`
           : logs.map(l=>`<div class="call-entry"><div class="call-entry-top"><div class="call-entry-result">${resultMap[l.result]||l.result||'—'}</div><div class="call-entry-date">${formatDateShort(l.date)} ${l.time||''}</div></div><div class="call-entry-note">${l.note||'—'}</div></div>`).join('');
       })()}
     </div>
@@ -2881,7 +3366,7 @@ let editRentalId = '';
 
 function openAddRental() {
   editRentalId = '';
-  document.getElementById('drawerRentalTitle').textContent = 'Thêm Khách Thuê';
+  document.getElementById('drawerRentalTitle').textContent = t('titleAddRental');
   document.getElementById('btnDeleteRental').style.display = 'none';
   clearRentalForm();
   openDrawer('drawerRental');
@@ -2891,7 +3376,7 @@ function openEditRental(id) {
   const r = RDB.rentals.find(x => x.id === id);
   if (!r) return;
   editRentalId = id;
-  document.getElementById('drawerRentalTitle').textContent = 'Sửa Khách Thuê';
+  document.getElementById('drawerRentalTitle').textContent = t('titleEditRental');
   document.getElementById('btnDeleteRental').style.display = 'flex';
   document.getElementById('rName').value = r.name || '';
   document.getElementById('rPhone').value = r.phone || '';
@@ -2933,7 +3418,7 @@ function selectRentalChip(el, groupId, cls) {
 function saveRental() {
   const name = document.getElementById('rName').value.trim();
   const phone = document.getElementById('rPhone').value.trim();
-  if (!name || !phone) { showToast('⚠️ Cần nhập Tên và SĐT!','error'); return; }
+  if (!name || !phone) { showToast(t('toastNeedNamePhone'),'error'); return; }
 
   const data = {
     name, phone,
@@ -2961,19 +3446,19 @@ function saveRental() {
   }
   RDB.rentals = rentals;
   closeDrawer();
-  showToast(editRentalId ? '✅ Đã cập nhật khách thuê' : '✅ Đã thêm khách thuê mới', 'success');
+  showToast(editRentalId ? t('toastRentalUpdated') : t('toastRentalAdded'), 'success');
   render();
   syncAllToCloud();
 }
 
 function deleteRental() {
   if (!editRentalId) return;
-  if (!confirm('Xóa khách thuê này?')) return;
+  if (!confirm(t('confirmDeleteRental'))) return;
   const idToDelete = editRentalId;
   RDB.rentals = RDB.rentals.filter(r => r.id !== idToDelete);
   if (sbClient) sbClient.from('rentals').delete().eq('id', idToDelete);
   closeDrawer();
-  showToast('🗑 Đã xóa khách thuê','error');
+  showToast(t('toastRentalDeleted'),'error');
   render();
 }
 
