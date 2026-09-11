@@ -377,6 +377,34 @@
   }
   .auth-link:hover { text-decoration: underline; }
 
+  /* ── LANGUAGE SELECTOR ── */
+  .lang-btn {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 20px; padding: 4px 10px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: var(--transition);
+  }
+  .lang-btn:active { transform: scale(0.92); }
+  .lang-dropdown {
+    position: absolute; top: calc(100% + 6px); right: 0;
+    background: rgba(4, 28, 27, 0.96); backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 240, 224, 0.35); border-radius: 12px;
+    padding: 6px; display: none; flex-direction: column; gap: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 1000; min-width: 120px;
+  }
+  .lang-dropdown.show { display: flex; }
+  .lang-opt {
+    padding: 7px 10px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    color: var(--text2); display: flex; align-items: center; gap: 8px;
+    cursor: pointer; transition: var(--transition);
+  }
+  .lang-opt:hover, .lang-opt.active {
+    background: rgba(0, 240, 224, 0.18); color: #00f0e0;
+  }
+  .auth-lang-wrap {
+    display: flex; justify-content: flex-end; margin-bottom: 12px; position: relative;
+  }
 </style>
 
 </head>
@@ -385,6 +413,15 @@
 <!-- AUTH SCREEN (LOGIN / REGISTER / FORGOT) -->
 <div id="authScreen" style="display:none">
   <div class="auth-card">
+    <div class="auth-lang-wrap">
+      <div class="lang-btn" onclick="toggleLangMenu('authLangDrop')" id="authLangBtn">🇻🇳 Tiếng Việt ▾</div>
+      <div class="lang-dropdown" id="authLangDrop">
+        <div class="lang-opt" onclick="changeLang('vi')">🇻🇳 Tiếng Việt</div>
+        <div class="lang-opt" onclick="changeLang('en')">🇬🇧 English</div>
+        <div class="lang-opt" onclick="changeLang('zh')">🇨🇳 中文</div>
+      </div>
+    </div>
+
     <div style="text-align:center;margin-bottom:20px">
       <div class="auth-badge">⚡ XANH CRM</div>
       <div class="auth-title" id="authTitle">Đăng Nhập Tài Khoản</div>
@@ -875,6 +912,327 @@
 
 <script>
 // ══════════════════════════════════════════════════════
+// I18N MULTI-LANGUAGE SYSTEM (vi, en, zh)
+// ══════════════════════════════════════════════════════
+const I18N = {
+  vi: {
+    langName: '🇻🇳 Tiếng Việt',
+    appName: '⚡ Xanh CRM',
+    cloudTitle: '☁️ Supabase Cloud',
+    navHome: 'Mua/ĐT',
+    navRental: 'Cho Thuê',
+    navReminders: 'Nhắc hẹn',
+    navReports: 'Báo cáo',
+    // Filters & status
+    filterAll: 'Tất cả',
+    statusHot: '🔥 Nóng',
+    statusWarm: '🌤 Ấm',
+    statusCold: '❄️ Lạnh',
+    statusClosed: '✅ Đã chốt',
+    statusRented: '✅ Đã thuê',
+    statusLost: '🚫 Mất KH',
+    sortNew: '🆕 Mới',
+    sortOld: '📅 Cũ',
+    searchPlaceholder: 'Tên, SĐT, khu vực...',
+    noCustomers: 'Chưa có khách hàng',
+    noRentals: 'Chưa có khách thuê',
+    notFound: 'Không tìm thấy',
+    addPrompt: 'Nhấn nút ＋ để thêm',
+    tryOtherKeyword: 'Thử từ khoá khác',
+    // Person
+    personEasy: '😊 Dễ tính',
+    personNormal: '😐 Bình thường',
+    personHard: '😤 Khó tính',
+    // Reminders page
+    remindersTitle: '🔔 Nhắc Hẹn',
+    noReminders: 'Không có nhắc hẹn nào!',
+    overdueTag: 'QUÁ HẠN',
+    todayTag: 'HÔM NAY',
+    remindPrefix: 'Nhắc: ',
+    overduePrefix: 'Quá hạn: ',
+    btnDone: 'Xong',
+    // Reports page
+    reportsTitle: '📊 Báo Cáo',
+    userAccount: '👤 Tài khoản:',
+    btnLogout: '🚪 Đăng xuất',
+    totalCustomers: 'Tổng khách hàng',
+    hotCustomers: 'Khách nóng',
+    todayReminders: 'Nhắc hẹn hôm nay',
+    closedCustomers: 'Đã chốt',
+    areaInterest: '📍 Khu vực quan tâm',
+    statusDist: '📊 Phân bổ trạng thái',
+    exportData: '💾 Xuất dữ liệu',
+    exportCSV: 'Xuất CSV',
+    exportTXT: 'Xuất TXT',
+    csvSub: 'Mở bằng Excel',
+    txtSub: 'Văn bản đầy đủ',
+    // Auth Screen
+    loginTab: 'Đăng Nhập',
+    regTab: 'Đăng Ký Mới',
+    loginTitle: 'Đăng Nhập Tài Khoản',
+    regTitle: 'Đăng Ký Tài Khoản',
+    forgotTitle: 'Quên Mật Khẩu',
+    labelEmail: 'Email (@gmail.com) *',
+    labelPassword: 'Mật khẩu *',
+    labelFullName: 'Họ và Tên *',
+    labelMinPassword: 'Mật khẩu (tối thiểu 6 ký tự) *',
+    forgotLink: 'Quên mật khẩu?',
+    btnLoginSubmit: 'Đăng Nhập Ngay ➔',
+    btnRegSubmit: 'Tạo Tài Khoản Mới ➔',
+    btnForgotSubmit: 'Gửi Link Khôi Phục ✉️',
+    alreadyHaveAccount: 'Đã có tài khoản?',
+    backToLogin: '← Quay lại Đăng nhập',
+    gmailOnlyNotice: '⚠️ Chỉ chấp nhận tài khoản có đuôi @gmail.com',
+    forgotHelpText: 'Nhập địa chỉ Gmail của bạn. Chúng tôi sẽ gửi link đặt lại mật khẩu mới vào hòm thư.',
+    // Greetings
+    goodMorning: 'Chào buổi sáng',
+    goodAfternoon: 'Chào buổi chiều',
+    goodEvening: 'Chào buổi tối',
+    // Drawer titles
+    titleAddCustomer: 'Thêm Khách Hàng',
+    titleEditCustomer: 'Sửa Khách Hàng',
+    titleAddRental: 'Thêm Khách Thuê',
+    titleEditRental: 'Sửa Khách Thuê',
+    titleRentalPage: '🔑 Khách Cho Thuê'
+  },
+  en: {
+    langName: '🇬🇧 English',
+    appName: '⚡ Green CRM',
+    cloudTitle: '☁️ Supabase Cloud',
+    navHome: 'Buy/Invest',
+    navRental: 'Rentals',
+    navReminders: 'Reminders',
+    navReports: 'Reports',
+    // Filters & status
+    filterAll: 'All',
+    statusHot: '🔥 Hot',
+    statusWarm: '🌤 Warm',
+    statusCold: '❄️ Cold',
+    statusClosed: '✅ Closed',
+    statusRented: '✅ Rented',
+    statusLost: '🚫 Lost',
+    sortNew: '🆕 Newest',
+    sortOld: '📅 Oldest',
+    searchPlaceholder: 'Name, phone, district...',
+    noCustomers: 'No customers yet',
+    noRentals: 'No rental clients yet',
+    notFound: 'No results found',
+    addPrompt: 'Tap ＋ to add a new client',
+    tryOtherKeyword: 'Try searching with other keywords',
+    // Person
+    personEasy: '😊 Easy',
+    personNormal: '😐 Moderate',
+    personHard: '😤 Demanding',
+    // Reminders page
+    remindersTitle: '🔔 Reminders',
+    noReminders: 'No pending reminders!',
+    overdueTag: 'OVERDUE',
+    todayTag: 'TODAY',
+    remindPrefix: 'Remind: ',
+    overduePrefix: 'Overdue: ',
+    btnDone: 'Done',
+    // Reports page
+    reportsTitle: '📊 Reports',
+    userAccount: '👤 Account:',
+    btnLogout: '🚪 Logout',
+    totalCustomers: 'Total Clients',
+    hotCustomers: 'Hot Leads',
+    todayReminders: 'Today Reminders',
+    closedCustomers: 'Closed Deals',
+    areaInterest: '📍 Area of Interest',
+    statusDist: '📊 Status Distribution',
+    exportData: '💾 Export Data',
+    exportCSV: 'Export CSV',
+    exportTXT: 'Export TXT',
+    csvSub: 'Open with Excel',
+    txtSub: 'Plain Text File',
+    // Auth Screen
+    loginTab: 'Sign In',
+    regTab: 'Sign Up',
+    loginTitle: 'Sign In to Account',
+    regTitle: 'Create New Account',
+    forgotTitle: 'Forgot Password',
+    labelEmail: 'Email (@gmail.com) *',
+    labelPassword: 'Password *',
+    labelFullName: 'Full Name *',
+    labelMinPassword: 'Password (min 6 chars) *',
+    forgotLink: 'Forgot password?',
+    btnLoginSubmit: 'Sign In Now ➔',
+    btnRegSubmit: 'Create Account ➔',
+    btnForgotSubmit: 'Send Recovery Link ✉️',
+    alreadyHaveAccount: 'Already have an account?',
+    backToLogin: '← Back to Sign In',
+    gmailOnlyNotice: '⚠️ Only @gmail.com accounts are supported',
+    forgotHelpText: 'Enter your Gmail address. We will send a secure password reset link to your inbox.',
+    // Greetings
+    goodMorning: 'Good morning',
+    goodAfternoon: 'Good afternoon',
+    goodEvening: 'Good evening',
+    // Drawer titles
+    titleAddCustomer: 'Add Client',
+    titleEditCustomer: 'Edit Client',
+    titleAddRental: 'Add Rental Client',
+    titleEditRental: 'Edit Rental Client',
+    titleRentalPage: '🔑 Rental Clients'
+  },
+  zh: {
+    langName: '🇨🇳 中文',
+    appName: '⚡ 绿色 CRM',
+    cloudTitle: '☁️ Supabase 云端',
+    navHome: '买房/投资',
+    navRental: '房产租赁',
+    navReminders: '跟进提醒',
+    navReports: '数据报表',
+    // Filters & status
+    filterAll: '全部',
+    statusHot: '🔥 高意向',
+    statusWarm: '🌤 中意向',
+    statusCold: '❄️ 潜在客',
+    statusClosed: '✅ 已成交',
+    statusRented: '✅ 已出租',
+    statusLost: '🚫 已流失',
+    sortNew: '🆕 最新',
+    sortOld: '📅 最早',
+    searchPlaceholder: '姓名、电话、区域...',
+    noCustomers: '暂无客户数据',
+    noRentals: '暂无租客数据',
+    notFound: '未找到相关数据',
+    addPrompt: '点击 ＋ 按钮添加新客户',
+    tryOtherKeyword: '尝试其他搜索关键词',
+    // Person
+    personEasy: '😊 随和',
+    personNormal: '😐 普通',
+    personHard: '😤 严格',
+    // Reminders page
+    remindersTitle: '🔔 跟进提醒',
+    noReminders: '暂无待办提醒！',
+    overdueTag: '已逾期',
+    todayTag: '今日',
+    remindPrefix: '提醒: ',
+    overduePrefix: '逾期: ',
+    btnDone: '完成',
+    // Reports page
+    reportsTitle: '📊 数据报表',
+    userAccount: '👤 登录账号:',
+    btnLogout: '🚪 退出登录',
+    totalCustomers: '客户总数',
+    hotCustomers: '高意向客户',
+    todayReminders: '今日待办',
+    closedCustomers: '已成交数',
+    areaInterest: '📍 热门关注区域',
+    statusDist: '📊 客户状态分布',
+    exportData: '💾 导出数据',
+    exportCSV: '导出 CSV',
+    exportTXT: '导出 TXT',
+    csvSub: 'Excel 表格打开',
+    txtSub: '完整文本格式',
+    // Auth Screen
+    loginTab: '账号登录',
+    regTab: '注册新账号',
+    loginTitle: '登录您的账号',
+    regTitle: '注册新账号',
+    forgotTitle: '找回密码',
+    labelEmail: '电子邮箱 (@gmail.com) *',
+    labelPassword: '密码 *',
+    labelFullName: '您的姓名 *',
+    labelMinPassword: '登录密码（至少 6 位）*',
+    forgotLink: '忘记密码？',
+    btnLoginSubmit: '立即登录 ➔',
+    btnRegSubmit: '注册并进入 ➔',
+    btnForgotSubmit: '发送重置链接 ✉️',
+    alreadyHaveAccount: '已有账号？',
+    backToLogin: '← 返回登录',
+    gmailOnlyNotice: '⚠️ 仅支持 @gmail.com 邮箱账号',
+    forgotHelpText: '请输入您的 Gmail 邮箱地址，我们将发送密码重置链接至您的邮箱。',
+    // Greetings
+    goodMorning: '早上好',
+    goodAfternoon: '下午好',
+    goodEvening: '晚上好',
+    // Drawer titles
+    titleAddCustomer: '添加客户',
+    titleEditCustomer: '编辑客户',
+    titleAddRental: '添加租客',
+    titleEditRental: '编辑租客',
+    titleRentalPage: '🔑 房产租赁客户'
+  }
+};
+
+let currentLang = localStorage.getItem('crm_lang') || 'vi';
+
+function t(key) {
+  const dict = I18N[currentLang] || I18N.vi;
+  return dict[key] !== undefined ? dict[key] : (I18N.vi[key] || key);
+}
+
+function toggleLangMenu(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isShow = el.classList.contains('show');
+  document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('show'));
+  if (!isShow) el.classList.add('show');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.lang-btn') && !e.target.closest('.lang-dropdown')) {
+    document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('show'));
+  }
+});
+
+function changeLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('crm_lang', lang);
+  document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('show'));
+  updateAuthScreenTexts();
+  updateNavLabels();
+  render();
+}
+
+function updateNavLabels() {
+  const nHome = document.querySelector('#nav-home .nav-label');
+  const nRental = document.querySelector('#nav-rental .nav-label');
+  const nReminders = document.querySelector('#nav-reminders .nav-label');
+  const nDash = document.querySelector('#nav-dashboard .nav-label');
+  if (nHome) nHome.textContent = t('navHome');
+  if (nRental) nRental.textContent = t('navRental');
+  if (nReminders) nReminders.textContent = t('navReminders');
+  if (nDash) nDash.textContent = t('navReports');
+}
+
+function updateAuthScreenTexts() {
+  const authBtn = document.getElementById('authLangBtn');
+  if (authBtn) authBtn.textContent = I18N[currentLang].langName + ' ▾';
+  const tabL = document.getElementById('tabLogin');
+  const tabR = document.getElementById('tabRegister');
+  if (tabL) tabL.textContent = t('loginTab');
+  if (tabR) tabR.textContent = t('regTab');
+  
+  const fLogin = document.getElementById('formLogin');
+  const isLogin = fLogin && fLogin.style.display !== 'none';
+  const title = document.getElementById('authTitle');
+  if (title) title.textContent = isLogin ? t('loginTitle') : t('regTitle');
+  
+  const btnL = document.getElementById('btnLoginSubmit');
+  if (btnL) btnL.textContent = t('btnLoginSubmit');
+  const btnR = document.getElementById('btnRegSubmit');
+  if (btnR) btnR.textContent = t('btnRegSubmit');
+  const btnF = document.getElementById('btnForgotSubmit');
+  if (btnF) btnF.textContent = t('btnForgotSubmit');
+}
+
+function renderLangSelector(dropId) {
+  const name = I18N[currentLang].langName;
+  return `
+    <div style="position:relative;display:inline-block">
+      <div class="lang-btn" onclick="toggleLangMenu('${dropId}')">${name} ▾</div>
+      <div class="lang-dropdown" id="${dropId}">
+        <div class="lang-opt ${currentLang==='vi'?'active':''}" onclick="changeLang('vi')">🇻🇳 Tiếng Việt</div>
+        <div class="lang-opt ${currentLang==='en'?'active':''}" onclick="changeLang('en')">🇬🇧 English</div>
+        <div class="lang-opt ${currentLang==='zh'?'active':''}" onclick="changeLang('zh')">🇨🇳 中文</div>
+      </div>
+    </div>
+  `;
+}
+// ══════════════════════════════════════════════════════
 // DATA LAYER
 // ══════════════════════════════════════════════════════
 const DB = {
@@ -1008,14 +1366,15 @@ function renderHome() {
   const now = new Date();
 
   const cards = customers.length === 0
-    ? `<div class="empty-state"><div class="icon">${homeSearch ? '🔍' : '🏠'}</div><h3>${homeSearch ? 'Không tìm thấy' : 'Chưa có khách hàng'}</h3><p>${homeSearch ? 'Thử từ khoá khác' : 'Nhấn nút <strong>＋</strong> để thêm'}</p></div>`
+    ? `<div class="empty-state"><div class="icon">${homeSearch ? '🔍' : '🏠'}</div><h3>${homeSearch ? t('notFound') : t('noCustomers')}</h3><p>${homeSearch ? t('tryOtherKeyword') : t('addPrompt')}</p></div>`
     : customers.map(c => renderCustomerCard(c, reminders, now)).join('');
 
   return `
     <div class="topbar">
-      <div class="topbar-title">⚡ Xanh CRM</div>
+      <div class="topbar-title">${t('appName')}</div>
       <div class="topbar-right">
-        <div class="notif-btn" onclick="openCloudConfig()" title="Đồng bộ Supabase Cloud">
+        ${renderLangSelector('homeLangDrop')}
+        <div class="notif-btn" onclick="openCloudConfig()" title="${t('cloudTitle')}">
           ☁️
           <span class="cloud-dot" style="position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#64748b;border:1.5px solid var(--bg)"></span>
         </div>
@@ -1026,26 +1385,26 @@ function renderHome() {
       </div>
     </div>
     <div class="filter-row">
-      <div class="pill pill-all ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">Tất cả (${DB.customers.length})</div>
-      <div class="pill pill-hot ${currentFilter==='hot'?'active':''}" onclick="setFilter('hot')">🔥 Nóng</div>
-      <div class="pill pill-warm ${currentFilter==='warm'?'active':''}" onclick="setFilter('warm')">🌤 Ấm</div>
-      <div class="pill pill-cold ${currentFilter==='cold'?'active':''}" onclick="setFilter('cold')">❄️ Lạnh</div>
-      <div class="pill pill-closed ${currentFilter==='closed'?'active':''}" onclick="setFilter('closed')">✅ Chốt</div>
-      <div class="pill pill-lost ${currentFilter==='lost'?'active':''}" onclick="setFilter('lost')">🚫 Mất KH</div>
+      <div class="pill pill-all ${currentFilter==='all'?'active':''}" onclick="setFilter('all')">${t('filterAll')} (${DB.customers.length})</div>
+      <div class="pill pill-hot ${currentFilter==='hot'?'active':''}" onclick="setFilter('hot')">${t('statusHot')}</div>
+      <div class="pill pill-warm ${currentFilter==='warm'?'active':''}" onclick="setFilter('warm')">${t('statusWarm')}</div>
+      <div class="pill pill-cold ${currentFilter==='cold'?'active':''}" onclick="setFilter('cold')">${t('statusCold')}</div>
+      <div class="pill pill-closed ${currentFilter==='closed'?'active':''}" onclick="setFilter('closed')">${t('statusClosed')}</div>
+      <div class="pill pill-lost ${currentFilter==='lost'?'active':''}" onclick="setFilter('lost')">${t('statusLost')}</div>
     </div>
     <div class="search-sort-bar">
       <div class="inline-search">
         <span class="si-icon">🔍</span>
         <input type="text"
-          placeholder="Tên, SĐT, khu vực..."
+          placeholder="${t('searchPlaceholder')}"
           value="${homeSearch}"
           oninput="homeSearch=this.value; renderInPlace('home')"
         />
         ${homeSearch ? `<span class="si-clear" onclick="homeSearch=''; renderInPlace('home')">✕</span>` : ''}
       </div>
       <div class="sort-btn-group">
-        <div class="sort-btn ${homeSort==='newest'?'active':''}" onclick="homeSort='newest'; renderInPlace('home')">🆕<span>Mới</span></div>
-        <div class="sort-btn ${homeSort==='oldest'?'active':''}" onclick="homeSort='oldest'; renderInPlace('home')">📅<span>Cũ</span></div>
+        <div class="sort-btn ${homeSort==='newest'?'active':''}" onclick="homeSort='newest'; renderInPlace('home')">🆕<span>${t('sortNew')}</span></div>
+        <div class="sort-btn ${homeSort==='oldest'?'active':''}" onclick="homeSort='oldest'; renderInPlace('home')">📅<span>${t('sortOld')}</span></div>
       </div>
     </div>
     <div class="cards-list">${cards}</div>
@@ -1057,8 +1416,18 @@ function renderCustomerCard(c, reminders, now) {
   const logs = DB.logs.filter(l => l.customerId === c.id).sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   const lastLog = logs[0];
   const reminder = reminders.filter(r => r.customerId === c.id && !r.done).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time))[0];
-  const statusMap = {hot:{label:'🔥 Nóng',cls:'hot'},warm:{label:'🌤 Ấm',cls:'warm'},cold:{label:'❄️ Lạnh',cls:'cold'},closed:{label:'✅ Chốt',cls:'closed'},lost:{label:'🚫 Mất KH',cls:'lost'}};
-  const personMap = {easy:{label:'😊 Dễ tính',cls:'easy'},normal:{label:'😐 Bình thường',cls:'normal'},hard:{label:'😤 Khó tính',cls:'hard'}};
+  const statusMap = {
+    hot:{label:t('statusHot'),cls:'hot'},
+    warm:{label:t('statusWarm'),cls:'warm'},
+    cold:{label:t('statusCold'),cls:'cold'},
+    closed:{label:t('statusClosed'),cls:'closed'},
+    lost:{label:t('statusLost'),cls:'lost'}
+  };
+  const personMap = {
+    easy:{label:t('personEasy'),cls:'easy'},
+    normal:{label:t('personNormal'),cls:'normal'},
+    hard:{label:t('personHard'),cls:'hard'}
+  };
   const s = statusMap[c.status] || statusMap.cold;
   const p = personMap[c.personality] || null;
   const isReminderToday = reminder && reminder.date === today();
@@ -1105,8 +1474,11 @@ function renderReminders() {
 
   if (reminders.length === 0) {
     return `
-      <div class="topbar"><div class="topbar-title">🔔 Nhắc Hẹn</div></div>
-      <div class="no-reminders"><div style="font-size:48px;margin-bottom:12px">✅</div><div>Không có nhắc hẹn nào!</div></div>
+      <div class="topbar">
+        <div class="topbar-title">${t('remindersTitle')}</div>
+        <div class="topbar-right">${renderLangSelector('remLangDrop')}</div>
+      </div>
+      <div class="no-reminders"><div style="font-size:48px;margin-bottom:12px">✅</div><div>${t('noReminders')}</div></div>
     `;
   }
 
@@ -1119,8 +1491,8 @@ function renderReminders() {
         <div class="reminder-time-col">
           <div class="reminder-time">${r.time||'—'}</div>
           <div class="reminder-date">${formatDateShort(r.date)}</div>
-          ${isPast ? '<div style="font-size:9px;color:var(--hot);font-weight:700;margin-top:2px">QUÁ HẠN</div>' : ''}
-          ${isToday ? '<div style="font-size:9px;color:var(--primary);font-weight:700;margin-top:2px">HÔM NAY</div>' : ''}
+          ${isPast ? `<div style="font-size:9px;color:var(--hot);font-weight:700;margin-top:2px">${t('overdueTag')}</div>` : ''}
+          ${isToday ? `<div style="font-size:9px;color:var(--primary);font-weight:700;margin-top:2px">${t('todayTag')}</div>` : ''}
         </div>
         <div class="reminder-info">
           <div class="reminder-name">${c.name}</div>
@@ -1136,7 +1508,10 @@ function renderReminders() {
   }).join('');
 
   return `
-    <div class="topbar"><div class="topbar-title">🔔 Nhắc Hẹn (${reminders.length})</div></div>
+    <div class="topbar">
+      <div class="topbar-title">${t('remindersTitle')} (${reminders.length})</div>
+      <div class="topbar-right">${renderLangSelector('remLangDrop')}</div>
+    </div>
     <div class="reminders-list">${items}</div>
   `;
 }
@@ -1158,7 +1533,7 @@ function renderDashboard() {
   const todayStr = today();
   const now = new Date();
   const hours = now.getHours();
-  const greeting = hours < 12 ? 'Chào buổi sáng' : hours < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+  const greeting = hours < 12 ? t('goodMorning') : hours < 18 ? t('goodAfternoon') : t('goodEvening');
 
   const hot = customers.filter(c=>c.status==='hot').length;
   const warm = customers.filter(c=>c.status==='warm').length;
@@ -1194,56 +1569,59 @@ function renderDashboard() {
   `).join('');
 
   return `
-    <div class="topbar"><div class="topbar-title">📊 Báo Cáo</div></div>
+    <div class="topbar">
+      <div class="topbar-title">${t('reportsTitle')}</div>
+      <div class="topbar-right">${renderLangSelector('dashLangDrop')}</div>
+    </div>
     <div class="dashboard">
       <div class="dash-greeting">${greeting}! 👋</div>
       <div class="dash-date">${formatDateLong(todayStr)}</div>
 
       <div class="stat-card" style="margin-bottom:16px;background:rgba(0,240,224,0.08);border-color:rgba(0,240,224,0.3);display:flex;justify-content:space-between;align-items:center;padding:12px 14px">
         <div>
-          <div style="font-size:11px;color:var(--text3)">👤 Tài khoản:</div>
+          <div style="font-size:11px;color:var(--text3)">${t('userAccount')}</div>
           <div style="font-size:13px;font-weight:700;color:#00f0e0">${currentUser ? currentUser.email : 'Chưa đăng nhập'}</div>
         </div>
-        <button onclick="handleLogout()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:var(--hot);border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">🚪 Đăng xuất</button>
+        <button onclick="handleLogout()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:var(--hot);border-radius:10px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">${t('btnLogout')}</button>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon">👥</div>
           <div class="stat-num">${customers.length}</div>
-          <div class="stat-label">Tổng khách hàng</div>
+          <div class="stat-label">${t('totalCustomers')}</div>
         </div>
         <div class="stat-card accent-hot">
           <div class="stat-icon">🔥</div>
           <div class="stat-num" style="color:var(--hot)">${hot}</div>
-          <div class="stat-label">Khách nóng</div>
+          <div class="stat-label">${t('hotCustomers')}</div>
         </div>
         <div class="stat-card accent-warm">
           <div class="stat-icon">🔔</div>
           <div class="stat-num" style="color:var(--warm)">${todayRem.length}</div>
-          <div class="stat-label">Nhắc hẹn hôm nay</div>
+          <div class="stat-label">${t('todayReminders')}</div>
         </div>
         <div class="stat-card accent-closed">
           <div class="stat-icon">✅</div>
           <div class="stat-num" style="color:var(--closed)">${closed}</div>
-          <div class="stat-label">Đã chốt</div>
+          <div class="stat-label">${t('closedCustomers')}</div>
         </div>
       </div>
 
       ${overdue.length > 0 ? `<div style="background:rgba(239,68,68,0.1);border:1.5px solid rgba(239,68,68,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--hot)">⚠️ Bạn có <strong>${overdue.length}</strong> nhắc hẹn đã quá hạn!</div>` : ''}
 
-      ${todayRem.length > 0 ? `<div class="dash-section-title">⏰ Nhắc hẹn hôm nay</div><div class="today-reminders">${todayItems}</div>` : ''}
+      ${todayRem.length > 0 ? `<div class="dash-section-title">⏰ ${t('todayReminders')}</div><div class="today-reminders">${todayItems}</div>` : ''}
 
       ${topAreas.length > 0 ? `
-        <div class="dash-section-title">📍 Khu vực quan tâm</div>
+        <div class="dash-section-title">${t('areaInterest')}</div>
         <div class="stat-card" style="margin-bottom:16px">
           <div class="district-chart">${areaChart}</div>
         </div>
       ` : ''}
 
-      <div class="dash-section-title">📊 Phân bổ trạng thái</div>
+      <div class="dash-section-title">${t('statusDist')}</div>
       <div class="stat-card">
-        ${[['hot','🔥 Nóng',hot,'var(--hot)'],['warm','🌤 Ấm',warm,'var(--warm)'],['cold','❄️ Lạnh',customers.filter(c=>c.status==='cold').length,'var(--cold)'],['closed','✅ Chốt',closed,'var(--closed)'],['lost','🚫 Mất KH',customers.filter(c=>c.status==='lost').length,'var(--lost)']].map(([k,label,n,color])=>`
+        ${[['hot',t('statusHot'),hot,'var(--hot)'],['warm',t('statusWarm'),warm,'var(--warm)'],['cold',t('statusCold'),customers.filter(c=>c.status==='cold').length,'var(--cold)'],['closed',t('statusClosed'),closed,'var(--closed)'],['lost',t('statusLost'),customers.filter(c=>c.status==='lost').length,'var(--lost)']].map(([k,label,n,color])=>`
           <div class="district-row" style="margin-bottom:10px">
             <div class="district-name" style="font-size:13px">${label}</div>
             <div class="district-bar-wrap"><div class="district-bar" style="width:${customers.length?Math.round(n/customers.length*100):0}%;background:${color};opacity:0.8"></div></div>
@@ -1252,17 +1630,17 @@ function renderDashboard() {
         `).join('')}
       </div>
 
-      <div class="dash-section-title" style="margin-top:20px">💾 Xuất dữ liệu</div>
+      <div class="dash-section-title" style="margin-top:20px">${t('exportData')}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
         <button onclick="exportCSV()" style="background:rgba(16,185,129,0.12);border:1.5px solid rgba(16,185,129,0.35);color:var(--closed);border-radius:14px;padding:14px 10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s">
           <span style="font-size:24px">📊</span>
-          <span>Xuất CSV</span>
-          <span style="font-size:10px;font-weight:400;opacity:0.7">Mở bằng Excel</span>
+          <span>${t('exportCSV')}</span>
+          <span style="font-size:10px;font-weight:400;opacity:0.7">${t('csvSub')}</span>
         </button>
         <button onclick="exportTXT()" style="background:rgba(96,165,250,0.12);border:1.5px solid rgba(96,165,250,0.35);color:var(--cold);border-radius:14px;padding:14px 10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all 0.2s">
           <span style="font-size:24px">📄</span>
-          <span>Xuất TXT</span>
-          <span style="font-size:10px;font-weight:400;opacity:0.7">File văn bản nhẹ</span>
+          <span>${t('exportTXT')}</span>
+          <span style="font-size:10px;font-weight:400;opacity:0.7">${t('txtSub')}</span>
         </button>
       </div>
       <div style="background:var(--bg2);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--text3);line-height:1.6">
@@ -1902,6 +2280,7 @@ function showAuthScreen() {
   if (app) app.style.display = 'none';
   const nav = document.querySelector('.bottom-nav');
   if (nav) nav.style.display = 'none';
+  updateAuthScreenTexts();
 }
 
 function hideAuthScreen() {
@@ -1934,19 +2313,19 @@ function switchAuthMode(mode) {
   if (mode === 'login') {
     fLogin.style.display = 'block';
     tLogin.classList.add('active');
-    title.textContent = 'Đăng Nhập Tài Khoản';
+    title.textContent = t('loginTitle');
     sub.textContent = '';
     sub.style.display = 'none';
   } else if (mode === 'register') {
     fReg.style.display = 'block';
     tReg.classList.add('active');
-    title.textContent = 'Đăng Ký Tài Khoản';
+    title.textContent = t('regTitle');
     sub.textContent = '';
     sub.style.display = 'none';
   } else if (mode === 'forgot') {
     fForgot.style.display = 'block';
     tabs.style.display = 'none';
-    title.textContent = 'Quên Mật Khẩu';
+    title.textContent = t('forgotTitle');
     sub.textContent = '';
     sub.style.display = 'none';
   }
@@ -2247,6 +2626,8 @@ async function syncFromCloud(silent = false) {
 // INIT
 // ══════════════════════════════════════════════════════
 initSampleData();
+updateNavLabels();
+updateAuthScreenTexts();
 initSupabase();
 render();
 
@@ -2312,11 +2693,21 @@ function renderRental() {
   }
 
   const typeMap = { apartment:'🏢 Căn hộ', house:'🏠 Nhà phố', office:'💼 Văn phòng', shophouse:'🏪 Mặt bằng', villa:'🏰 Biệt thự' };
-  const statusMap = { hot:{label:'🔥 Nóng',cls:'hot'}, warm:{label:'🌤 Ấm',cls:'warm'}, cold:{label:'❄️ Lạnh',cls:'cold'}, closed:{label:'✅ Đã thuê',cls:'closed'}, lost:{label:'🚫 Mất KH',cls:'lost'} };
-  const personMap = { easy:{label:'😊 Dễ tính',cls:'easy'}, normal:{label:'😐 Bình thường',cls:'normal'}, hard:{label:'😤 Khó tính',cls:'hard'} };
+  const statusMap = {
+    hot:{label:t('statusHot'),cls:'hot'},
+    warm:{label:t('statusWarm'),cls:'warm'},
+    cold:{label:t('statusCold'),cls:'cold'},
+    closed:{label:t('statusRented'),cls:'closed'},
+    lost:{label:t('statusLost'),cls:'lost'}
+  };
+  const personMap = {
+    easy:{label:t('personEasy'),cls:'easy'},
+    normal:{label:t('personNormal'),cls:'normal'},
+    hard:{label:t('personHard'),cls:'hard'}
+  };
 
   const cards = rentals.length === 0
-    ? `<div class="empty-state"><div class="icon">${rentalSearch ? '🔍' : '🔑'}</div><h3>${rentalSearch ? 'Không tìm thấy' : 'Chưa có khách thuê'}</h3><p>${rentalSearch ? 'Thử từ khoá khác' : 'Nhấn <strong>＋</strong> để thêm'}</p></div>`
+    ? `<div class="empty-state"><div class="icon">${rentalSearch ? '🔍' : '🔑'}</div><h3>${rentalSearch ? t('notFound') : t('noRentals')}</h3><p>${rentalSearch ? t('tryOtherKeyword') : t('addPrompt')}</p></div>`
     : rentals.map(r => {
         const s = statusMap[r.status] || statusMap.cold;
         const p = personMap[r.personality] || null;
@@ -2338,7 +2729,7 @@ function renderRental() {
             ${r.note ? `<div class="card-note">${r.note}</div>` : ''}
             <div class="card-footer">
               <div>
-                ${reminder ? `<div class="reminder-tag ${isOverdue?'tag-overdue':''}">${isOverdue?'⚠️':'⏰'} ${isOverdue?'Quá hạn: ':'Nhắc: '}${formatDateShort(reminder.date)} ${reminder.time}</div>` : ''}
+                ${reminder ? `<div class="reminder-tag ${isOverdue?'tag-overdue':''}">${isOverdue?'⚠️':'⏰'} ${isOverdue?t('overduePrefix'):t('remindPrefix')}${formatDateShort(reminder.date)} ${reminder.time}</div>` : ''}
               </div>
               <div class="card-actions">
                 <button class="action-btn action-btn-call" onclick="event.stopPropagation(); callPhone('${r.phone}')">📞</button>
@@ -2351,9 +2742,10 @@ function renderRental() {
 
   return `
     <div class="topbar">
-      <div class="topbar-title">🔑 Khách Cho Thuê</div>
+      <div class="topbar-title">${t('titleRentalPage')}</div>
       <div class="topbar-right">
-        <div class="notif-btn" onclick="openCloudConfig()" title="Đồng bộ Supabase Cloud">
+        ${renderLangSelector('rentalLangDrop')}
+        <div class="notif-btn" onclick="openCloudConfig()" title="${t('cloudTitle')}">
           ☁️
           <span class="cloud-dot" style="position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#64748b;border:1.5px solid var(--bg)"></span>
         </div>
@@ -2361,25 +2753,25 @@ function renderRental() {
       </div>
     </div>
     <div class="filter-row">
-      <div class="pill pill-all ${rentalFilter==='all'?'active':''}" onclick="setRentalFilter('all')">Tất cả (${RDB.rentals.length})</div>
-      <div class="pill pill-hot ${rentalFilter==='hot'?'active':''}" onclick="setRentalFilter('hot')">🔥 Nóng</div>
-      <div class="pill pill-warm ${rentalFilter==='warm'?'active':''}" onclick="setRentalFilter('warm')">🌤 Ấm</div>
-      <div class="pill pill-cold ${rentalFilter==='cold'?'active':''}" onclick="setRentalFilter('cold')">❄️ Lạnh</div>
-      <div class="pill pill-closed ${rentalFilter==='closed'?'active':''}" onclick="setRentalFilter('closed')">✅ Đã thuê</div>
+      <div class="pill pill-all ${rentalFilter==='all'?'active':''}" onclick="setRentalFilter('all')">${t('filterAll')} (${RDB.rentals.length})</div>
+      <div class="pill pill-hot ${rentalFilter==='hot'?'active':''}" onclick="setRentalFilter('hot')">${t('statusHot')}</div>
+      <div class="pill pill-warm ${rentalFilter==='warm'?'active':''}" onclick="setRentalFilter('warm')">${t('statusWarm')}</div>
+      <div class="pill pill-cold ${rentalFilter==='cold'?'active':''}" onclick="setRentalFilter('cold')">${t('statusCold')}</div>
+      <div class="pill pill-closed ${rentalFilter==='closed'?'active':''}" onclick="setRentalFilter('closed')">${t('statusRented')}</div>
     </div>
     <div class="search-sort-bar">
       <div class="inline-search">
         <span class="si-icon">🔍</span>
         <input type="text"
-          placeholder="Tên, SĐT, khu vực..."
+          placeholder="${t('searchPlaceholder')}"
           value="${rentalSearch}"
           oninput="rentalSearch=this.value; renderInPlace('rental')"
         />
         ${rentalSearch ? `<span class="si-clear" onclick="rentalSearch=''; renderInPlace('rental')">✕</span>` : ''}
       </div>
       <div class="sort-btn-group">
-        <div class="sort-btn ${rentalSort==='newest'?'active':''}" onclick="rentalSort='newest'; renderInPlace('rental')">🆕<span>Mới</span></div>
-        <div class="sort-btn ${rentalSort==='oldest'?'active':''}" onclick="rentalSort='oldest'; renderInPlace('rental')">📅<span>Cũ</span></div>
+        <div class="sort-btn ${rentalSort==='newest'?'active':''}" onclick="rentalSort='newest'; renderInPlace('rental')">🆕<span>${t('sortNew')}</span></div>
+        <div class="sort-btn ${rentalSort==='oldest'?'active':''}" onclick="rentalSort='oldest'; renderInPlace('rental')">📅<span>${t('sortOld')}</span></div>
       </div>
     </div>
     <div class="cards-list">${cards}</div>
