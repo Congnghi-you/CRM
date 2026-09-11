@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #042020;
@@ -300,6 +301,37 @@
 
 <!-- OVERLAY -->
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER: Supabase Cloud Config -->
+<div class="drawer" id="drawerCloud">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title">☁️ Kết Nối Supabase Cloud</div>
+  <div class="drawer-body">
+    <div style="background:rgba(0,210,196,0.1);border:1.5px solid rgba(0,210,196,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;line-height:1.6;color:var(--text2)">
+      🛡️ Dữ liệu sẽ được lưu an toàn trên Cloud của tài khoản <strong>congnghi1@gmail.com</strong>.<br/>
+      Đổi máy, hư điện thoại chỉ cần vào lại web là còn nguyên 100%!
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🔑 Thông số kết nối</div>
+      <div class="field">
+        <label>Project URL *</label>
+        <input type="url" id="sbUrl" placeholder="https://xxxx.supabase.co" />
+      </div>
+      <div class="field">
+        <label>Anon Public Key *</label>
+        <textarea id="sbKey" style="min-height:70px;font-size:12px" placeholder="eyJhbGciOi..."></textarea>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;font-size:12px;color:var(--text3)">
+      💡 <em>Lấy tại: Supabase Dashboard → Project "CRM" → Settings → API</em>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveSupabaseConfig()">⚡ Kết nối & Đồng bộ ngay</button>
+    <button class="btn btn-ghost" onclick="syncFromCloud()" id="btnSyncFromCloud" style="display:none;margin-top:10px">🔄 Tải dữ liệu từ Cloud về máy này</button>
+  </div>
+</div>
 
 <!-- DRAWER: Add/Edit Customer -->
 <div class="drawer" id="drawerCustomer">
@@ -829,6 +861,10 @@ function renderHome() {
     <div class="topbar">
       <div class="topbar-title">🏡 CRM BĐS</div>
       <div class="topbar-right">
+        <div class="notif-btn" onclick="openCloudConfig()" title="Đồng bộ Supabase Cloud">
+          ☁️
+          <span class="cloud-dot" style="position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#64748b;border:1.5px solid var(--bg)"></span>
+        </div>
         <div class="notif-btn" onclick="navigate('reminders')">
           🔔
           <div class="notif-badge" id="topBadge" style="display:none"></div>
@@ -1372,6 +1408,7 @@ function saveCustomer() {
   closeDrawer();
   showToast(id ? '✅ Đã cập nhật khách hàng' : '✅ Đã thêm khách hàng mới', 'success');
   render();
+  syncAllToCloud();
 }
 
 function deleteCustomer() {
@@ -1381,6 +1418,11 @@ function deleteCustomer() {
   DB.customers = DB.customers.filter(c => c.id !== id);
   DB.logs = DB.logs.filter(l => l.customerId !== id);
   DB.reminders = DB.reminders.filter(r => r.customerId !== id);
+  if (sbClient) {
+    sbClient.from('customers').delete().eq('id', id);
+    sbClient.from('call_logs').delete().eq('customer_id', id);
+    sbClient.from('reminders').delete().eq('customer_id', id);
+  }
   closeDrawer();
   showToast('🗑 Đã xóa khách hàng', 'error');
   render();
@@ -1656,9 +1698,177 @@ function updateBadge() {
 }
 
 // ══════════════════════════════════════════════════════
+// SUPABASE CLIENT & CLOUD SYNC
+// ══════════════════════════════════════════════════════
+let sbClient = null;
+
+function getSbConfig() {
+  return {
+    url: localStorage.getItem('crm_sb_url') || '',
+    key: localStorage.getItem('crm_sb_key') || ''
+  };
+}
+
+function initSupabase() {
+  const cfg = getSbConfig();
+  if (cfg.url && cfg.key && window.supabase) {
+    try {
+      sbClient = window.supabase.createClient(cfg.url, cfg.key);
+      updateCloudDot(true);
+      return true;
+    } catch(e) {
+      console.warn('Supabase init error:', e);
+      updateCloudDot(false);
+      return false;
+    }
+  }
+  updateCloudDot(false);
+  return false;
+}
+
+function updateCloudDot(connected) {
+  setTimeout(() => {
+    document.querySelectorAll('.cloud-dot').forEach(el => {
+      el.style.background = connected ? '#10b981' : '#64748b';
+      el.title = connected ? 'Cloud Supabase: Đã kết nối' : 'Cloud Supabase: Chưa kết nối';
+    });
+  }, 50);
+}
+
+function openCloudConfig() {
+  const cfg = getSbConfig();
+  document.getElementById('sbUrl').value = cfg.url;
+  document.getElementById('sbKey').value = cfg.key;
+  const btnSync = document.getElementById('btnSyncFromCloud');
+  if (btnSync) btnSync.style.display = cfg.url ? 'block' : 'none';
+  openDrawer('drawerCloud');
+}
+
+async function saveSupabaseConfig() {
+  const url = document.getElementById('sbUrl').value.trim();
+  const key = document.getElementById('sbKey').value.trim();
+  if (!url || !key) {
+    showToast('⚠️ Vui lòng nhập đủ URL và Key!', 'error');
+    return;
+  }
+  localStorage.setItem('crm_sb_url', url);
+  localStorage.setItem('crm_sb_key', key);
+  const ok = initSupabase();
+  if (!ok) {
+    showToast('❌ Không thể khởi tạo Supabase. Kiểm tra lại URL!', 'error');
+    return;
+  }
+  showToast('🔄 Đang đồng bộ dữ liệu lên Cloud...', '');
+  await syncAllToCloud();
+  closeDrawer('drawerCloud');
+  showToast('✅ Đã kết nối và đồng bộ Supabase Cloud!', 'success');
+}
+
+async function syncAllToCloud() {
+  if (!sbClient) return;
+  try {
+    const customers = DB.customers;
+    for (const c of customers) {
+      await sbClient.from('customers').upsert({
+        id: c.id, name: c.name, phone: c.phone, zalo: c.zalo || '',
+        source: c.source || '', purpose: c.purpose || '', prop_type: c.propType || '',
+        area: c.area || '', budget: c.budget || '', area2: c.area2 || '',
+        status: c.status || 'cold', personality: c.personality || '', note: c.note || '',
+        facebook: c.facebook || '', zalo_social: c.zaloSocial || '', tiktok: c.tiktok || '',
+        instagram: c.instagram || '', youtube: c.youtube || '',
+        created_at: c.createdAt || Date.now(), updated_at: c.updatedAt || Date.now()
+      });
+    }
+
+    const rentals = RDB.rentals;
+    for (const r of rentals) {
+      await sbClient.from('rentals').upsert({
+        id: r.id, name: r.name, phone: r.phone, zalo: r.zalo || '',
+        source: r.source || '', rental_type: r.rentalType || '', area: r.area || '',
+        price_min: r.priceMin || '', price_max: r.priceMax || '', size: r.size || '',
+        duration: r.duration || '', status: r.status || 'cold', personality: r.personality || '',
+        note: r.note || '', created_at: r.createdAt || Date.now(), updated_at: r.updatedAt || Date.now()
+      });
+    }
+
+    const logs = DB.logs;
+    for (const l of logs) {
+      await sbClient.from('call_logs').upsert({
+        id: l.id, customer_id: l.customerId, call_date: l.date || '',
+        call_time: l.time || '', result: l.result || '', note: l.note || '',
+        followup: l.followup || '', reminder_date: l.reminderDate || '',
+        reminder_time: l.reminderTime || '', reminder_note: l.reminderNote || '',
+        done: l.done || false, created_at: l.createdAt || Date.now()
+      });
+    }
+
+    const reminders = DB.reminders;
+    for (const rm of reminders) {
+      await sbClient.from('reminders').upsert({
+        id: rm.id, customer_id: rm.customerId, remind_date: rm.date || '',
+        remind_time: rm.time || '', note: rm.note || '', done: rm.done || false
+      });
+    }
+  } catch(err) {
+    console.warn('Sync cloud notice:', err);
+  }
+}
+
+async function syncFromCloud() {
+  if (!sbClient) return;
+  try {
+    showToast('🔄 Đang kéo dữ liệu từ Cloud...', '');
+    const { data: custData, error: e1 } = await sbClient.from('customers').select('*');
+    if (custData && custData.length > 0) {
+      DB.customers = custData.map(c => ({
+        id: c.id, name: c.name, phone: c.phone, zalo: c.zalo, source: c.source,
+        purpose: c.purpose, propType: c.prop_type, area: c.area, budget: c.budget,
+        area2: c.area2, status: c.status, personality: c.personality, note: c.note,
+        facebook: c.facebook, zaloSocial: c.zalo_social, tiktok: c.tiktok,
+        instagram: c.instagram, youtube: c.youtube, createdAt: c.created_at, updatedAt: c.updated_at
+      }));
+    }
+
+    const { data: rentData, error: e2 } = await sbClient.from('rentals').select('*');
+    if (rentData && rentData.length > 0) {
+      RDB.rentals = rentData.map(r => ({
+        id: r.id, name: r.name, phone: r.phone, zalo: r.zalo, source: r.source,
+        rentalType: r.rental_type, area: r.area, priceMin: r.price_min, priceMax: r.price_max,
+        size: r.size, duration: r.duration, status: r.status, personality: r.personality,
+        note: r.note, createdAt: r.created_at, updatedAt: r.updated_at
+      }));
+    }
+
+    const { data: logData, error: e3 } = await sbClient.from('call_logs').select('*');
+    if (logData && logData.length > 0) {
+      DB.logs = logData.map(l => ({
+        id: l.id, customerId: l.customer_id, date: l.call_date, time: l.call_time,
+        result: l.result, note: l.note, followup: l.followup, reminderDate: l.reminder_date,
+        reminderTime: l.reminder_time, reminderNote: l.reminder_note, done: l.done, createdAt: l.created_at
+      }));
+    }
+
+    const { data: remData, error: e4 } = await sbClient.from('reminders').select('*');
+    if (remData && remData.length > 0) {
+      DB.reminders = remData.map(rm => ({
+        id: rm.id, customerId: rm.customer_id, date: rm.remind_date, time: rm.remind_time,
+        note: rm.note, done: rm.done
+      }));
+    }
+
+    closeDrawer('drawerCloud');
+    showToast('✅ Đã tải dữ liệu từ Cloud về!', 'success');
+    render();
+  } catch(err) {
+    showToast('❌ Lỗi tải: ' + (err.message || err), 'error');
+  }
+}
+
+// ══════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════
 initSampleData();
+initSupabase();
 render();
 
 // Request notification permission
@@ -1764,6 +1974,10 @@ function renderRental() {
     <div class="topbar">
       <div class="topbar-title">🔑 Khách Cho Thuê</div>
       <div class="topbar-right">
+        <div class="notif-btn" onclick="openCloudConfig()" title="Đồng bộ Supabase Cloud">
+          ☁️
+          <span class="cloud-dot" style="position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#64748b;border:1.5px solid var(--bg)"></span>
+        </div>
         <div class="notif-btn" onclick="navigate('reminders')">🔔<div class="notif-badge" id="topBadge" style="display:none"></div></div>
       </div>
     </div>
@@ -1978,12 +2192,15 @@ function saveRental() {
   closeDrawer();
   showToast(editRentalId ? '✅ Đã cập nhật khách thuê' : '✅ Đã thêm khách thuê mới', 'success');
   render();
+  syncAllToCloud();
 }
 
 function deleteRental() {
   if (!editRentalId) return;
   if (!confirm('Xóa khách thuê này?')) return;
-  RDB.rentals = RDB.rentals.filter(r => r.id !== editRentalId);
+  const idToDelete = editRentalId;
+  RDB.rentals = RDB.rentals.filter(r => r.id !== idToDelete);
+  if (sbClient) sbClient.from('rentals').delete().eq('id', idToDelete);
   closeDrawer();
   showToast('🗑 Đã xóa khách thuê','error');
   render();
