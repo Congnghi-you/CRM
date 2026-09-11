@@ -1668,26 +1668,10 @@ const DB = {
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
-const SAMPLE_DATA = [
-  { id:'s1', name:'Anh Minh', phone:'0901234567', zalo:'0901234567', source:'Facebook', purpose:'buy', propType:'apartment', area:'Quận 7, Nhà Bè', budget:'2 - 3 tỷ', area2:'65-80', status:'hot', personality:'easy', note:'Quan tâm căn 2PN view sông, cần gấp trong 1 tháng tới', createdAt: Date.now()-86400000*5 },
-  { id:'s2', name:'Chị Lan Hương', phone:'0912345678', zalo:'', source:'Giới thiệu', purpose:'invest', propType:'land', area:'Bình Chánh, Long An', budget:'5 - 7 tỷ', area2:'200+', status:'warm', personality:'normal', note:'Đầu tư đất nền, cần pháp lý sạch, sổ đỏ riêng', createdAt: Date.now()-86400000*2 },
-  { id:'s3', name:'Chú Tám BĐS', phone:'0933445566', zalo:'0933445566', source:'Cold call', purpose:'sell', propType:'house', area:'Quận 9, Thủ Đức', budget:'', area2:'', status:'cold', personality:'hard', note:'Muốn bán nhà phố, hỏi giá cao, khó thương lượng', createdAt: Date.now()-86400000*10 },
-];
+const SAMPLE_DATA = [];
 
 function initSampleData() {
-  if (DB.customers.length === 0) {
-    DB.customers = SAMPLE_DATA;
-    // Sample logs
-    const logs = [
-      { id:uid(), customerId:'s1', date:'2026-09-10', time:'09:30', result:'interested', note:'Khách rất quan tâm dự án River Park Q7, hỏi về tầng cao view sông Sài Gòn. Ngân sách ổn khoảng 2.8 tỷ.', followup:'call', reminderDate:'2026-09-12', reminderTime:'10:00', reminderNote:'Gửi thêm bảng giá, gọi xác nhận lịch xem nhà', done:false },
-      { id:uid(), customerId:'s2', date:'2026-09-09', time:'14:00', result:'callback', note:'Hỏi thêm về pháp lý đất nền Bình Chánh. Cần sổ đỏ riêng, không mua đất phân lô chui.', followup:'msg', reminderDate:'2026-09-11', reminderTime:'15:30', reminderNote:'Gửi Zalo dự án đất sổ đỏ Bình Chánh', done:false },
-      { id:uid(), customerId:'s3', date:'2026-09-08', time:'16:00', result:'no-answer', note:'Gọi không nghe, nhắn tin chưa rep', followup:'call', reminderDate:'2026-09-15', reminderTime:'09:00', reminderNote:'Gọi lại lần 2', done:false },
-    ];
-    DB.logs = logs;
-    DB.reminders = logs.filter(l => l.reminderDate).map(l => ({
-      id: l.id, customerId: l.customerId, date: l.reminderDate, time: l.reminderTime, note: l.reminderNote, done: false
-    }));
-  }
+  // Không tự động nạp dữ liệu mẫu để giữ danh sách khách hàng luôn sạch cho tài khoản mới
 }
 
 // ══════════════════════════════════════════════════════
@@ -1944,6 +1928,7 @@ function doneReminder(id) {
   if (i > -1) { reminders[i].done = true; DB.reminders = reminders; }
   showToast(t('toastDoneReminder'), 'success');
   render();
+  syncAllToCloud();
 }
 
 // ══════════════════════════════════════════════════════
@@ -2480,6 +2465,7 @@ function saveLog() {
   closeDrawer();
   showToast(t('toastLogSaved'), 'success');
   render();
+  syncAllToCloud();
 }
 
 // ══════════════════════════════════════════════════════
@@ -2724,12 +2710,18 @@ async function checkAuthSession() {
     if (session && session.user) {
       currentUser = session.user;
       hideAuthScreen();
-      syncFromCloud(true);
+      await syncFromCloud(true);
     } else {
+      currentUser = null;
+      DB.customers = [];
+      RDB.rentals = [];
+      DB.logs = [];
+      DB.reminders = [];
       showAuthScreen();
     }
   } catch(e) {
     console.warn('Check auth session error:', e);
+    currentUser = null;
     showAuthScreen();
   }
 }
@@ -2809,6 +2801,12 @@ async function handleLogin(e) {
     const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
     if (error) throw error;
     currentUser = data.user;
+    // Xóa sạch dữ liệu cục bộ cũ trước khi kéo dữ liệu của tài khoản này
+    DB.customers = [];
+    RDB.rentals = [];
+    DB.logs = [];
+    DB.reminders = [];
+    render();
     showToast('✅ Đăng nhập thành công! Chào mừng bạn.', 'success');
     hideAuthScreen();
     await syncFromCloud(true);
@@ -2842,6 +2840,13 @@ async function handleRegister(e) {
       options: { data: { full_name: name } }
     });
     if (error) throw error;
+
+    // Xóa trắng toàn bộ dữ liệu máy cho tài khoản mới
+    DB.customers = [];
+    RDB.rentals = [];
+    DB.logs = [];
+    DB.reminders = [];
+    render();
 
     if (data.session) {
       currentUser = data.user;
@@ -2974,13 +2979,13 @@ async function saveSupabaseConfig() {
 }
 
 async function syncAllToCloud() {
-  if (!sbClient) return;
+  if (!sbClient || !currentUser) return;
   try {
     const customers = DB.customers;
     for (const c of customers) {
       await sbClient.from('customers').upsert({
         id: c.id,
-        user_id: currentUser ? currentUser.id : undefined,
+        user_id: currentUser.id,
         name: c.name, phone: c.phone, zalo: c.zalo || '',
         source: c.source || '', purpose: c.purpose || '', prop_type: c.propType || '',
         area: c.area || '', budget: c.budget || '', area2: c.area2 || '',
@@ -2995,7 +3000,7 @@ async function syncAllToCloud() {
     for (const r of rentals) {
       await sbClient.from('rentals').upsert({
         id: r.id,
-        user_id: currentUser ? currentUser.id : undefined,
+        user_id: currentUser.id,
         name: r.name, phone: r.phone, zalo: r.zalo || '',
         source: r.source || '', rental_type: r.rentalType || '', area: r.area || '',
         price_min: r.priceMin || '', price_max: r.priceMax || '', size: r.size || '',
@@ -3008,7 +3013,7 @@ async function syncAllToCloud() {
     for (const l of logs) {
       await sbClient.from('call_logs').upsert({
         id: l.id,
-        user_id: currentUser ? currentUser.id : undefined,
+        user_id: currentUser.id,
         customer_id: l.customerId, call_date: l.date || '',
         call_time: l.time || '', result: l.result || '', note: l.note || '',
         followup: l.followup || '', reminder_date: l.reminderDate || '',
@@ -3021,7 +3026,7 @@ async function syncAllToCloud() {
     for (const rm of reminders) {
       await sbClient.from('reminders').upsert({
         id: rm.id,
-        user_id: currentUser ? currentUser.id : undefined,
+        user_id: currentUser.id,
         customer_id: rm.customerId, remind_date: rm.date || '',
         remind_time: rm.time || '', note: rm.note || '', done: rm.done || false
       });
@@ -3032,46 +3037,55 @@ async function syncAllToCloud() {
 }
 
 async function syncFromCloud(silent = false) {
-  if (!sbClient) return;
+  if (!sbClient || !currentUser) return;
   try {
     if (!silent) showToast('🔄 Đang kéo dữ liệu từ Cloud...', '');
-    const { data: custData, error: e1 } = await sbClient.from('customers').select('*');
-    if (custData && custData.length > 0) {
-      DB.customers = custData.map(c => ({
-        id: c.id, name: c.name, phone: c.phone, zalo: c.zalo, source: c.source,
-        purpose: c.purpose, propType: c.prop_type, area: c.area, budget: c.budget,
-        area2: c.area2, status: c.status, personality: c.personality, note: c.note,
-        facebook: c.facebook, zaloSocial: c.zalo_social, tiktok: c.tiktok,
-        instagram: c.instagram, youtube: c.youtube, createdAt: c.created_at, updatedAt: c.updated_at
-      }));
-    }
+    
+    // Kéo khách mua/bán của tài khoản đang đăng nhập
+    const { data: custData, error: e1 } = await sbClient
+      .from('customers')
+      .select('*')
+      .eq('user_id', currentUser.id);
+    DB.customers = (custData || []).map(c => ({
+      id: c.id, name: c.name, phone: c.phone, zalo: c.zalo, source: c.source,
+      purpose: c.purpose, propType: c.prop_type, area: c.area, budget: c.budget,
+      area2: c.area2, status: c.status, personality: c.personality, note: c.note,
+      facebook: c.facebook, zaloSocial: c.zalo_social, tiktok: c.tiktok,
+      instagram: c.instagram, youtube: c.youtube, createdAt: c.created_at, updatedAt: c.updated_at
+    }));
 
-    const { data: rentData, error: e2 } = await sbClient.from('rentals').select('*');
-    if (rentData && rentData.length > 0) {
-      RDB.rentals = rentData.map(r => ({
-        id: r.id, name: r.name, phone: r.phone, zalo: r.zalo, source: r.source,
-        rentalType: r.rental_type, area: r.area, priceMin: r.price_min, priceMax: r.price_max,
-        size: r.size, duration: r.duration, status: r.status, personality: r.personality,
-        note: r.note, createdAt: r.created_at, updatedAt: r.updated_at
-      }));
-    }
+    // Kéo khách thuê của tài khoản đang đăng nhập
+    const { data: rentData, error: e2 } = await sbClient
+      .from('rentals')
+      .select('*')
+      .eq('user_id', currentUser.id);
+    RDB.rentals = (rentData || []).map(r => ({
+      id: r.id, name: r.name, phone: r.phone, zalo: r.zalo, source: r.source,
+      rentalType: r.rental_type, area: r.area, priceMin: r.price_min, priceMax: r.price_max,
+      size: r.size, duration: r.duration, status: r.status, personality: r.personality,
+      note: r.note, createdAt: r.created_at, updatedAt: r.updated_at
+    }));
 
-    const { data: logData, error: e3 } = await sbClient.from('call_logs').select('*');
-    if (logData && logData.length > 0) {
-      DB.logs = logData.map(l => ({
-        id: l.id, customerId: l.customer_id, date: l.call_date, time: l.call_time,
-        result: l.result, note: l.note, followup: l.followup, reminderDate: l.reminder_date,
-        reminderTime: l.reminder_time, reminderNote: l.reminder_note, done: l.done, createdAt: l.created_at
-      }));
-    }
+    // Kéo nhật ký cuộc gọi
+    const { data: logData, error: e3 } = await sbClient
+      .from('call_logs')
+      .select('*')
+      .eq('user_id', currentUser.id);
+    DB.logs = (logData || []).map(l => ({
+      id: l.id, customerId: l.customer_id, date: l.call_date, time: l.call_time,
+      result: l.result, note: l.note, followup: l.followup, reminderDate: l.reminder_date,
+      reminderTime: l.reminder_time, reminderNote: l.reminder_note, done: l.done, createdAt: l.created_at
+    }));
 
-    const { data: remData, error: e4 } = await sbClient.from('reminders').select('*');
-    if (remData && remData.length > 0) {
-      DB.reminders = remData.map(rm => ({
-        id: rm.id, customerId: rm.customer_id, date: rm.remind_date, time: rm.remind_time,
-        note: rm.note, done: rm.done
-      }));
-    }
+    // Kéo lịch nhắc nhở
+    const { data: remData, error: e4 } = await sbClient
+      .from('reminders')
+      .select('*')
+      .eq('user_id', currentUser.id);
+    DB.reminders = (remData || []).map(rm => ({
+      id: rm.id, customerId: rm.customer_id, date: rm.remind_date, time: rm.remind_time,
+      note: rm.note, done: rm.done
+    }));
 
     if (!silent) {
       closeDrawer('drawerCloud');
@@ -3112,15 +3126,7 @@ const RDB = {
   set rentals(v) { localStorage.setItem('crm_rentals', JSON.stringify(v)); }
 };
 
-// Sample rental data
-(function initRentalSample() {
-  if (RDB.rentals.length === 0) {
-    RDB.rentals = [
-      { id:'r1', name:'Anh Tuấn', phone:'0977001122', zalo:'0977001122', source:'Zalo', rentalType:'apartment', area:'Quận 2, Thủ Đức', priceMin:'8', priceMax:'12', size:'50-70', duration:'1 năm', status:'hot', personality:'normal', note:'Cần gấp căn 2PN gần trường học, có thang máy', createdAt: Date.now()-86400000*3 },
-      { id:'r2', name:'Chị Phương Linh', phone:'0944556677', zalo:'', source:'Facebook', rentalType:'house', area:'Quận 7, Nhà Bè', priceMin:'15', priceMax:'20', size:'80-120', duration:'2 năm', status:'warm', personality:'easy', note:'Nhà nguyên căn, có chỗ để xe ô tô, không nuôi thú cưng', createdAt: Date.now()-86400000*7 },
-    ];
-  }
-})();
+
 
 let rentalFilter = 'all';
 
