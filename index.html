@@ -496,31 +496,26 @@
 <!-- DRAWER: Supabase Cloud Config -->
 <div class="drawer" id="drawerCloud">
   <div class="drawer-handle"></div>
-  <div class="drawer-title">☁️ Kết Nối Supabase Cloud</div>
+  <div class="drawer-title" id="drawerCloudTitle">☁️ Trạng Thái Đồng Bộ Cloud</div>
   <div class="drawer-body">
     <div style="background:rgba(0,210,196,0.1);border:1.5px solid rgba(0,210,196,0.3);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:12px;line-height:1.6;color:var(--text2)">
-      🛡️ Dữ liệu sẽ được lưu an toàn trên Cloud của tài khoản <strong>congnghi1@gmail.com</strong>.<br/>
-      Đổi máy, hư điện thoại chỉ cần vào lại web là còn nguyên 100%!
+      🛡️ <span id="cloudSecurityNote">Dữ liệu được lưu trữ an toàn trên Cloud cho tài khoản:</span><br/>
+      <strong id="cloudUserEmail" style="color:var(--teal);font-size:14px;word-break:break-all">...</strong><br/>
+      <span style="font-size:11px;color:var(--text3)">Đổi máy hay mất điện thoại chỉ cần đăng nhập lại là dữ liệu còn nguyên 100%!</span>
     </div>
 
-    <div class="form-section">
-      <div class="form-section-title">🔑 Thông số kết nối</div>
-      <div class="field">
-        <label>Project URL *</label>
-        <input type="url" id="sbUrl" placeholder="https://xxxx.supabase.co" />
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:600;color:var(--text2)" id="cloudStatusLabel">Trạng thái kết nối</span>
+        <span id="cloudStatusBadge" style="background:rgba(16,185,129,0.2);color:#10b981;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700">🟢 Đã kết nối</span>
       </div>
-      <div class="field">
-        <label>Anon Public Key *</label>
-        <textarea id="sbKey" style="min-height:70px;font-size:12px" placeholder="eyJhbGciOi..."></textarea>
+      <div style="font-size:12px;color:var(--text3);line-height:1.5" id="cloudStatusDesc">
+        Toàn bộ khách hàng, khách thuê, nhật ký gọi và lịch hẹn được tự động đồng bộ hóa bảo mật theo tài khoản của bạn.
       </div>
     </div>
 
-    <div style="margin-bottom:16px;font-size:12px;color:var(--text3)">
-      💡 <em>Lấy tại: Supabase Dashboard → Project "CRM" → Settings → API</em>
-    </div>
-
-    <button class="btn btn-primary" onclick="saveSupabaseConfig()">⚡ Kết nối & Đồng bộ ngay</button>
-    <button class="btn btn-ghost" onclick="syncFromCloud()" id="btnSyncFromCloud" style="display:none;margin-top:10px">🔄 Tải dữ liệu từ Cloud về máy này</button>
+    <button class="btn btn-primary" onclick="triggerManualSync()" id="btnManualSync">🔄 Đồng bộ dữ liệu ngay</button>
+    <button class="btn btn-ghost" onclick="closeDrawer('drawerCloud'); handleLogout();" style="margin-top:10px;color:var(--hot);border-color:rgba(239,68,68,0.3)" id="btnCloudLogout">🚪 Đăng xuất tài khoản</button>
   </div>
 </div>
 
@@ -1089,7 +1084,18 @@ const I18N = {
     // Greetings
     goodMorning: 'Chào buổi sáng',
     goodAfternoon: 'Chào buổi chiều',
-    goodEvening: 'Chào buổi tối'
+    goodEvening: 'Chào buổi tối',
+    // Cloud Sync Drawer
+    cloudSyncStatus: '☁️ Trạng Thái Đồng Bộ Cloud',
+    cloudSecurityNote: 'Dữ liệu được lưu trữ an toàn trên Cloud cho tài khoản:',
+    cloudConnStatus: 'Trạng thái kết nối',
+    cloudConnActive: '🟢 Đã kết nối Cloud',
+    cloudConnInactive: '⚪ Chưa kết nối',
+    cloudAutoSyncDesc: 'Toàn bộ khách hàng, khách thuê, nhật ký gọi và lịch hẹn được tự động đồng bộ hóa bảo mật theo tài khoản của bạn.',
+    btnSyncNow: '🔄 Đồng bộ dữ liệu ngay',
+    btnSyncing: '⏳ Đang đồng bộ...',
+    toastSyncSuccess: '✅ Đã đồng bộ toàn bộ dữ liệu lên Cloud!',
+    notLoggedIn: 'Chưa đăng nhập'
   },
   en: {
     langName: '🇬🇧 English',
@@ -1265,7 +1271,18 @@ const I18N = {
     // Greetings
     goodMorning: 'Good morning',
     goodAfternoon: 'Good afternoon',
-    goodEvening: 'Good evening'
+    goodEvening: 'Good evening',
+    // Cloud Sync Drawer
+    cloudSyncStatus: '☁️ Cloud Sync Status',
+    cloudSecurityNote: 'Data is securely stored in Cloud for account:',
+    cloudConnStatus: 'Connection Status',
+    cloudConnActive: '🟢 Cloud Connected',
+    cloudConnInactive: '⚪ Disconnected',
+    cloudAutoSyncDesc: 'All customers, rentals, call logs, and reminders are automatically synchronized securely with your account.',
+    btnSyncNow: '🔄 Sync Data Now',
+    btnSyncing: '⏳ Syncing...',
+    toastSyncSuccess: '✅ All data synced to Cloud!',
+    notLoggedIn: 'Not logged in'
   },
   zh: {
     langName: '🇨🇳 中文',
@@ -1441,7 +1458,18 @@ const I18N = {
     // Greetings
     goodMorning: '早上好',
     goodAfternoon: '下午好',
-    goodEvening: '晚上好'
+    goodEvening: '晚上好',
+    // Cloud Sync Drawer
+    cloudSyncStatus: '☁️ 云端同步状态',
+    cloudSecurityNote: '数据已为该账户安全存储于云端：',
+    cloudConnStatus: '连接状态',
+    cloudConnActive: '🟢 云端已连接',
+    cloudConnInactive: '⚪ 未连接',
+    cloudAutoSyncDesc: '所有客户、租客、通话记录和日程提醒均已根据您的账户自动安全同步。',
+    btnSyncNow: '🔄 立即同步数据',
+    btnSyncing: '⏳ 正在同步...',
+    toastSyncSuccess: '✅ 所有数据已成功同步至云端！',
+    notLoggedIn: '未登录'
   }
 };
 
@@ -1589,6 +1617,14 @@ function updateDrawerTexts() {
   const foCall = document.querySelector('#followupRow [data-val="call"]'); if (foCall) foCall.textContent = t('foCall');
   const foMsg = document.querySelector('#followupRow [data-val="msg"]'); if (foMsg) foMsg.textContent = t('foMsg');
   const foNone = document.querySelector('#followupRow [data-val="none"]'); if (foNone) foNone.textContent = t('foNone');
+
+  // drawerCloud
+  const dCloudTitle = document.getElementById('drawerCloudTitle'); if (dCloudTitle) dCloudTitle.textContent = t('cloudSyncStatus');
+  const dCloudSecNote = document.getElementById('cloudSecurityNote'); if (dCloudSecNote) dCloudSecNote.textContent = t('cloudSecurityNote');
+  const dCloudStatusLbl = document.getElementById('cloudStatusLabel'); if (dCloudStatusLbl) dCloudStatusLbl.textContent = t('cloudConnStatus');
+  const dCloudStatusDesc = document.getElementById('cloudStatusDesc'); if (dCloudStatusDesc) dCloudStatusDesc.textContent = t('cloudAutoSyncDesc');
+  const btnManSync = document.getElementById('btnManualSync'); if (btnManSync) btnManSync.textContent = t('btnSyncNow');
+  const btnCLogout = document.getElementById('btnCloudLogout'); if (btnCLogout) btnCLogout.textContent = '🚪 ' + t('btnLogout');
 }
 
 function updateAuthScreenTexts() {
@@ -2950,32 +2986,36 @@ function updateCloudDot(connected) {
 }
 
 function openCloudConfig() {
-  const cfg = getSbConfig();
-  document.getElementById('sbUrl').value = cfg.url;
-  document.getElementById('sbKey').value = cfg.key;
-  const btnSync = document.getElementById('btnSyncFromCloud');
-  if (btnSync) btnSync.style.display = cfg.url ? 'block' : 'none';
+  const emailEl = document.getElementById('cloudUserEmail');
+  if (emailEl) {
+    emailEl.textContent = currentUser ? currentUser.email : (t('notLoggedIn') || 'Chưa đăng nhập');
+  }
+  const badgeEl = document.getElementById('cloudStatusBadge');
+  if (badgeEl) {
+    badgeEl.textContent = sbClient ? (t('cloudConnActive') || '🟢 Đã kết nối') : (t('cloudConnInactive') || '⚪ Chưa kết nối');
+    badgeEl.style.color = sbClient ? '#10b981' : '#94a3b8';
+  }
   openDrawer('drawerCloud');
 }
 
-async function saveSupabaseConfig() {
-  const url = document.getElementById('sbUrl').value.trim();
-  const key = document.getElementById('sbKey').value.trim();
-  if (!url || !key) {
-    showToast('⚠️ Vui lòng nhập đủ URL và Key!', 'error');
-    return;
+async function triggerManualSync() {
+  const btn = document.getElementById('btnManualSync');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = t('btnSyncing') || '⏳ Đang đồng bộ...';
   }
-  localStorage.setItem('crm_sb_url', url);
-  localStorage.setItem('crm_sb_key', key);
-  const ok = initSupabase();
-  if (!ok) {
-    showToast('❌ Không thể khởi tạo Supabase. Kiểm tra lại URL!', 'error');
-    return;
+  try {
+    await syncAllToCloud();
+    await syncFromCloud(true);
+    showToast(t('toastSyncSuccess') || '✅ Đã đồng bộ toàn bộ dữ liệu lên Cloud!', 'success');
+  } catch(e) {
+    showToast('❌ ' + (e.message || e), 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = t('btnSyncNow') || '🔄 Đồng bộ dữ liệu ngay';
+    }
   }
-  showToast('🔄 Đang đồng bộ dữ liệu lên Cloud...', '');
-  await syncAllToCloud();
-  closeDrawer('drawerCloud');
-  showToast('✅ Đã kết nối và đồng bộ Supabase Cloud!', 'success');
 }
 
 async function syncAllToCloud() {
