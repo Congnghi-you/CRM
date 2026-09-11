@@ -58,7 +58,19 @@
   .search-box input::placeholder { color: var(--text3); }
 
   /* ── FILTER PILLS ── */
-  .filter-row { display: flex; gap: 8px; padding: 0 16px 12px; overflow-x: auto; scrollbar-width: none; }
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+    touch-action: pan-x;
+  }
+  .filter-row:active { cursor: grabbing; }
   .filter-row::-webkit-scrollbar { display: none; }
   .pill { flex-shrink: 0; padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; transition: var(--transition); white-space: nowrap; }
   .pill.active { color: #021a19; border-color: transparent; }
@@ -278,18 +290,18 @@
   .tag-overdue { background: rgba(239,68,68,0.12); color: var(--hot); border-color: rgba(239,68,68,0.3); }
 
   /* ── SEARCH + SORT BAR ── */
-  .search-sort-bar { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; }
-  .inline-search { flex: 1; display: flex; align-items: center; gap: 8px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; padding: 8px 12px; transition: var(--transition); }
+  .search-sort-bar { display: flex; align-items: center; gap: 8px; padding: 0 16px 10px; width: 100%; box-sizing: border-box; }
+  .inline-search { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 6px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; padding: 7px 10px; transition: var(--transition); }
   .inline-search:focus-within { border-color: var(--primary); }
-  .inline-search input { background: transparent; border: none; outline: none; color: var(--text); font-size: 13px; font-family: inherit; flex: 1; min-width: 0; }
-  .inline-search input::placeholder { color: var(--text3); }
-  .inline-search .si-icon { font-size: 14px; color: var(--text3); flex-shrink: 0; }
+  .inline-search input { background: transparent; border: none; outline: none; color: var(--text); font-size: 13px; font-family: inherit; flex: 1 1 auto; min-width: 0; width: 100%; -webkit-appearance: none; }
+  .inline-search input::placeholder { color: var(--text3); opacity: 0.8; }
+  .inline-search .si-icon { font-size: 13px; color: var(--text3); flex-shrink: 0; }
   .inline-search .si-clear { font-size: 13px; color: var(--text3); cursor: pointer; padding: 0 2px; flex-shrink: 0; }
-  .sort-btn-group { display: flex; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
-  .sort-btn { padding: 7px 10px; font-size: 11px; font-weight: 700; color: var(--text3); cursor: pointer; transition: var(--transition); white-space: nowrap; display: flex; align-items: center; gap: 3px; }
+  .sort-btn-group { display: inline-flex; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+  .sort-btn { padding: 6px 9px; font-size: 11px; font-weight: 700; color: var(--text3); cursor: pointer; transition: var(--transition); white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 3px; flex-shrink: 0; }
   .sort-btn:first-child { border-right: 1px solid var(--border); }
-  .sort-btn.active { background: rgba(0,210,196,0.2); color: var(--primary); }
-  .sort-btn:active { transform: scale(0.93); }
+  .sort-btn.active { background: rgba(0,210,196,0.22); color: var(--primary); }
+  .sort-btn:active { transform: scale(0.95); }
 
   /* ── AUTH SCREEN (XANH SM BRIGHT ELECTRIC THEME) ── */
   #authScreen {
@@ -496,7 +508,7 @@
 <!-- DRAWER: Supabase Cloud Config -->
 <div class="drawer" id="drawerCloud">
   <div class="drawer-handle"></div>
-  <div class="drawer-title" id="drawerCloudTitle">☁️ Tài Khoản & Hỗ Trợ</div>
+  <div class="drawer-title" id="drawerCloudTitle">🚪 Tài Khoản & Hỗ Trợ</div>
   <div class="drawer-body">
 
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
@@ -1078,7 +1090,7 @@ const I18N = {
     goodAfternoon: 'Chào buổi chiều',
     goodEvening: 'Chào buổi tối',
     // Cloud Sync Drawer
-    cloudAccountTitle: '☁️ Tài Khoản & Hỗ Trợ',
+    cloudAccountTitle: '🚪 Tài Khoản & Hỗ Trợ',
     cloudSecurityNote: 'Dữ liệu được lưu trữ an toàn trên Cloud cho tài khoản:',
     cloudContactLabel: '📩 Hỗ trợ kỹ thuật & Góp ý qua Email:',
     btnSyncNow: '🔄 Đồng bộ dữ liệu ngay',
@@ -1263,7 +1275,7 @@ const I18N = {
     goodAfternoon: 'Good afternoon',
     goodEvening: 'Good evening',
     // Cloud Sync Drawer
-    cloudAccountTitle: '☁️ Account & Support',
+    cloudAccountTitle: '🚪 Account & Support',
     cloudSecurityNote: 'Data is securely stored in Cloud for account:',
     cloudContactLabel: '📩 Technical Support & Feedback via Email:',
     btnSyncNow: '🔄 Sync Data Now',
@@ -1448,7 +1460,7 @@ const I18N = {
     goodAfternoon: '下午好',
     goodEvening: '晚上好',
     // Cloud Sync Drawer
-    cloudAccountTitle: '☁️ 账户与支持',
+    cloudAccountTitle: '🚪 账户与支持',
     cloudSecurityNote: '数据已为该账户安全存储于云端：',
     cloudContactLabel: '📩 技术支持与邮件反馈：',
     btnSyncNow: '🔄 立即同步数据',
@@ -1720,6 +1732,55 @@ function navigate(page) {
   render();
 }
 
+function initDragScroll() {
+  document.querySelectorAll('.filter-row').forEach(slider => {
+    if (slider.dataset.dragInit) return;
+    slider.dataset.dragInit = '1';
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let hasMoved = false;
+
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      hasMoved = false;
+      slider.style.cursor = 'grabbing';
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isDown) return;
+      isDown = false;
+      slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 1.6;
+      if (Math.abs(walk) > 4) hasMoved = true;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+
+    slider.addEventListener('click', (e) => {
+      if (hasMoved) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        hasMoved = false;
+      }
+    }, true);
+
+    slider.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        slider.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    }, { passive: false });
+  });
+}
+
 function render() {
   const app = document.getElementById('app');
   switch(currentPage) {
@@ -1731,6 +1792,7 @@ function render() {
     default: app.innerHTML = renderHome();
   }
   updateBadge();
+  initDragScroll();
 }
 
 // Re-render cards only (keep search input focused)
@@ -1802,7 +1864,11 @@ function renderHome() {
       <div class="topbar-right">
         ${renderLangSelector('homeLangDrop')}
         <div class="notif-btn" onclick="openCloudConfig()" title="${t('cloudTitle')}">
-          ☁️
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
           <span class="cloud-dot" style="position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#64748b;border:1.5px solid var(--bg)"></span>
         </div>
         <div class="notif-btn" onclick="navigate('reminders')">
@@ -1830,8 +1896,8 @@ function renderHome() {
         ${homeSearch ? `<span class="si-clear" onclick="homeSearch=''; renderInPlace('home')">✕</span>` : ''}
       </div>
       <div class="sort-btn-group">
-        <div class="sort-btn ${homeSort==='newest'?'active':''}" onclick="homeSort='newest'; renderInPlace('home')">🆕<span>${t('sortNew')}</span></div>
-        <div class="sort-btn ${homeSort==='oldest'?'active':''}" onclick="homeSort='oldest'; renderInPlace('home')">📅<span>${t('sortOld')}</span></div>
+        <div class="sort-btn ${homeSort==='newest'?'active':''}" onclick="homeSort='newest'; renderInPlace('home')"><span>${t('sortNew')}</span></div>
+        <div class="sort-btn ${homeSort==='oldest'?'active':''}" onclick="homeSort='oldest'; renderInPlace('home')"><span>${t('sortOld')}</span></div>
       </div>
     </div>
     <div class="cards-list">${cards}</div>
@@ -3230,7 +3296,11 @@ function renderRental() {
       <div class="topbar-right">
         ${renderLangSelector('rentalLangDrop')}
         <div class="notif-btn" onclick="openCloudConfig()" title="${t('cloudTitle')}">
-          ☁️
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:block">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
           <span class="cloud-dot" style="position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#64748b;border:1.5px solid var(--bg)"></span>
         </div>
         <div class="notif-btn" onclick="navigate('reminders')">🔔<div class="notif-badge" id="topBadge" style="display:none"></div></div>
@@ -3254,8 +3324,8 @@ function renderRental() {
         ${rentalSearch ? `<span class="si-clear" onclick="rentalSearch=''; renderInPlace('rental')">✕</span>` : ''}
       </div>
       <div class="sort-btn-group">
-        <div class="sort-btn ${rentalSort==='newest'?'active':''}" onclick="rentalSort='newest'; renderInPlace('rental')">🆕<span>${t('sortNew')}</span></div>
-        <div class="sort-btn ${rentalSort==='oldest'?'active':''}" onclick="rentalSort='oldest'; renderInPlace('rental')">📅<span>${t('sortOld')}</span></div>
+        <div class="sort-btn ${rentalSort==='newest'?'active':''}" onclick="rentalSort='newest'; renderInPlace('rental')"><span>${t('sortNew')}</span></div>
+        <div class="sort-btn ${rentalSort==='oldest'?'active':''}" onclick="rentalSort='oldest'; renderInPlace('rental')"><span>${t('sortOld')}</span></div>
       </div>
     </div>
     <div class="cards-list">${cards}</div>
