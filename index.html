@@ -1712,12 +1712,18 @@ function getSbConfig() {
   };
 }
 
+let realtimeSubscribed = false;
+
 function initSupabase() {
   const cfg = getSbConfig();
   if (cfg.url && cfg.key && window.supabase) {
     try {
       sbClient = window.supabase.createClient(cfg.url, cfg.key);
       updateCloudDot(true);
+      // Auto pull latest data in background on load
+      syncFromCloud(true);
+      // Listen to real-time changes
+      setupRealtime();
       return true;
     } catch(e) {
       console.warn('Supabase init error:', e);
@@ -1727,6 +1733,22 @@ function initSupabase() {
   }
   updateCloudDot(false);
   return false;
+}
+
+function setupRealtime() {
+  if (!sbClient || realtimeSubscribed) return;
+  try {
+    sbClient
+      .channel('schema-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'customers' }, () => syncFromCloud(true))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'rentals' }, () => syncFromCloud(true))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'call_logs' }, () => syncFromCloud(true))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reminders' }, () => syncFromCloud(true))
+      .subscribe();
+    realtimeSubscribed = true;
+  } catch(e) {
+    console.warn('Realtime subscribe notice:', e);
+  }
 }
 
 function updateCloudDot(connected) {
@@ -1817,10 +1839,10 @@ async function syncAllToCloud() {
   }
 }
 
-async function syncFromCloud() {
+async function syncFromCloud(silent = false) {
   if (!sbClient) return;
   try {
-    showToast('🔄 Đang kéo dữ liệu từ Cloud...', '');
+    if (!silent) showToast('🔄 Đang kéo dữ liệu từ Cloud...', '');
     const { data: custData, error: e1 } = await sbClient.from('customers').select('*');
     if (custData && custData.length > 0) {
       DB.customers = custData.map(c => ({
@@ -1859,11 +1881,13 @@ async function syncFromCloud() {
       }));
     }
 
-    closeDrawer('drawerCloud');
-    showToast('✅ Đã tải dữ liệu từ Cloud về!', 'success');
+    if (!silent) {
+      closeDrawer('drawerCloud');
+      showToast('✅ Đã tải dữ liệu từ Cloud về!', 'success');
+    }
     render();
   } catch(err) {
-    showToast('❌ Lỗi tải: ' + (err.message || err), 'error');
+    if (!silent) showToast('❌ Lỗi tải: ' + (err.message || err), 'error');
   }
 }
 
