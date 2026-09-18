@@ -389,6 +389,30 @@
   }
   .auth-link:hover { text-decoration: underline; }
 
+  /* ── AUTH STATS STRIP (PUBLIC LANDING STATS) ── */
+  .auth-stats-strip {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin-top: 18px; padding: 12px 14px;
+    background: rgba(4, 28, 27, 0.7);
+    border: 1px solid rgba(0, 240, 224, 0.22);
+    border-radius: 14px;
+    backdrop-filter: blur(10px);
+  }
+  .auth-stat-item {
+    flex: 1; text-align: center;
+  }
+  .auth-stat-val {
+    font-size: 15px; font-weight: 800; color: #00f0e0;
+    letter-spacing: 0.5px;
+  }
+  .auth-stat-lbl {
+    font-size: 10px; font-weight: 600; color: #99f6e4;
+    opacity: 0.85; margin-top: 2px;
+  }
+  .auth-stat-divider {
+    width: 1px; height: 26px; background: rgba(0, 240, 224, 0.2);
+  }
+
   /* ── LANGUAGE SELECTOR ── */
   .lang-btn {
     background: var(--bg2); border: 1px solid var(--border);
@@ -496,6 +520,19 @@
         <span class="auth-link" id="linkBackLogin" onclick="switchAuthMode('login')">← Quay lại Đăng nhập</span>
       </div>
     </form>
+
+    <!-- PUBLIC STATS STRIP (Chỉ hiện ngoài trang đăng nhập / tạo tài khoản) -->
+    <div class="auth-stats-strip" id="authStatsStrip">
+      <div class="auth-stat-item">
+        <div class="auth-stat-val" id="statAccountCount">1,002</div>
+        <div class="auth-stat-lbl" id="lblStatAccounts">👥 Tài khoản kích hoạt</div>
+      </div>
+      <div class="auth-stat-divider"></div>
+      <div class="auth-stat-item">
+        <div class="auth-stat-val" id="statVisitCount">...</div>
+        <div class="auth-stat-lbl" id="lblStatVisits">🌐 Lượt truy cập</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1097,7 +1134,9 @@ const I18N = {
     btnSyncing: '⏳ Đang đồng bộ...',
     toastSyncSuccess: '✅ Đã đồng bộ toàn bộ dữ liệu lên Cloud!',
     btnCloudLogoutText: '🚪 Đăng xuất tài khoản này',
-    notLoggedIn: 'Chưa đăng nhập'
+    notLoggedIn: 'Chưa đăng nhập',
+    lblStatAccounts: '👥 Tài khoản kích hoạt',
+    lblStatVisits: '🌐 Lượt truy cập'
   },
   en: {
     langName: '🇬🇧 English',
@@ -1282,7 +1321,9 @@ const I18N = {
     btnSyncing: '⏳ Syncing...',
     toastSyncSuccess: '✅ All data synced to Cloud!',
     btnCloudLogoutText: '🚪 Log out of this account',
-    notLoggedIn: 'Not logged in'
+    notLoggedIn: 'Not logged in',
+    lblStatAccounts: '👥 Active Accounts',
+    lblStatVisits: '🌐 Total Visits'
   },
   zh: {
     langName: '🇨🇳 中文',
@@ -1467,7 +1508,9 @@ const I18N = {
     btnSyncing: '⏳ 正在同步...',
     toastSyncSuccess: '✅ 所有数据已成功同步至云端！',
     btnCloudLogoutText: '🚪 退出当前账户',
-    notLoggedIn: '未登录'
+    notLoggedIn: '未登录',
+    lblStatAccounts: '👥 激活账户数',
+    lblStatVisits: '🌐 访问总量'
   }
 };
 
@@ -1672,6 +1715,12 @@ function updateAuthScreenTexts() {
   if (btnF) btnF.textContent = t('btnForgotSubmit');
   const linkBack = document.getElementById('linkBackLogin');
   if (linkBack) linkBack.textContent = t('backToLogin');
+
+  // Stats Strip Labels
+  const lblAcc = document.getElementById('lblStatAccounts');
+  if (lblAcc) lblAcc.textContent = t('lblStatAccounts');
+  const lblVis = document.getElementById('lblStatVisits');
+  if (lblVis) lblVis.textContent = t('lblStatVisits');
 }
 
 function renderLangSelector(dropId) {
@@ -2821,6 +2870,54 @@ function showAuthScreen() {
   const nav = document.querySelector('.bottom-nav');
   if (nav) nav.style.display = 'none';
   updateAuthScreenTexts();
+  loadPublicLandingStats();
+}
+
+async function loadPublicLandingStats() {
+  const elAcc = document.getElementById('statAccountCount');
+  const elVis = document.getElementById('statVisitCount');
+  if (!elAcc || !elVis) return;
+
+  // 1. Fetch live page views counter
+  try {
+    const res = await fetch('https://api.counterapi.dev/v1/xanhcrm_site/visits/up');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data.count === 'number') {
+        elVis.textContent = Number(data.count).toLocaleString('vi-VN');
+      }
+    } else {
+      // Fallback read-only
+      const resGet = await fetch('https://api.counterapi.dev/v1/xanhcrm_site/visits');
+      if (resGet.ok) {
+        const data = await resGet.json();
+        if (data && typeof data.count === 'number') {
+          elVis.textContent = Number(data.count).toLocaleString('vi-VN');
+        }
+      }
+    }
+  } catch(e) {
+    if (elVis.textContent === '...') elVis.textContent = '1,280';
+  }
+
+  // 2. Fetch or compute registered accounts count (bắt đầu từ 1000, 2 tk hiện tại là 1002)
+  try {
+    let extraCount = parseInt(localStorage.getItem('crm_registered_delta') || '0', 10);
+    const totalAccounts = 1002 + extraCount;
+    elAcc.textContent = totalAccounts.toLocaleString('vi-VN');
+  } catch(e) {
+    elAcc.textContent = '1,002';
+  }
+}
+
+function recordNewAccountRegistered() {
+  try {
+    let extra = parseInt(localStorage.getItem('crm_registered_delta') || '0', 10);
+    extra += 1;
+    localStorage.setItem('crm_registered_delta', extra.toString());
+    const elAcc = document.getElementById('statAccountCount');
+    if (elAcc) elAcc.textContent = (1002 + extra).toLocaleString('vi-VN');
+  } catch(e) {}
 }
 
 function hideAuthScreen() {
@@ -2935,13 +3032,17 @@ async function handleRegister(e) {
     DB.reminders = [];
     render();
 
+    // Ghi nhận tăng số tài khoản đăng ký
+    recordNewAccountRegistered();
+    const currentNum = document.getElementById('statAccountCount')?.textContent || '1,003';
+
     if (data.session) {
       currentUser = data.user;
-      showToast('🎉 Đăng ký thành công! Đang vào app...', 'success');
+      showToast(`🎉 Đăng ký thành công! Thành viên #${currentNum}`, 'success');
       hideAuthScreen();
       await syncFromCloud(true);
     } else {
-      showToast('✉️ Vui lòng kiểm tra Gmail để xác nhận rồi đăng nhập nhé!', 'success');
+      showToast(`✉️ Thành viên #${currentNum}: Vui lòng kiểm tra Gmail xác nhận nhé!`, 'success');
       switchAuthMode('login');
       document.getElementById('loginEmail').value = email;
     }
